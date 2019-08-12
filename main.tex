@@ -98,7 +98,7 @@
 \[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{10}+\frac{x_2}{10^2}+\frac{x_3}{10^3}+\cdots+\frac{x_t}{10^t}\right\}\times10^l\ (\tilde{x}=0.x_1x_2x_3\cdots x_t\times10^l)\]
 其中$1\leq x_1<10$，$0\leq x_j<10$，$j=2,3,\cdots,t$。类似的，在$\beta$进制中，一个数的表示方式：
 \[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right\}\times\beta^l\]
-其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$0.x_1x_2\cdotsx_t$称为尾数。$fl(x)$称为一个\key{规格化浮点数}。
+其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$0.x_1x_2\cdots x_t$称为尾数。$fl(x)$称为一个\key{规格化浮点数}。
 
 \entry 称计算机中所能表示的全体数的集合称为\key{浮点数集}，记为$F(\beta,t,L,U)$。
 \begin{equation}
@@ -142,7 +142,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 
 若原有的计算公式不符合以上的这些原则，则可以通过对原式的等价变换或近似处理，使之符合上面的原则。
 
-\example 设$|x|\ll1$，则可以改写数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
+\example 设$|x|\ll1$，则可改写数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
 \[\ln\frac{1-\sqrt{1-x^2}}{|x|}=\ln\frac{x^2}{|x|\cdot(1+\sqrt{1-x^2})}=\ln\frac{|x|}{1+\sqrt{1-x^2}}\]
 
 \section{计算方法的研究内容}
