@@ -98,7 +98,7 @@
 \[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{10}+\frac{x_2}{10^2}+\frac{x_3}{10^3}+\cdots+\frac{x_t}{10^t}\right\}\times10^l\ (\tilde{x}=0.x_1x_2x_3\cdots x_t\times10^l)\]
 其中$1\leq x_1<10$，$0\leq x_j<10$，$j=2,3,\cdots,t$。类似的，在$\beta$进制中，一个数的表示方式：
 \[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right\}\times\beta^l\]
-其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$x_1,x_2\cdots,x_t$称为位数。$fl(x)$称为一个\key{规格化浮点数}。
+其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$0.x_1x_2\cdotsx_t$称为尾数。$fl(x)$称为一个\key{规格化浮点数}。
 
 \entry 称计算机中所能表示的全体数的集合称为\key{浮点数集}，记为$F(\beta,t,L,U)$。
 \begin{equation}
@@ -112,12 +112,12 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \caption{\textsf{C++}中\texttt{float}类型变量的储存原理}\label{1-2}
 \end{figure}
 
-\entry 浮点数集中的数的个数：$N=2\cdot(\beta-1)\cdot\beta^t\cdot(U-L+1)+1$
+\entry 浮点数集中的数的个数：$N=2\cdot(\beta-1)\cdot\beta^(t-1)\cdot(U-L+1)+1$
 
 \entry 浮点数$fl(x)$与对应真值$x$的误差：
 \begin{itemize}\tl
     \item 绝对误差：$|x-fl(x)|\leq\dfrac12\beta^{-t}\times\beta^l=\dfrac12\beta^{l-t}$
-    \item 相对误差：$\dfrac{|x-fl(x)|}{|x|}\leq\dfrac{\beta^{l-t}/2}{\beta^{l-1}}=\dfrac12\beta^{1-t}\ (|x|\geq0.1\times\beta^l)$
+    \item 相对误差：由$|x|\geq0.1\times\beta^l$，有$\dfrac{|x-fl(x)|}{|x|}\leq\dfrac{\beta^{l-t}/2}{\beta^{l-1}}=\dfrac12\beta^{1-t}$
 \end{itemize}
 此类误差称为\key{舍入误差}。
 
@@ -142,7 +142,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 
 若原有的计算公式不符合以上的这些原则，则可以通过对原式的等价变换或近似处理，使之符合上面的原则。
 
-\example 设$|x|\ll1$，则可以简化数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
+\example 设$|x|\ll1$，则可以改写数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
 \[\ln\frac{1-\sqrt{1-x^2}}{|x|}=\ln\frac{x^2}{|x|\cdot(1+\sqrt{1-x^2})}=\ln\frac{|x|}{1+\sqrt{1-x^2}}\]
 
 \section{计算方法的研究内容}
@@ -151,9 +151,9 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
     \item 某一问题的数值计算算法（即通常意义上的“计算方法”）；
     \item 这些算法的误差、复杂性或收敛速度之估计。
 \end{enumerate}
-而后者至关重要，对于算法的误差或复杂性分析使这门课程区别于一般的工具性课程。
+后者至关重要。对于算法的误差或复杂性分析，使这门课程区别于一般的工具性课程。
 
-\entry 针对一些模型，还存在着一类特定的问题，即\textbf{病态问题}。度量这类问题的性质，需要用到\key{条件数}。
+\entry 针对一些模型，还存在着一类特定的问题，即\textbf{病态问题}。为度量这类问题的性质，需要用到\key{条件数}。
 \begin{itemize}\tl
     \item 根据输入数据的微小变化能引起问题之解变化的大小程度，可以将数值计算问题区别为两类：若由此能引起解的很大变化，则称问题是\textbf{病态}的；否则，称一个问题是\textbf{良态}的。病态问题不易精确求解。
     \item \key{条件数}：输入数据$x,\tilde{x}$，输出$f(x),f(\tilde{x})$。设$x\neq0$，$f(x)\neq0$，若存在$m>0$使：
@@ -161,10 +161,12 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
     则将$m$称为该问题的\textbf{条件数}，记为$\cond(f)$。
 \end{itemize}
 
-\example $y=\varphi(x_1,x_2,\cdots,x_n)$。输入为$\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，近似解$\tilde{y}=\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，则有
+\example $y=\varphi(x_1,x_2,\cdots,x_n)$。输入为$\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，近似解$\tilde{y}=\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)$，则有
 \begin{gather}
-\Delta y=\varphi(x_1,x_2,\cdots,x_n)-\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\Delta x_i\\
-\delta y=\frac{\Delta y}{y}\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\frac{\Delta x_i}{x_i}=\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\delta x_i
+\Delta y=\varphi(x_1,x_2,\cdots,x_n)-\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)
+\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\Delta x_i\\
+\delta y=\frac{\Delta y}{y}\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{\Delta x_i}{y}
+=\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\delta x_i
 \end{gather}
 故可见$\left|\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\right|$即条件数。
 
