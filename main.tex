@@ -1,0 +1,584 @@
+\documentclass[opensource,b5paper,sourcefont]{qyxf-book}
+\usepackage{makeidx}
+\usepackage{etoolbox}
+\makeindex
+
+\title{计算方法笔记}
+\subtitle{Notes on Computing Methods}
+\author{王天浩}
+\typo{xjtu-blacksmith}
+\date{2019 年 6 月 6 日}
+\sourcepage{\url{https://github.com/qyxf/Tutorials}}
+
+\newcounter{entry}
+\counterwithin*{entry}{chapter}
+
+\newcommand{\example}{\stepcounter{entry}\noindent$\text{\ding{48}}{}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\entry}{\stepcounter{entry}\noindent$\text{\ding{226}}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\defwidth}{.2\textwidth}
+\newcommand{\tl}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcommand{\add}[1]{\textsf{[#1]}}
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\di}{\mathrm{d}}
+\newcommand{\sothat}{\ \Rightarrow\ }
+\newcommand{\trm}{\stepcounter{entry}\noindent$\text{\ding{43}}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\define}{\trm}
+\newcommand{\key}[1]{\textbf{#1}\index{#1}}
+
+\renewcommand{\emph}[1]{\underline{#1}}
+
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\cond}{Cond}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+\chapter*{前言}
+计算方法是本校钱学森班、少年班等试验班的同学必修的一门数学基础课程，其内容包括解决一些计算问题（如解线性方程组、插值与逼近、数值微积分等）的常用算法，以及针对这些算法之误差与稳定性的相关数学理论。相较于其他的数学课程，计算方法课程具有内容丰富、实用性强等特点，但也兼有一般数学课程内容深、考点多的性质。可以说，计算方法课程是工科学生在走向专业课程之前所要翻越的最后一座数学理论“大山”。
+
+基于以上的特点，在计算方法课程的学习与复习过程中，便非常需要一本\textbf{详略适中}、\textbf{重点突出}的课程笔记，以资参考。2014级少年班的王天浩同学，于此方面做了相当好的工作，在学习本课程期间整理了十分详尽的课程笔记，基本上达到了以上所提到的要求。……
+
+为方便之后的同学复习计算方法课程，经与王天浩学长协商，我自2019年6月6日开始将原有的纸质扫描笔记以\LaTeX 整理为电子版，补足了语言上的一些省略、缺失，并增写了许多注记、说明。……
+
+\subsection*{正文格式说明}
+电子版笔记基本上遵循了原有纸质笔记的框架，但相较与原来的样式更为清晰、简明。这份笔记的正文中包含了这样几类内容：
+\begin{description}
+    \item[零碎的知识点] 用无序号列表的形式列出。
+    \item[例题] 以加粗的“\textbf{例}”字引导，通常是对其正上方那一个或几个知识点的具体呈现与演示。
+    \item[注记] 用脚注的方式给出，通常是对正文内容的进一步阐释。大部分注记标明了“——编者注”的字样，这些都是编者所加上的。
+    % \item[正文补正] 用方括号包围的黑体字呈现，这些内容是编者在原有笔记之基础上所做的补充与删改。凡未这样改动的部分，则都保持了原来的模样。
+\end{description}
+
+\subsection*{帮助我们改进这份笔记}
+一本好的教科书，来自于相关教师历经数代、数十年的逐次再版改进；一份好的笔记，同样也需要长期的维护、改进才能够最终创造出来。……
+
+\begin{flushright}
+能动少C71 尤佳睿（{\fangsong 黑山雁}）
+\footnote{个人博客：\url{https://www.cnblogs.com/xjtu-blacksmith/}}
+\\2019 年 6 月 6 日
+\end{flushright}
+\cleardoublepage
+
+\tableofcontents
+
+\mainmatter
+\chapter{误差}
+\section{真值与误差}
+\entry 有测量就会有误差。通常，将某数学量、物理量的\key{真值}记为$x$（不加任何修饰符），而将测量或计算所得的$x$的\key{近似值}记作$\tilde{x}$。
+
+\entry 两种误差：$\begin{cases}\Delta x=x-\tilde{x} \text{\ (绝对误差)}\\ \delta x=\frac{x-\tilde{x}}{x}\text{\ (相对误差)}\end{cases}$
+
+\entry 两种误差限：$\begin{cases}|\Delta x|\leq\varepsilon\text{\ (绝对误差限)}\\|\delta x|\leq\varepsilon_r\text{\ (相对误差限)}\end{cases}$
+
+\entry 相对误差较小时，有近似计算式\footnote{在估计误差时，真值$x$往往难以确定，但绝对误差$|\Delta x|$或绝对误差限$\varepsilon$往往能够确定下来。}
+：$|\delta x|\approx\frac{|x-\tilde{x}|}{\tilde{x}}=\frac{\Delta x}{\tilde{x}}\leq\frac{|\varepsilon|}{\tilde{x}}$
+
+\entry 若$|\Delta x|=|x-\tilde{x}|\leq0.5\times10^{-n}$，则称$x$的近似值$\tilde{x}$\emph{准确到第$n$位小数}。
+
+\example 设$x=0.31682$，则$\tilde{x}_1=0.3$精确到$1$位有效数字，$\tilde{x}_2=0.32$精确到$2$位，$\tilde{x}_3=0.317$精确到$3$位，$\tilde{x}_4=0.3168$精确到$4$位。若取$\tilde{x}_5=0.3169$为$x$的近似值，则其仅精确到$3$位小数。
+
+\section{浮点运算与浮点数集}
+\entry 在计算机中，实数将被储存为\key{浮点数}，故计算机中的实数运算常被称作\key{浮点运算}。为此，有下面的一些概念与理论。
+
+\entry \key{浮点运算量}：记\emph{一次加法和一次乘法}（如$a+b\times c$）所需的时间为一个\key{时间单位}，记为flop。
+
+\example 设$\mathbf{A}_1$为一$10\times20$的矩阵，$\mathbf{A}_2$为一$20\times50$的矩阵，欲计算$\mathbf{A}_1\cdot\mathbf{A}_2$，则运算量为$10\times20\times50=10000$ flop，如图\ref{1-1}所示。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{矩阵乘法运算量示意图}\label{1-1}
+\end{figure}
+
+\entry \key{浮点数集}：在10进制中，浮点数$\tilde{x}$（或一实数$x$的近似$t$位有效数字的浮点数$\tilde{x}$）可表示如下：
+\[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{10}+\frac{x_2}{10^2}+\frac{x_3}{10^3}+\cdots+\frac{x_t}{10^t}\right\}\times10^l\ (\tilde{x}=0.x_1x_2x_3\cdots x_t\times10^l)\]
+其中$1\leq x_1<10$，$0\leq x_j<10$，$j=2,3,\cdots,t$。类似的，在$\beta$进制中，一个数的表示方式：
+\[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right\}\times\beta^l\]
+其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$x_1,x_2\cdots,x_t$称为位数。$fl(x)$称为一个\key{规格化浮点数}。
+
+\entry 称计算机中所能表示的全体数的集合称为\key{浮点数集}，记为$F(\beta,t,L,U)$。
+\begin{equation}
+F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right)\times\beta^l:L\leq l\leq U\right\}
+\end{equation}
+
+\example \textsf{C++}里的\verb|float|：4字节内存，32个二进制bit，如图\ref{1-2}所示。可以将这一浮点数集记为$F(2,23,-128,127)$。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{\textsf{C++}中\texttt{float}类型变量的储存原理}\label{1-2}
+\end{figure}
+
+\entry 浮点数集中的数的个数：$N=2\cdot(\beta-1)\cdot\beta^t\cdot(U-L+1)+1$
+
+\entry 浮点数$fl(x)$与对应真值$x$的误差：
+\begin{itemize}\tl
+    \item 绝对误差：$|x-fl(x)|\leq\dfrac12\beta^{-t}\times\beta^l=\dfrac12\beta^{l-t}$
+    \item 相对误差：$\dfrac{|x-fl(x)|}{|x|}\leq\dfrac{\beta^{l-t}/2}{\beta^{l-1}}=\dfrac12\beta^{1-t}\ (|x|\geq0.1\times\beta^l)$
+\end{itemize}
+此类误差称为\key{舍入误差}。
+
+\entry 计算结果的错误/误差：
+\begin{enumerate}\tl
+    \item $l\notin[L,U]$：\key{上溢}（$l\geq L$）会出错，\key{下溢}（$l\leq U$）变为$0$。
+    \item 尾数多于$t$位：自动进行舍入处理，造成误差
+    \item 有效数字丢失（\emph{“大数吃小数”}）
+\end{enumerate}
+
+
+\example 设计算时保留4位有效数字，则$1234+0.3678=1234.3678=1234.3678\approx1234$，在此发生了“大数吃小数”的现象。
+
+\entry 设计数值计算的算法时，应结合浮点数具有的特性，避免上面所提到的各类计算错误。为此，提出以下几条\emph{浮点运算原则}：
+\begin{enumerate}\tl
+    \item 避免产生大结果的运算，避免小数作为除数。
+    \item 避免“大”、“小”数相加减，防止大数吃小数。
+    \item 避免相近数直接相减，防止有效数字损失。
+    \item 简化运算步骤，减少运算次数
+    \footnote{由此避免各类误差的逐次累计。——编者注}。
+\end{enumerate}
+
+若原有的计算公式不符合以上的这些原则，则可以通过对原式的等价变换或近似处理，使之符合上面的原则。
+
+\example 设$|x|\ll1$，则可以简化数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
+\[\ln\frac{1-\sqrt{1-x^2}}{|x|}=\ln\frac{x^2}{|x|\cdot(1+\sqrt{1-x^2})}=\ln\frac{|x|}{1+\sqrt{1-x^2}}\]
+
+\section{计算方法的研究内容}
+\entry 计算方法课程，并不仅仅包含各类数值计算方法。归结而言，计算方法课程的研究内容可以归纳为：
+\begin{enumerate}\tl
+    \item 某一问题的数值计算算法（即通常意义上的“计算方法”）；
+    \item 这些算法的误差、复杂性或收敛速度之估计。
+\end{enumerate}
+而后者至关重要，对于算法的误差或复杂性分析使这门课程区别于一般的工具性课程。
+
+\entry 针对一些模型，还存在着一类特定的问题，即\textbf{病态问题}。度量这类问题的性质，需要用到\key{条件数}。
+\begin{itemize}\tl
+    \item 根据输入数据的微小变化能引起问题之解变化的大小程度，可以将数值计算问题区别为两类：若由此能引起解的很大变化，则称问题是\textbf{病态}的；否则，称一个问题是\textbf{良态}的。病态问题不易精确求解。
+    \item \key{条件数}：输入数据$x,\tilde{x}$，输出$f(x),f(\tilde{x})$。设$x\neq0$，$f(x)\neq0$，若存在$m>0$使：
+    \[\frac{|f(x)-f(\tilde{x})|}{|f(x)|}\leq m\cdot\frac{|x-\tilde{x}|}{|x|}\ (\text{输出误差}\leq m\cdot\text{输入误差})\]
+    则将$m$称为该问题的\textbf{条件数}，记为$\cond(f)$。
+\end{itemize}
+
+\example $y=\varphi(x_1,x_2,\cdots,x_n)$。输入为$\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，近似解$\tilde{y}=\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，则有
+\begin{gather}
+\Delta y=\varphi(x_1,x_2,\cdots,x_n)-\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\Delta x_i\\
+\delta y=\frac{\Delta y}{y}\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\frac{\Delta x_i}{x_i}=\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\delta x_i
+\end{gather}
+故可见$\left|\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\right|$即条件数。
+
+\entry \key{稳定性}（数值稳定性）：运算中\textbf{舍入误差积累}是否影响结果的可靠性。
+
+\example 欲用数值计算方法求解由$I_k=\e^{-1}\int_0^1x^k\e^x\di x,\ k=0,1,\cdots,7$所定义的一系列定积分的值。
+\begin{itemize}\tl
+    \item 算法1：构建递推公式
+    \begin{equation}\label{1-e1}
+    \left\{
+    \begin{aligned}
+    I_0&=\e^{-1}\int_0^1\di x=1-\dfrac1\e\\
+    I_k&=\e^{-1}\int_0^1x^k\e^x\di x=\e^{-1}x^k\cdot\left.\e^{-1}\right|_0^1-\e^{-1}\int_0^1k\cdot\e^xx^{k-1}\di x=1-kI_{k-1}
+    \end{aligned}
+    \right.
+    \end{equation}
+    利用递推关系依次计算$I_0\rightarrow I_1\rightarrow I_1\rightarrow\cdots\rightarrow I_7$。
+    \item 算法2：近似计算$I_7$，利用递推关系
+    \footnote{即将(\ref{1-e1})式移项，反得$I_{k-1}=\dfrac{1-I_k}{k}$。——编者注}
+    依次计算$I_7\rightarrow I_6\rightarrow\cdots\rightarrow I_0$。
+\end{itemize}
+实际上就整体而言，算法2精度更高。对算法1递推公式$I_k=1-kI_{k-1}$。若$I_{k-1}$有舍入误差$\Delta I_{k-1}$（或记作$\Delta$），则$\tilde{I}_k=1-k(I_{k-1}+\Delta)=I_k-k\cdot\Delta$，误差被放大
+\footnote{对算法2的递推公式做类似分析，可见$\tilde{I}_{k-1}=I_{k-1}-\Delta/k$，即误差被减小到原来的$1/k$倍，这是大大缩小了。故算法2较算法1更为稳定。——编者注}。
+
+\chapter{线性方程组直接解法}
+\section{Gauss消元法的引入}
+
+\entry 整体思路：
+\begin{enumerate}\tl
+    \item 先推得$\mathbf{Ax}=\mathbf{b}\sothat\mathbf{x}=\mathbf{A}^{-1}\mathbf{b}$，再求$\mathbf{A}^{-1}$（初等行变换法、伴随矩阵法、Gauss-Jordan消去法）
+    \item Crammer法则：$\mathbf{Ax}=\mathbf{b}\sothat x_i=\frac{|\mathbf{A}_i|}{|\mathbf{A}|}$，浮点运算数$N=(n^2-1)\cdot n!+n$ flop（很大）
+\end{enumerate}
+
+\entry Gauss消去法：降维（$n\to n-1\to\cdots\to1$）
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{Gauss消去法步骤示意图}\label{2-f1}
+\end{figure}
+\begin{itemize}\tl
+\item 消去运算量：$N_1=\sum\limits_{k=1}^{n-1}(n-k)(n-k+2)=\frac{n^3}3+n^2-\frac{5n}6$
+\item 回代运算量：$N_2=1+2+\cdots+n=\frac{n(n+1)}2$
+\item 总计运算量：$N=N_1+N_2=\frac{n^3}3+n^2-\frac n3=O(n^3)$
+\end{itemize}
+
+\entry 可能出现的问题：（主要是消去过程中）
+\begin{enumerate}\tl
+    \item $a_{kk}^{(k-1)}=0$，无法进行
+    \item $|a_{kk}^{(k-1)}|\ll|a_{ik}^{(k-1)}|\ (i=k+1,k+2,\cdots,n)$，误差极大（大/小=大，误差被放大）
+\end{enumerate}
+对 Problem 1，只要满足：(1)$\mathbf{A}$是方阵；(2)$|\mathbf{A}|\neq0$，则可通过换行达到解决问题。
+
+\trm $a_{kk}^{(k-1)}$不为$0$的充要条件是$\mathbf{A}$的$1$阶与$k$阶主子式均不为$0$，即
+\[a_{kk}^{(k-1)}\neq0\ \Leftrightarrow\ D_1=a_{11}\neq0,\ D_k=\left|\begin{array}{cccc}a_{11}&a_{12}&\cdots&a_{1k}\\a_{21}&a_{22}&\cdots&a_{2k}\\\vdots&\vdots&\ddots&\vdots\\a_{k1}&a_{k2}&\cdots&a_{kk}\end{array}\right|\]
+对 Problem 2，则不易解决\footnote{可参见下一节中的“列主元Gauss消元法”}。
+
+\define 设矩阵$\mathbf{A}$满足$\sum\limits_{j=1,j\neq i}^n|a_{ij}|<|a_{ii}|$~，则称$\mathbf{A}$是严格对角占优矩阵。
+
+\entry Gauss消去法顺利进行条件：
+\begin{enumerate}\tl
+    \item $\mathbf{A}$各阶顺序主子式不等于$0$。
+    \item $\mathbf{A}$是对称正定阵。
+    \item $\mathbf{A}$是严格对角占优矩阵。
+\end{enumerate}
+
+
+\section{Gauss消元法的改进}
+\entry 列主元Gauss消元法：消去进行到第$k$步时如下所示：
+\[\begin{pmatrix}a_{11}^{(k-1)}&a_{12}^{(k-1)}&\cdots&a_{1k}^{(k-1)}&\cdots&a_{1n}^{(k-1)}\\0&a_{22}^{(k-1)}&\cdots&a_{2k}^{(k-1)}&\cdots&a_{2n}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{kk}^{(k-1)}&\cdots&a_{kn}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{nk}^{(k-1)}&\cdots&a_{nn}^{(k-1)}\end{pmatrix}\]
+选取$\max(|a_{ik}^{(k-1)}|)\ i=k,k+1,\cdots,n$的一行与第$k$行互换，继续消去（算法较稳定）
+
+\entry Gauss消去法矩阵形式：
+\[\mathbf{A}=\mathbf{A}^{(0)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\end{pmatrix}\sothat\mathbf{A}^{(1)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\end{pmatrix}\]
+则$\mathbf{A}^{(1)}=\mathbf{L}_1\mathbf{A}^{(0)}$，其中$L_1=\begin{pmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{pmatrix}$。按此方式依次变换得
+\[\mathbf{A}^{(n)}=\mathbf{L}_n\mathbf{A}^{(n-1)}=\cdots=\mathbf{L}_n\mathbf{L}_{n-1}\cdots\mathbf{L}_2\mathbf{L}_1\mathbf{A}^{(0)}\]
+反推得到
+\[\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{A}^{(n-1)}\]
+记$\mathbf{U}=\mathbf{A}^{(n-1)}$，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$
+
+\trm 设$\mathbf{A}$为$n$阶矩阵，$D_k\neq0$，则$\mathbf{A}$可唯一分解为一单位下三角阵$\mathbf{L}$与一上三角阵$\mathbf{U}$之积
+\begin{equation}\label{2-e1}
+\mathbf{A}=\mathbf{LU}
+\end{equation}
+称为\textbf{LU分解}（Doolittle分解）。
+
+\entry LU分解的算法实现：根据式(\ref{2-e1})可知，$\mathbf{A}$中的元素$\alpha_{ij}$满足
+\begin{align*}
+\alpha_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_{2j}\ \cdots\ \mu_{jj}\ 0\ \cdots\ 0)^{\mathrm{T}}\\
+&=\begin{cases}\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}+\mu_{ij}&,j\geq i,\ i=1,2,\cdots,n\\\sum\limits_{k=1}^jl_{ik}\mu_{kj}&,j<i,\ i=1,2,\cdots,n\end{cases}
+\end{align*}
+由此可以推得迭代算式为：
+\begin{align}
+&\mu_{1j}=\alpha_{1j}&j=1,2,\cdots,n\label{2-e2}\\
+&l_{i1}=\alpha_{i1}/\mu{11}&i=2,3,\cdots,n\label{2-e3}\\
+&\mu_{ij}=\alpha_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e4}\\
+&l_{ki}=(\alpha_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti})/\mu_{ii}&k=i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e5}
+\end{align}
+
+\entry 实用算法：
+\begin{enumerate}\tl
+    \item 照抄\footnote{即利用式(\ref{2-e2})。}系数矩阵$\mathbf{A}$第$1$行；
+    \item 用式(\ref{2-e3})写出第$1$列；
+    \item 用式(\ref{2-e4})写出第$2$行；
+    \item 用式(\ref{2-e5})写出第$2$列；
+    \item 重复应用式(\ref{2-e4})、式(\ref{2-e5})，生成行与列。
+    \item 分成$\mathbf{L}$、$\mathbf{U}$两矩阵。
+\end{enumerate}
+
+\begin{gather*}
+    \begin{pmatrix}a_{11}&a_{12}&\cdots&a_{1n}\\&&&\\&&&\\&&&\end{pmatrix}\sothat
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&&&\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\sothat
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\\
+    \ \overset{\cdots\ }{\Rightarrow}\ 
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&&\vdots\\l_{n1}&l_{n2}&\cdots&\mu_{nn}\end{pmatrix}=\mathbf{L}+\mathbf{U}=
+    \begin{pmatrix}&&&\\l_{21}&&&\\\vdots&\vdots&&\\l_{n1}&l_{n2}&\cdots&\end{pmatrix}+
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\&\mu_{22}&\cdots&\mu_{2n}\\&&\ddots&\vdots\\&&&\mu_{nn}\end{pmatrix}
+\end{gather*}
+
+\entry 需注意：重复第5步时，有如下的小妙招。
+\begin{enumerate}\tl
+    \item 我们注意到，按此方法生成的顺序如左下图所示，为“┌”状的生成顺序。那么我们以第$k$步时的生成为例。
+    \item 在第$k$步生成行时，对第$k$步的行的某个元素，首先向上找，应该能找到$k-1$个元素的列向量；再向左找，能找到一个$k-1$个元素的行向量，则该处应生成的值即为矩阵$\mathbf{A}$对应位置的元素值减去找到的两个向量的内积。
+    \item 类似的，在第$k$步生成时，先向左找$k-1$个元素的行向量，再向上找$k-1$个元素的列向量，生成值为矩阵$\mathbf{A}$对应位置元素值减两向量内积之后\textbf{除以}$\mu_{kk}$。
+    \item \emph{千万不要忘记生成列时要除以$\mu_{kk}$！！！}
+\end{enumerate}
+
+
+\example 分解矩阵$\mathbf{LU}$，其中：$\mathbf{A}=\begin{pmatrix}4&-2&0&4\\-2&2&-3&1\\0&-3&13&-7\\4&1&-7&23\end{pmatrix}$
+
+（答案：$\mathbf{L}=\begin{pmatrix}1&&&\\-\frac12&1&&\\0&-3&1&\\1&3&\frac12&1\end{pmatrix},\mathbf{U}=\begin{pmatrix}4&-2&0&4\\&1&-3&3\\&&4&2\\&&&9\end{pmatrix}$）
+
+
+\entry 利用LU分解可解线性方程组$\mathbf{Ax}=\mathbf{b}$。
+
+\entry 平方根法和改进平方根法。
+
+\entry LDU分解：令$\mathbf{D}=\diag(\mu_{11},\mu_{22},\cdots,\mu_{nn})$，则有：
+\[\mathbf{A}=\mathbf{LU}=\mathbf{L\cdot I\cdot U}=\mathbf{LDD}^{-1}\mathbf{U}=\mathbf{LDM}^{\mathrm{T}}\]
+其中$\mathbf{M}^{\mathrm{T}}=\mathbf{D}^{-1}\mathbf{U}$，$\mathbf{M}^{\mathrm{T}}$是一单位上三角阵。则：
+\begin{equation}
+\mathbf{M}=\begin{pmatrix}1&&&\\m_{21}&1&&\\\vdots&\vdots&\ddots&\\m_{n1}&m_{n2}&\cdots&1\end{pmatrix},\ m_{ji}=\frac{\mu_{ij}}{\mu_{ii}}\text{\ （即每行元素除以排头元素）}
+\end{equation}
+称$\mathbf{A=LDM}^{\mathrm{T}}$为矩阵的LDU分解。
+
+\entry 对于对称阵，可分解为：$\mathbf{A=LDL}^{\mathrm{T}}$（前提：各阶顺序主子式非$0$）
+
+\entry 对于对称正定阵，$\mathbf{D}$的元素均非负（且对角线非$0$），$\mathbf{A}=\mathbf{GG}^{\mathrm{T}}$（Cholesky分解）
+
+\entry LDU计算式不必死记，只需记住LU分解然后变换即可。
+
+\entry 平方根法：$\mathbf{A=GG}^{
+\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{GG}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Gy=b}\sothat\text{解出}\mathbf{y}\\\mathbf{G}^{\mathrm{T}}\mathbf{x=y}\sothat\text{解出}\mathbf{x}\end{cases}$
+
+\entry 改进平方根法：$\mathbf{A=LDL}^{\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{LDL}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Ly=b}\sothat\text{解出}\mathbf{y}\\\mathbf{Dz=y}\sothat\text{解出}\mathbf{z}\\\mathbf{L}^{\mathrm{T}}\mathbf{x=b}\sothat\text{解出}\mathbf{x}\end{cases}$
+
+\entry 稀疏矩阵：大量元素为$0$，非零元很少。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{稀疏矩阵做LU分解示意图}\label{2-f2}
+\end{figure}
+$p=q=1$时的带状矩阵称为三对角阵，通常为严格对角占优矩阵。
+
+\entry 解三对角系数矩阵线性方程组的追赶法：设系数矩阵$\mathbf{T}$为三对角阵，则有
+\[\mathbf{T=LU},\mathbf{Tx=d}\sothat\mathbf{LUx=d}\sothat\begin{cases}\mathbf{Ly=d}&\text{（追）}\\\mathbf{Ux=y}&\text{（赶）}\end{cases}\]
+
+
+\section{病态问题理论}
+
+\entry 残向量：$\mathbf{r=b-A}\tilde{\mathbf{x}}$
+
+\entry 误差向量：$\mathbf{e=x^{\ast}}-\tilde{\mathbf{x}}$
+
+\entry 如何衡量误差（向量）的大小？可采用向量的范数衡量。
+
+\entry 向量范数：称$\|\mathbf{x}\|$为一个向量的范数，若$\|\mathbf{x}\|\in\mathbb{R}$满足：
+\begin{enumerate}\tl
+    \item 非负性：$\forall \mathbf{x}\in\mathbb{R}^n,\|\mathbf{x}\|\geq0\text{且}\|\mathbf{x}\|=0\neq\mathbf{x=0}$
+    \item 齐次性：$\forall\alpha\in\mathbb{R},x\in\mathbb{R}^n,\|\alpha\mathbf{x}\|=|\alpha|\cdot\|\mathbf{x}\|$
+    \item 三角不等式：$\forall\mathbf{x,y}\in\mathbb{R}^n,\|\mathbf{x+y}\|\leq\|\mathbf{x}\|+\|\mathbf{y}\|$
+\end{enumerate}
+
+\entry 常用范数：
+\begin{itemize}\tl
+    \item $1$-范数：$\|\mathbf{x}\|_1=|x_1|+|x_2|+\cdots+|x_n|.$
+    \item $2$-范数：$\|\mathbf{x}\|_2=\sqrt{x_1^2+x_2^2+\cdots+x_n^2}.$
+    \item $\infty$-范数：$\|\mathbf{x}\|_{\infty}=\max\limits_{1\leq i\leq n}|x_i|.$
+\end{itemize}
+
+\entry 矩阵范数：称$\|\mathbf{A}\|\in\mathbb{R}$为一个矩阵范数，若其满足：
+\begin{enumerate}\tl
+    \item 非负性：$\forall\mathbf{A},\|\mathbf{A}\|\geq0$且$\|\mathbf{A}\|=0\ \Leftrightarrow\ \mathbf{A=O}$
+    \item 齐次性：$\forall\alpha\in\mathbb{R},\|\alpha\mathbf{A}\|=|\alpha|\cdot\|\mathbf{A}\|$
+    \item 三角不等式：$\|\mathbf{A+B}\|\leq\|\mathbf{A}\|+\|\mathbf{B}\|$
+    \item $\|\mathbf{AB}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{B}\|$
+\end{enumerate}
+
+\entry 定义：若$\|\mathbf{Ax}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}\|$，则称矩阵范数$\|\mathbf{A}\|$与向量范数$\|\mathbf{x}\|$为相容或协调的。
+
+\entry 算子范数：$\|\mathbf{A}\|_p=\max\dfrac{\|\mathbf{Ax}\|_p}{\|\mathbf{x}\|_p}=\max\limits_{\|\mathbf{x}\|_p=1}\|\mathbf{Ax}\|_p$，容易证明$\|\mathbf{A}\|_p$满足相容条件。
+\begin{enumerate}\tl
+    \item $1$-范数：$\|\mathbf{A}\|_1=\max\limits_{1\leq j\leq n}\left\{\sum\limits_{i=1}^n|a_{ij}|\right\}$即列和最大值
+    \item $2$-范数：$\|\mathbf{A}\|_2=\sqrt{\mathbf{A}^{\mathrm{T}}\mathbf{A}\text{的最大特征值}}$
+    \item $\infty$-范数：$\|\mathbf{A}\|_{\infty}=\max\limits_{1\leq i\leq n}\left\{\sum\limits_{j=1}^n|a_{ij}|\right\}$即行和最大值
+\end{enumerate}
+
+\entry 矩阵的谱半径：$\rho(\mathbf{A})=\max\limits_{1\leq i\leq n}|\lambda_i|$，性质：$\rho(\mathbf{A})\leq\|\mathbf{A}\|$
+
+\entry 定理：设$\|\mathbf{B}\|\leq1$，则$\mathbf{I-B}$可逆，且
+\begin{equation}
+\|(\mathbf{I-B})^{-1}\|\leq\frac1{1-\|\mathbf{B}\|}
+\end{equation}
+
+\entry 舍入误差对解的影响：
+\[\mathbf{r=b-A}\tilde{\mathbf{x}}\sothat\mathbf{A}\tilde{\mathbf{x}}=\mathbf{b-r}\neq\mathbf{b}\]
+为分析舍入误差的相对水平，首先定义$\mathbf{e=\mathbf{x}^{\ast}-\tilde{\mathbf{x}}}$，分析其量级有
+\[\tilde{\mathbf{x}}=\\\mathbf{A}^{-1}\mathbf{r}\sothat\|\mathbf{e}\|=\|\mathbf{A}^{-1}\mathbf{r}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{r}\|\]
+由于$\mathbf{Ax}^{\ast}=\mathbf{b}$，故
+\[\|\mathbf{b}\|=\|\mathbf{Ax}^{\ast}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}^{\ast}\|\sothat\frac1{\|\mathbf{x}^{\ast}\|}\leq\frac{\|\mathbf{A}\|}{\|\mathbf{b}\|}\]
+故相对误差水平$\dfrac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\leq\|\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|\cdot\dfrac{\|\mathbf{r}\|}{\|\mathbf{b}\|}$，其中的系数即可定义为矩阵的条件数$\cond(\mathbf{A})=\|\mathbf{A}\|\|\mathbf{A}^{-1}\|$
+
+\entry 易知$\cond(\mathbf{A})>1$（$\|\mathbf{A}\|\|\mathbf{A}^{-1}\|\geq\|\mathbf{A\cdot A}^{-1}\|=1$）
+
+\entry 残向量$\mathbf{r}$不能完全反映偏差水平，因$\mathbf{r}$小，$\mathbf{e}$也不一定小。
+
+\entry 系数矩阵扰动对解的影响：
+\[(\mathbf{A}+\Delta\mathbf{A})\mathbf{x=b}\sothat\mathbf{r=b-A}\tilde{\mathbf{x}}=\Delta\mathbf{A}\tilde{\mathbf{x}}\sothat\|\mathbf{r}\|\leq\|\Delta\mathbf{A}\|\|\tilde{\mathbf{x}}\|\]
+可见若$\Delta\mathbf{A}$小，$\mathbf{r}$也小。故相对误差水平
+\[\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\cond(\mathbf{A})\frac{\|\mathbf{r}\|}{\|\mathbf{b}\|}\leq\cond(\mathbf{A})\cdot\frac{\|\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\]
+
+\entry 共同影响：$(\mathbf{A}-\Delta\mathbf{A})(\mathbf{x}-\Delta\mathbf{x})=\mathbf{b}-\Delta\mathbf{b}$，当$\|\Delta\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|<1$时：
+\begin{equation}
+\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\frac{\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|}{1-\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}}\left(\frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}+\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\right)
+\end{equation}
+$\cond(\mathbf{A})$较大时，方程组为病态方程组；反之，$\cond(\mathbf{A})$较小时，方程组仍为良态方程组。
+
+\entry $\cond(\mathbf{A})$的估计：
+\[\mathbf{Ax=b}\sothat\mathbf{x=A}^{-1}\mathbf{b}\sothat\|\mathbf{x}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{b}\|\sothat\frac{\|\mathbf{x}\|}{\|\mathbf{b}\|}\leq\|\mathbf{A}^{-1}\|\]
+随机选取$p$个向量$\mathbf{b}_1,\mathbf{b}_2,\cdots,\mathbf{b}_p$，解方程$\mathbf{Ax}^{(k)}=\mathbf{b}_k$，得到$\mathbf{x}^{(k)}$，由上面结论得到
+\[\max_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}\leq\|\mathbf{A}^{-1}\|\]
+故可近似认为：$\cond(\mathbf{A})\approx\|\mathbf{A}\|\cdot\max\limits_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}.$
+
+
+\chapter{线性方程组迭代解法}
+\section{迭代方法概要}
+
+
+\entry 思想：$f(x^{\ast})=0\sothat\cdots\sothat x^{\ast}=\phi(x^{\ast})$，给出初值$x_0$和递推公式$x_{k+1}=\phi(x_k)$，假设$\{x_k\}$收敛，求极限——设$\lim\limits_{k\to\infty}x_k=x$，则有$x=\phi(x)$，从而必有$f(x)=0$。
+
+\entry 向量序列收敛：$\mathbf{x}^{(k)}=(x_1^{(k)},x_2^{(k)},\cdots,x_n^{(k)})^{\mathrm{T}}$，若$\lim\limits_{k\to\infty}x_i^{(k)}=x_i^{\ast}$，则$\mathbf{x}^{(k)}\to\mathbf{x}^{\ast}\ (k\to\infty)$，记作$\lim\limits_{k\to\infty}\mathbf{x}^{(k)}=\mathbf{x}^{\ast}$。
+
+\entry 矩阵序列收敛：$\mathbf{A}^{(k)}=(a_{ij}^{(k)})_{m\times n}$，若$\lim\limits_{k\to\infty}a_{ij}^{(k)}=a_{ij}$，则称$\mathbf{A}^{(k)}\to\mathbf{A}=(a_{ij})_{m\times n}$
+\footnote{不用$\mathbf{A}^\ast$，是怕与伴随矩阵的符号弄混。——作者注}
+，记作$\lim\limits_{k\to\infty}\mathbf{A}^{(k)}=\mathbf{A}$。
+
+\entry 序列收敛定理：
+\begin{itemize}\tl
+    \item 对向量，$\mathbf{x}^{(k)}\to\mathbf{x}^\ast\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{x}^\ast-\mathbf{x}^{(k)}\|=0$
+    \item 对矩阵，$\mathbf{A}^{(k)}\to\mathbf{A}\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{A}-\mathbf{A}^{(k)}\|=0$
+\end{itemize}
+
+\entry 定理：设$\mathbf{B}\in\mathbb{R}^{m\times n}$，则$\lim\limits_{k\to\infty}\mathbf{B}^k=0\ \Leftrightarrow\ \rho(\mathbf{B})<1$。
+
+\entry 设$\mathbf{Ax=b}$，变形得$\mathbf{x=Bx+g}$，可构造迭代格式
+\begin{equation}\label{3-e1}
+    \mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}
+\end{equation}
+则$\mathbf{x}^\ast=\lim\limits_{k\to\infty}\mathbf{x}^{(k)}$满足$\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}\sothat\mathbf{Ax}^\ast=\mathbf{b}$\ ，故可以通过(\ref{3-e1})式不断迭代以逼近方程的解。
+
+
+\section{三种基本迭代法}
+
+\entry 方法一·Jacobi迭代法：以第$i$行为例，有：
+\[a_{i1}x_1+a_{i2}x_2+\cdots+a_{ii}x_i+\cdots+a_{in}x_n=b_i\]
+可解出
+\begin{align}
+x_i&=\frac1{a_{ii}}[b_i-(a_{i1}x_1+a_{i2}x_2+\cdots+a_{i,i-1}x_{i-1}+a_{i,i+1}x_{i+1}+\cdots+a_{in}x_n)]\notag\\
+&=\frac1{a_{ii}}\left[b_i-\sum_{j=1,j\neq i}^na_{ij}x_j\right]
+\end{align}
+依上式即可构造Jacobi迭代格式：
+\begin{equation}
+x_i^{(k+1)}=\frac1{a_{ii}}\left[b_i-\sum_{j=1,j\neq i}^na_{ij}x_j^{(k)}\right]\quad(i=1,2,\cdots,n)
+\end{equation}
+按照$\mathbf{x=Bx+g}$的标准格式，整理成矩阵格式：
+\begin{equation}
+\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}=\begin{pmatrix}0&-\frac{a_{12}}{a_{11}}&-\frac{a_{13}}{a_{11}}&\cdots&-\frac{a_{1n}}{a_{11}}\\-\frac{a_{21}}{a_{22}}&0&-\frac{a_{23}}{a_{22}}&\cdots&-\frac{a_{2n}}{a_{22}}\\\vdots&\vdots&\vdots&\ddots&\vdots\\-\frac{a_{n1}}{a_{nn}}&-\frac{a_{n2}}{a_{nn}}&-\frac{a_{n3}}{a_{nn}}&\cdots&0\end{pmatrix}\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}+\begin{pmatrix}\frac{b_1}{a_{11}}\\\frac{b_2}{a_{22}}\\\vdots\\\frac{b_n}{a_{nn}}\end{pmatrix}
+\end{equation}
+
+\entry 方法二·Gauss-Seidel迭代法：
+\begin{equation}
+\left\{
+\begin{aligned}
+x_1^{(k+1)}&=\frac1{a_{11}}(b_1-a_{12}x_2^{(k)}-a_{13}x_3^{(k)}-\cdots-a_{1n}x_n^{(k)})\\
+x_2^{(k+1)}&=\frac1{a_{22}}(b_2-a_{21}\fbox{$x_1^{(k+1)}$}-a_{23}x_3^{(k)}-\cdots-a_{2n}x_n^{(k)})\\
+x_3^{(k+1)}&=\frac1{a_{33}}(b_2-a_{31}\fbox{$x_1^{(k+1)}$}-a_{32}\fbox{$x_2^{(k+1)}$}-\cdots-a_{3n}x_n^{(k)})\\
+\cdots&\cdots\\
+x_n^{(k+1)}&=\frac1{a_{nn}}(b_2-a_{n1}\fbox{$x_1^{(k+1)}$}-a_{n2}\fbox{$x_2^{(k+1)}$}-\cdots-a_{n,n-1}\fbox{$x_{n-1}^{(k+1)}$})
+\end{aligned}
+\right.
+\end{equation}
+$\mathbf{x=Bx+g}$形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了“新解”即上式中用方框框出的部分。
+
+\entry 方法三·超松弛（SOR）迭代法：对Gauss-Seidel法的通用格式分析改写：若记每次迭代时的误差为$\mathbf{r_i^{(k+1)}}$，即
+\[x_i^{(k+1)}=x_i^{(k)}+\frac1{a_ii}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=1}^na_{ij}x_j^{(k)}\right]=x_i^{(k)}+\frac{r_i^{(k+1)}}{a_{ii}}\]
+当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以强行乘一个系数$\omega$以加快收敛：
+\[x_i^{(k+1)}=(1-\omega)x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)} \right] \]
+整理得
+\begin{equation}
+x_i^{(k+1)}=(1-\omega)x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i+1}^na_{ij}x_j^{(k)} \right]
+\end{equation}
+整体迭代格式：
+\begin{equation}
+\left\{
+\begin{aligned}
+x_1^{(k+1)}&=(1-\omega)x_1^{(k)}+\frac\omega{a_{11}}\left(b_1-a_{12}x_2^{(k)}-a_{13}x_3^{(k)}-\cdots-a_{1n}x_{11}^{(k)} \right)\\
+x_2^{(k+1)}&=(1-\omega)x_2^{(k)}+\frac\omega{a_{11}}\left(b_2-a_{21}x_1^{(k+1)}-a_{23}x_3^{(k)}-\cdots-a_{2n}x_{11}^{(k)} \right)\\
+\cdots&\cdots\\
+x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-a_{n2}x_2^{(k+1)}-\cdots-a_{n,n-1}x_{11}^{(k+1)} \right)
+\end{aligned}
+\right.
+\end{equation}
+
+\entry 迭代的矩阵表示法：将$\mathbf{A}$分解为$\mathbf{D,E,F}$三部分：$\mathbf{A=D-E-F}$，其中
+\begin{equation}
+\mathbf{D}=\left(\begin{smallmatrix}a_{11}&&&\\&a_{22}&&\\&&\ddots&\\&&&a_{nn}\end{smallmatrix}\right),\quad\mathbf{E}=\left(\begin{smallmatrix}0&&&&&\\-a_{21}&0&&&\\-a_{31}&-a_{32}&0&&\\\vdots&\vdots&\vdots&\ddots&\\-a_{n1}&-a_{n2}&-a_{n3}&\cdots&0 \end{smallmatrix}\right),\quad\mathbf{F}=\left(\begin{smallmatrix}0&-a_{12}&-a_{13}&\cdots&-a_{1n}\\&0&-a_{23}&\cdots&-a_{2n}\\&&0&\cdots&-a_{3n}\\&&&\ddots&\vdots\\&&&&0 \end{smallmatrix}\right)
+\end{equation}
+\begin{itemize}\tl
+    \item Jacobi法：用矩阵形式推导Jacobi迭代公式，有
+    \[\mathbf{(D-E-F)x=b}\sothat\mathbf{Dx=(E+F)x+b}\sothat\mathbf{x=D}^{-1}\mathbf{(E+F)x+D}^{-1}\mathbf{b}\]
+    可见有
+    \begin{equation}
+    \begin{cases}\mathbf{B=D}^{-1}\mathbf{(E+F)=D}^{-1}(\mathbf{D-A})=\mathbf{I-D}^{-1}\mathbf{A}\\\mathbf{g=D}^{-1}\mathbf{b}\end{cases}
+    \end{equation}
+    \item Gauss-Seidel法：
+    \[\mathbf{(D-E-F)x=b}\sothat\mathbf{(D-E)x=Fx+b}\sothat\mathbf{x=(D-E)}^{-1}\mathbf{Fx+(D-E)}^{-1}\mathbf{b}\]
+    可见有
+    \begin{equation}
+    \begin{cases}
+    \mathbf{B=(D-E)}^{-1}\mathbf{F}\\
+    \mathbf{g=(D-E)}^{-1}\mathbf{b}
+    \end{cases}
+    \end{equation}
+    \item SOR法：
+    \begin{gather*}
+    \omega\mathbf{(D-E-F)x}=\omega\mathbf{b}\sothat(\mathbf{D}-\omega\mathbf{E})\mathbf{x}=[(1-\omega)\mathbf{D}+\omega\mathbf{F}]\mathbf{x}+\omega\mathbf{b}\\
+    \sothat\mathbf{x}=(\mathbf{D}-\omega\mathbf{E})^{-1}[(1-\omega)\mathbf{D}+\omega \mathbf{F}]\mathbf{x}+(\mathbf{D}-\omega\mathbf{E})^{-1}\omega\mathbf{b}
+    \end{gather*}
+    可见有
+    \begin{equation}
+    \begin{cases}
+    \mathbf{B}=(\mathbf{D}-\omega\mathbf{R})^{-1}[(1-\omega)\mathbf{D}+\omega\mathbf{F}]\\
+    \mathbf{g}=\omega(\mathbf{D}-\omega\mathbf{E})^{-1}\mathbf{b}
+    \end{cases}
+    \end{equation}
+\end{itemize}
+
+
+
+\section{迭代收敛理论}
+\entry 下面给出迭代格式收敛的条件（非常重要！个人猜测必考）。
+
+\entry 定理1：若$\|\mathbf{B}\|\leq1$，则$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$，且有误差估计式：
+\begin{gather}
+\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(k)}-\mathbf{x}^{(k-1)}\|\quad\text{（事后估计）}\\
+\|\mathbf{x}-\mathbf{x}^{(k)}\|\leq\frac{\|\mathbf{B}\|^k}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(1)}-\mathbf{x}^{(0)}\|\quad\text{（事前估计）}
+\end{gather}
+
+\entry 定理2：$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$的充要条件是下列两条件至少有一个成立：
+\begin{enumerate}\tl
+    \item $\mathbf{B}^k\to\mathbf{O}$；
+    \item $\mathbf{B}$的谱半径$\rho(\mathbf{B})<1$。
+\end{enumerate}
+
+\entry 推论：SOR法收敛的必要条件是$0<\omega<2$。
+\begin{gather*}
+|\mathbf{B}|=|(D-\omega\mathbf{E})^{-1}|\cdot|(1-\omega)\mathbf{D}+\omega\mathbf{F}|=\frac{|(1-\omega)\mathbf{D}|}{|\mathbf{D}|}=(1-\omega)^n\\
+\rho(\mathbf{B})<1\sothat|\lambda_1\cdots\lambda_n|<1\sothat|1-\omega|<1\sothat0<\omega<2.
+\end{gather*}
+
+
+\entry 对于三种常用迭代法，还有更为实用的结论可供应用：
+\begin{itemize}\tl
+    \item 引理：若$\mathbf{A}$是严格对角占优矩阵，$0\le\omega\leq1$且$\lambda\geq1$时，矩阵$(\lambda+\omega-1)\mathbf{D}-\lambda\omega\mathbf{E}-\omega\mathbf{F}$也是严格对角占优矩阵。
+    \item 推论2：若$\mathbf{A}$是严格对角占优矩阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法、G-S法、SOR法（$0<\omega\leq1$）均收敛
+    \footnote{可由其上的引理推出：通过反设$|\lambda|\geq1$退出$|\lambda\mathbf{I-B}|\neq0$，故$|\lambda|<1$，$\rho(\mathbf{B})<1$。}
+    。
+    \item 推论3：若$\mathbf{A}$为对称正定阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法收敛的充要条件是：$2\mathbf{D-A}$也是对称正定阵。
+    \item 推论4：若$\mathbf{A}$是对称正定阵，则$\forall\mathbf{x}^{(0)}$，SOR法收敛充要条件为$0<\omega<2$。
+\end{itemize}
+
+\entry 对不同情况下的审敛法做总结：
+\begin{enumerate}\tl
+    \item 对角占优矩阵$\mathbf{A}$：Jacobi法收敛，G-S法收敛，$0<\omega\leq1$时SOR法收敛。
+    \item 对称正定阵$\mathbf{A}$：
+    \begin{itemize}\tl
+        \item Jacobi法收敛$\ \Leftrightarrow\ 2\mathbf{D-A}$收敛；
+        \item SOR法收敛$\ \Leftrightarrow\ 0<\omega<2$。
+    \end{itemize}
+    \item 一般矩阵$\mathbf{A}$：
+    \begin{itemize}\tl
+        \item $\|\mathbf{B}\|<1$时三方法均收敛；
+        \item $\mathbf{B}^k\to\mathbf{O}$和$\rho(B)<1$中之一成立，则三方法均收敛。
+        \item SOR法收敛的必要条件是$0<\omega<2$。
+    \end{itemize}
+\end{enumerate}
+
+\example 判断系数矩阵为$\mathbf{A}=\begin{pmatrix}2&3&4\\3&6&10\\4&10&20\end{pmatrix}$时各迭代法的收敛性。
+
+\chapter{插值法}
+\section{插值法思想概要}
+
+\backmatter
+\chapter*{后记}
+
+\printindex
+
+\end{document}
