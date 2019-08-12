@@ -209,7 +209,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \begin{itemize}\tl
 \item 消去运算量：$N_1=\sum\limits_{k=1}^{n-1}(n-k)(n-k+2)=\frac{n^3}3+n^2-\frac{5n}6$
 \item 回代运算量：$N_2=1+2+\cdots+n=\frac{n(n+1)}2$
-\item 总计运算量：$N=N_1+N_2=\frac{n^3}3+n^2-\frac n3=O(n^3)$
+\item 总计运算量：$N=N_1+\frac32N_2=\frac{n^3}3+n^2-\frac n3=O(n^3)$
 \end{itemize}
 
 \entry 可能出现的问题：（主要是消去过程中）
@@ -234,7 +234,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 
 
 \section{Gauss消元法的改进}
-\entry 列主元Gauss消元法：消去进行到第$k$步时如下所示：
+\entry \key{列主元Gauss消元法}. 消去进行到第$k$步时如下所示：
 \[\begin{pmatrix}a_{11}^{(k-1)}&a_{12}^{(k-1)}&\cdots&a_{1k}^{(k-1)}&\cdots&a_{1n}^{(k-1)}\\0&a_{22}^{(k-1)}&\cdots&a_{2k}^{(k-1)}&\cdots&a_{2n}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{kk}^{(k-1)}&\cdots&a_{kn}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{nk}^{(k-1)}&\cdots&a_{nn}^{(k-1)}\end{pmatrix}\]
 选取$\max(|a_{ik}^{(k-1)}|)\ i=k,k+1,\cdots,n$的一行与第$k$行互换，继续消去（算法较稳定）
 
@@ -244,7 +244,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \[\mathbf{A}^{(n)}=\mathbf{L}_n\mathbf{A}^{(n-1)}=\cdots=\mathbf{L}_n\mathbf{L}_{n-1}\cdots\mathbf{L}_2\mathbf{L}_1\mathbf{A}^{(0)}\]
 反推得到
 \[\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{A}^{(n-1)}\]
-记$\mathbf{U}=\mathbf{A}^{(n-1)}$，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$
+记$\mathbf{U}=\mathbf{A}^{(n-1)}$，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$。
 
 \trm 设$\mathbf{A}$为$n$阶矩阵，$D_k\neq0$，则$\mathbf{A}$可唯一分解为一单位下三角阵$\mathbf{L}$与一上三角阵$\mathbf{U}$之积
 \begin{equation}\label{2-e1}
@@ -252,17 +252,19 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \end{equation}
 称为\textbf{LU分解}（Doolittle分解）。
 
-\entry LU分解的算法实现：根据式(\ref{2-e1})可知，$\mathbf{A}$中的元素$\alpha_{ij}$满足
+% 此处缺少 L 与 U 的元素表示。
+
+\entry LU分解的算法实现：根据式(\ref{2-e1})可知，$\mathbf{A}$中的元素$a_{ij}$满足
 \begin{align*}
-\alpha_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_{2j}\ \cdots\ \mu_{jj}\ 0\ \cdots\ 0)^{\mathrm{T}}\\
+a_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_{2j}\ \cdots\ \mu_{jj}\ 0\ \cdots\ 0)^{\mathrm{T}}\\
 &=\begin{cases}\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}+\mu_{ij}&,j\geq i,\ i=1,2,\cdots,n\\\sum\limits_{k=1}^jl_{ik}\mu_{kj}&,j<i,\ i=1,2,\cdots,n\end{cases}
 \end{align*}
 由此可以推得迭代算式为：
 \begin{align}
-&\mu_{1j}=\alpha_{1j}&j=1,2,\cdots,n\label{2-e2}\\
-&l_{i1}=\alpha_{i1}/\mu{11}&i=2,3,\cdots,n\label{2-e3}\\
-&\mu_{ij}=\alpha_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e4}\\
-&l_{ki}=(\alpha_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti})/\mu_{ii}&k=i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e5}
+&\mu_{1j}=a_{1j}&j=1,2,\cdots,n\label{2-e2}\\
+&l_{i1}=a_{i1}/\mu_{11}&i=2,3,\cdots,n\label{2-e3}\\
+&\mu_{ij}=a_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e4}\\
+&l_{ki}=(a_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti})/\mu_{ii}&k=i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e5}
 \end{align}
 
 \entry 实用算法：
@@ -299,7 +301,10 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 （答案：$\mathbf{L}=\begin{pmatrix}1&&&\\-\frac12&1&&\\0&-3&1&\\1&3&\frac12&1\end{pmatrix},\mathbf{U}=\begin{pmatrix}4&-2&0&4\\&1&-3&3\\&&4&2\\&&&9\end{pmatrix}$）
 
 
-\entry 利用LU分解可解线性方程组$\mathbf{Ax}=\mathbf{b}$。
+\entry 利用LU分解可解线性方程组：
+\[\mathbf{Ax=b}\sothat\mathbf{LUx=b}\sothat
+\begin{cases}\mathbf{Ux=y}\\\mathbf{Ly=b}\end{cases}\]
+转化为两个对角阵方程，易于求解。
 
 \entry 平方根法和改进平方根法。
 
@@ -344,7 +349,7 @@ $p=q=1$时的带状矩阵称为三对角阵，通常为严格对角占优矩阵�
 
 \entry 向量范数：称$\|\mathbf{x}\|$为一个向量的范数，若$\|\mathbf{x}\|\in\mathbb{R}$满足：
 \begin{enumerate}\tl
-    \item 非负性：$\forall \mathbf{x}\in\mathbb{R}^n,\|\mathbf{x}\|\geq0\text{且}\|\mathbf{x}\|=0\neq\mathbf{x=0}$
+    \item 非负性：$\forall \mathbf{x}\in\mathbb{R}^n,\|\mathbf{x}\|\geq0\text{且}\|\mathbf{x}\|=0$ $\Leftrightarrow$ $\mathbf{x=0}$
     \item 齐次性：$\forall\alpha\in\mathbb{R},x\in\mathbb{R}^n,\|\alpha\mathbf{x}\|=|\alpha|\cdot\|\mathbf{x}\|$
     \item 三角不等式：$\forall\mathbf{x,y}\in\mathbb{R}^n,\|\mathbf{x+y}\|\leq\|\mathbf{x}\|+\|\mathbf{y}\|$
 \end{enumerate}
@@ -382,8 +387,8 @@ $p=q=1$时的带状矩阵称为三对角阵，通常为严格对角占优矩阵�
 
 \entry 舍入误差对解的影响：
 \[\mathbf{r=b-A}\tilde{\mathbf{x}}\sothat\mathbf{A}\tilde{\mathbf{x}}=\mathbf{b-r}\neq\mathbf{b}\]
-为分析舍入误差的相对水平，首先定义$\mathbf{e=\mathbf{x}^{\ast}-\tilde{\mathbf{x}}}$，分析其量级有
-\[\tilde{\mathbf{x}}=\\\mathbf{A}^{-1}\mathbf{r}\sothat\|\mathbf{e}\|=\|\mathbf{A}^{-1}\mathbf{r}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{r}\|\]
+为分析舍入误差的相对水平，先分析误差向量的大小：
+\[\mathbf{e}=\\\mathbf{A}^{-1}\mathbf{r}\sothat\|\mathbf{e}\|=\|\mathbf{A}^{-1}\mathbf{r}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{r}\|\]
 由于$\mathbf{Ax}^{\ast}=\mathbf{b}$，故
 \[\|\mathbf{b}\|=\|\mathbf{Ax}^{\ast}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}^{\ast}\|\sothat\frac1{\|\mathbf{x}^{\ast}\|}\leq\frac{\|\mathbf{A}\|}{\|\mathbf{b}\|}\]
 故相对误差水平$\dfrac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\leq\|\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|\cdot\dfrac{\|\mathbf{r}\|}{\|\mathbf{b}\|}$，其中的系数即可定义为矩阵的条件数$\cond(\mathbf{A})=\|\mathbf{A}\|\|\mathbf{A}^{-1}\|$
