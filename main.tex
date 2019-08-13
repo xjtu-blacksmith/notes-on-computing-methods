@@ -444,7 +444,7 @@ $\cond(\mathbf{A})$较大时，方程组为病态方程组；反之，$\cond(\ma
 
 \section{三种基本迭代法}
 
-\entry 方法一·Jacobi迭代法：以第$i$行为例，有：
+\entry \key{Jacobi迭代法}：以第$i$行为例，有：
 \[a_{i1}x_1+a_{i2}x_2+\cdots+a_{ii}x_i+\cdots+a_{in}x_n=b_i\]
 可解出
 \begin{align}
@@ -460,7 +460,7 @@ x_i^{(k+1)}=\frac1{a_{ii}}\left[b_i-\sum_{j=1,j\neq i}^na_{ij}x_j^{(k)}\right]\q
 \begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}=\begin{pmatrix}0&-\frac{a_{12}}{a_{11}}&-\frac{a_{13}}{a_{11}}&\cdots&-\frac{a_{1n}}{a_{11}}\\-\frac{a_{21}}{a_{22}}&0&-\frac{a_{23}}{a_{22}}&\cdots&-\frac{a_{2n}}{a_{22}}\\\vdots&\vdots&\vdots&\ddots&\vdots\\-\frac{a_{n1}}{a_{nn}}&-\frac{a_{n2}}{a_{nn}}&-\frac{a_{n3}}{a_{nn}}&\cdots&0\end{pmatrix}\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}+\begin{pmatrix}\frac{b_1}{a_{11}}\\\frac{b_2}{a_{22}}\\\vdots\\\frac{b_n}{a_{nn}}\end{pmatrix}
 \end{equation}
 
-\entry 方法二·Gauss-Seidel迭代法：
+\entry \key{Gauss-Seidel迭代法}：
 \begin{equation}
 \left\{
 \begin{aligned}
@@ -472,12 +472,12 @@ x_n^{(k+1)}&=\frac1{a_{nn}}(b_2-a_{n1}\fbox{$x_1^{(k+1)}$}-a_{n2}\fbox{$x_2^{(k+
 \end{aligned}
 \right.
 \end{equation}
-$\mathbf{x=Bx+g}$形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了“新解”即上式中用方框框出的部分。
+$\mathbf{x=Bx+g}$形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了“新解”（即上式中用方框框出的部分）。
 
-\entry 方法三·超松弛（SOR）迭代法：对Gauss-Seidel法的通用格式分析改写：若记每次迭代时的误差为$\mathbf{r_i^{(k+1)}}$，即
-\[x_i^{(k+1)}=x_i^{(k)}+\frac1{a_ii}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=1}^na_{ij}x_j^{(k)}\right]=x_i^{(k)}+\frac{r_i^{(k+1)}}{a_{ii}}\]
-当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以强行乘一个系数$\omega$以加快收敛：
-\[x_i^{(k+1)}=(1-\omega)x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)} \right] \]
+\entry \key{超松弛迭代法}：对Gauss-Seidel法的通用格式分析改写；若记每次迭代时的误差为$\mathbf{r_i^{(k+1)}}$，即
+\[x_i^{(k+1)}=x_i^{(k)}+\frac1{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)}\right]=x_i^{(k)}+\frac{r_i^{(k+1)}}{a_{ii}}\]
+当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以乘一个系数$\omega$以加快收敛：
+\[x_i^{(k+1)}=x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)} \right] \]
 整理得
 \begin{equation}
 x_i^{(k+1)}=(1-\omega)x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i+1}^na_{ij}x_j^{(k)} \right]
@@ -547,7 +547,7 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
 
 \entry 推论：SOR法收敛的必要条件是$0<\omega<2$。
 \begin{gather*}
-|\mathbf{B}|=|(D-\omega\mathbf{E})^{-1}|\cdot|(1-\omega)\mathbf{D}+\omega\mathbf{F}|=\frac{|(1-\omega)\mathbf{D}|}{|\mathbf{D}|}=(1-\omega)^n\\
+\|\mathbf{B}\|=\|(D-\omega\mathbf{E})^{-1}\|\cdot\|(1-\omega)\mathbf{D}+\omega\mathbf{F}\|=\frac{\|(1-\omega)\mathbf{D}\|}{\|\mathbf{D}\|}=(1-\omega)^n\\
 \rho(\mathbf{B})<1\sothat|\lambda_1\cdots\lambda_n|<1\sothat|1-\omega|<1\sothat0<\omega<2.
 \end{gather*}
 
@@ -556,7 +556,7 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
 \begin{itemize}\tl
     \item 引理：若$\mathbf{A}$是严格对角占优矩阵，$0\le\omega\leq1$且$\lambda\geq1$时，矩阵$(\lambda+\omega-1)\mathbf{D}-\lambda\omega\mathbf{E}-\omega\mathbf{F}$也是严格对角占优矩阵。
     \item 推论2：若$\mathbf{A}$是严格对角占优矩阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法、G-S法、SOR法（$0<\omega\leq1$）均收敛
-    \footnote{可由其上的引理推出：通过反设$|\lambda|\geq1$退出$|\lambda\mathbf{I-B}|\neq0$，故$|\lambda|<1$，$\rho(\mathbf{B})<1$。}
+    \footnote{可由其上的引理推出：通过反设$|\lambda|\geq1$推出$|\lambda\mathbf{I-B}|\neq0$，故$|\lambda|<1$，$\rho(\mathbf{B})<1$。}
     。
     \item 推论3：若$\mathbf{A}$为对称正定阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法收敛的充要条件是：$2\mathbf{D-A}$也是对称正定阵。
     \item 推论4：若$\mathbf{A}$是对称正定阵，则$\forall\mathbf{x}^{(0)}$，SOR法收敛充要条件为$0<\omega<2$。
