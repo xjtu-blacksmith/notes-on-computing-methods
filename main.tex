@@ -582,6 +582,293 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
 
 \chapter{插值法}
 \section{插值法思想概要}
+\entry 插值的动机：
+\begin{enumerate}
+    \item 离散型：给定$m+1$个数据点$(x_0,y_0)$、$(x_1,y_1)$、……$(x_m,y_m)$，找到一个函数$P(x)$通过所有的点。
+    \item 连续型：给定一未知函数$f(x)$及其$m+1$个数据点，要求另一已知函数$P(x)$在这
+    些数据点上与$f(x)$一致，并使其在定义与上与$f(x)$的偏差尽量小。（称$f(x)$为\key{
+    被插函数}。）
+\end{enumerate}
+
+\define 设以上的$P(x)$满足
+\begin{equation}\label{4-e1}
+P(x_i)=y_i\quad(i=0,1,\cdots,m),
+\end{equation}
+则称$P(x)$为这$m+1$个数据点上的\key{插值函数}，称数据点为\key{插值点}，并称式
+(\ref{4-e1})为\key{插值条件}。
+
+\entry 多项式插值：要求插值函数$P(x)$为一个多项式
+\begin{equation}
+P(x)=\sum_{k=0}^na_kx^k=a_0+a_1x+\cdots+a_nx^n,
+\end{equation}
+则称此时的$P(x)$为一个\key{插值多项式}，对应的插值条件
+\begin{equation}
+P(x_i)=y_i\sothat a_0+a_1x_i+\cdots+a_ix_i^n=y_i\quad(i=0,1,\cdots,m)
+\end{equation}
+可视为一个线性方程组：
+\begin{equation}\label{4-e2}
+\begin{pmatrix}1&x_0&\cdots&x_0^n\\1&x_1&\cdots&x_1^n\\\vdots&\vdots&&\vdots\\
+1&x_m&\cdots&x_m^n\end{pmatrix}\begin{pmatrix}a_0\\a_1\\\vdots\\a_n\end{pmatrix}
+=\begin{pmatrix}y_0\\y_1\\\vdots\\y_n\\\end{pmatrix},
+\end{equation}
+
+\entry 关于方程组(\ref{4-e2})的解分析：
+\begin{itemize}
+    \item $m>n$，方程一般无解；
+    \item $m<n$，方程有无穷多解；
+    \item $m=n$时，系数矩阵对应的行列式是Van der monde行列式：
+    \begin{equation}
+    |V|=\left\{\prod_{j=1}^n\left[\prod_{i=0}^{j-1}(x_j-x_i)\right]\right\}
+    \end{equation}
+    当$x_i\neq x_j\ (i\neq j)$时，$|V|\neq0$，方程组有唯一解。
+\end{itemize}
+
+\trm 对于给定的$n+1$个插值点，对应的$n$次插值多项式$P_n(x)$唯一存在。
+
+\entry 误差多项式：若被插函数$f(x)$满足$f^{(n)}(x)$在$[a,b]$上连续，$f^{(n+1)}$在
+$(a,b)$内存在，则误差多项式可估计为
+\begin{equation}
+R_n(x)=f(x)-P_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)(x-x_1)\cdots(x-x_n).
+\end{equation}
+记
+\begin{equation}
+\pi_{n+1}(x)=(x-x_0)(x-x_1)\cdots(x-x_n),
+\end{equation}
+则有
+\begin{equation}
+R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}\pi_{n+1}(x).
+\end{equation}
+
+\entry 实用误差估计式：设$P_n(x)$为在$x_0,x_1,\cdots,x_n$上的插值多项式，$P_n^\ast(x)$
+为在$x_0,x_1,\cdots,x_n,x_{n+1}$上的插值多项式，则
+\begin{gather}
+f(x)-P_n(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_0)\\
+f(x)-P_n^\ast(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_{n+1})
+\end{gather}
+
+\entry 采用式(\ref{4-e2})求解插值多项式的问题：方程条件数随$n$的增加而急剧上升，解不
+稳定、不精确；计算量太大。
+
+\section{Lagrange 插值法}
+\entry Lagrange 插值法思想：对$n+1$个数据点，构造对应的$n+1$个\key{Lagrange插值基函
+数}$l_0(x),l_1(x),\cdots,l_n(x)$使
+\begin{equation}\label{4-e3}
+P_n(x)=y_0\cdot l_0(x)+y_1\cdot l_1(x)+\cdots+y_n\cdot l_n(x).
+\end{equation}
+
+\entry 插值基函数的形式：由式(\ref{4-e3})易知插值基函数应在数据点上满足
+\begin{equation}
+l_i(x_j)=\delta_{ij}=\begin{cases}1&,i=j\\0&,i\neq j\end{cases}
+\end{equation}
+又要求插值基函数为$n$次多项式（与最终插值多项式的次数一致），则可解出
+\begin{gather}
+l_i(x)=\frac{(x-x_0)(x-x_1)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)}{(x_i-x_0)
+(x_i-x_1)\cdots(x_i-x_{i-1})(x-x_{i+1})\cdots(x_i-x_n)}.
+\end{gather}
+此即Lagrange插值基函数公式。由于其分母$\pi_{n+1}(x)/(x-x_i)$可直接写出，故只需计算
+插值基函数的系数
+\begin{equation}
+c_i=\left[(x-x_0)(x-x_1)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)\right]^{-1}.
+\end{equation}
+
+\example 给定数据点$(-1,7)$、$(1,7)$、$(2,4)$、$(5,35)$，用Lagrange插值法求解各插值
+基函数的系数。（答案：$c_0=-\frac1{36}$，$c_1=\frac18$，$c_2=-\frac19$，
+$c_3=\frac1{72}$。）
+
+\entry 常将Lagrange基函数记为
+\begin{equation}
+l_i(x)=\frac{\pi_{n+1}(x)}{(x-x_i)\pi'_{n+1}(x_i)}.
+\end{equation}
+
+\entry Lagrange插值法的特点：构造方便、格式统一；系数的计算方法简单，但乘除运算量大；
+插值基函数具有全局性质，「牵一发而动全身」，数据点变动后须全部重新计算。
+
+% P140 4.10：Lagrange 基函数的性质
+
+\section{Newton 插值法}
+\entry Newton 插值法思想：对$n+1$个数据点，采用「累进」的插值基函数
+\begin{equation}
+n_i(x)=\prod_{k=0}^{i-1}(x-x_k)=(x-x_0)(x-x_1)\cdots(x-x_{i-1}),
+\end{equation}
+构造得到的 \key{Newton 插值多项式}为
+\begin{equation}\label{4-e4}
+N_n(x)=c_0+c_1(x-x_0)+c_2(x-x_0)(x-x_1)+\cdots+c_n(x-x_0)(x-x_1)\cdots(x-x_n),
+\end{equation}
+再求解系数$c_i$。
+
+\entry \key{差商}：导数的一种离散形式，递归定义：
+\begin{itemize}
+    \item 零阶差商：$f[x_i]=f(x_i)=y_i\quad(i=0,1,\cdots,n)$.
+    \item 一阶差商：$f[x_i,x_{i+1}]=\frac{f[x_{i+1}]-f[x_i]}{x_{i+1}-x_i}\quad
+    (i=0,1,\cdots,n-1)$.
+    \item 二阶差商：$f[x_i,x_{i+1},x_{i+2}]=\frac{f[x_i,x_{i+2}]-f[x_i,x_{i+1}]}{
+    x_{i+2}-x_{i+1}}\quad(i=0,1,\cdots,n-2)$.
+    \item ……
+    \item $n$阶差商：$f[x_0,x_1,\cdots,x_n]=\frac{f[x_0,x_1,\cdots,x_{n-2},x_n]-
+    f[x_0,x_1,\cdots,x_{n-2},x_{n-1}]}{x_n-x_{n-1}}$.
+\end{itemize}
+
+\entry 易证式(\ref{4-e4})中系数满足$c_0=f[x_0]$，$c_1=f[x_0,x_1]$，$c_2=f[x_0,x_1,
+x_2]$……从而 Newton 插值多项式为
+\begin{equation}
+N_n(x)=\sum_{k=0}^nf[x_0,\cdots,x_k]\cdot n_k(x).
+\end{equation}
+
+\entry 由插值多项式的唯一性，对同样的$n+1$个数据点构造的 Lagrange 插值多项式$P_n(x)$
+与 Newton 插值多项式$N_n(x)$，必有$P_n(x)=N_n(x)$，即两种方法得到的结果相同。
+
+\trm 推论：比较 Newton 插值多项式与 Lagrange 插值多项式的最高次（$n$次）项系数，有
+\begin{equation}
+f[x_0,x_1,\ldots,x_n]=\sum_{i=0}^n\frac{f(x_i)}{\pi'_{n+1}(x_i)}.
+\end{equation}
+
+\trm 差商的性质：
+\begin{enumerate}
+    \item 差商仅与选取的具体点$(x_i,f(x_i))$有关，与它们的排列次序无关。
+    \item $f[x_i,x_{i+1},\ldots,x_{i+k}]=f^{(k)}(\xi)/(k!)$，其中$\xi\in(\min\{x_i
+    \},\max\{x_i\})$。
+    \item 在以上结论中取$x_i=x_{i+1}=\ldots=x_{i+k}$，得
+    \begin{equation}\label{4-e5}
+    f[x_i,x_i,\ldots,x_i]=\frac{f^{(k)}(x_i)}{k!}.
+    \end{equation}
+    \item $\frac{\di f[x_0,x_1,\ldots,x_{k-1},x]}{\di x}=\frac{f^{(k+1)}(\xi)}{
+    (k+1)!}$。
+\end{enumerate}
+
+\example 设$f(x)=x^3+2px+5qx+c$，其中$p,q,c$均为实数。若$f[1,2,m]=0$，试求$f[0,1,m]$。
+（答案：$-2$）
+
+\entry \key{差商表}：依次计算差商的工具。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{差商表及其构造步骤}\label{4-f1}
+\end{figure}
+
+\entry Newton 插值法余项公式及估计：
+\begin{align*}
+R_n(x)&=f(x)-N_n(x)\\
+&=f[x_0,x_1,\ldots,x_n,x](x-x_0)(x-x_1)\cdots(x-x_n)\\
+&\approx f[x_0,x_1,\ldots,x_n,x_{n+1}](x-x_0)(x-x_1)\cdots(x-x_n)\\
+&=N_{n+1}(x)-N_n(x)
+\end{align*}
+即:Newton 插值公式$N_n(x)$的余项，可估计为高一阶的插值多项式$N_{n+1}(x)$之最后一项。
+
+\section{Hermite 插值多项式}
+\entry Hermite 插值多项式：满足导数条件$P'(x_j)=y'_j$的插值多项式。
+
+\entry Newton 插值法构造 Hermite 插值多项式（\key{重节点法}）：在含导数条件的数据点处
+增加「重节点」，仍按差商表迭代，但利用条件(\ref{4-e5})计算含重节点的差商。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{重节点法示意}\label{4-f2}
+\end{figure}
+
+\entry Hermite 插值多项式的误差估计：利用 Newton 插值公式的余项估计即可。
+
+\example 对以下的数据点求解其 Hermite 插值多项式，并估计误差。
+\begin{center}\begin{tabular}{cccc}
+\toprule
+$x_i$&$-1$&$0$&$1$\\
+\midrule
+$y_i$&$0$&$-4$&$5$\\
+$y'_i$&&$0$&$5$\\
+$y''_i$&$6$&&\\
+\bottomrule
+\end{tabular}\end{center}
+（答案：$H_5(x)=x^5-2x^3+3x^2-4$，
+$R_5(x)=\frac{f^{(6)}(\xi)}{6!}(x+1)(x-1)^2x^3$。）
+
+\entry Lagrange 插值法构造 Hermite 插值多项式：对$n+1$个含带导数条件的数据点，在导数
+条件下构造插值基函数$h_i(x)$与$\overline{h}_i(x)$：
+\begin{gather}
+H_{2n+1}(x)=\sum_{i=0}^nh_i(x)f(x_i)+\sum_{i=0}^n\overline{h}_i(x)f'(x_i)\\
+h_i(x_j)=\delta_{ij},\quad h'_i(x_j)=0\quad\overline{h}_i(x_j)=0\quad
+\overline{h'}_i(x_j)=\delta_{ij}.
+\end{gather}
+分析零点重数可推得
+\begin{gather}
+h_i(x)=(ax+b)l_i^2(x),\quad\overline{h}_i(x)=(x-x_i)l_i^2(x)
+\end{gather}
+再求解系数$a$与$b$即可。
+
+\entry 不建议使用 Lagrange 插值法求解 Hermite 插值多项式：优势尽失。
+
+\section{分段插值与三次样条插值}
+\entry \key{Runge 现象}：采用高次的插值多项式，全局误差可能比低次多项式更大。
+
+\entry Runge 现象示例：对函数$f(x)=\frac1{1+25x^2}\quad(-1\leq x\leq 1)$等距插值。
+
+\entry Runge 现象表明，与其在全局应用高次插值多项式，不如采用分段低次插值多项式。
+
+\entry 分段线性插值的误差估计：
+\begin{equation}
+R_{1,j}(x)=\left|\frac{f''(\xi)}2(x-x_{i-1})(x-x_i)\right|\leq\frac{M_2i}2\cdot
+\frac14(x_i-x_{i-1})^2\leq\frac18M_2\Delta^2
+\end{equation}
+其中$M_2$为$f''(x)$在插值区间上的最大值，$\Delta$为各相邻插值节点的最大距离。
+
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{分段线性插值图示}\label{4-f3}
+\end{figure}
+
+\entry 分段线性插值的缺陷：在各个节点处导数不连续。
+
+\entry 分段二次插值：在$[x_{i-1},x_{i+1}]$上作 Newton 二次插值多项式$N_{2i}(x)$，则
+\begin{equation}
+f(x)\approx N_{2i}(x)=y_{i-1}+f[x_{i-1},x_i](x-x_{i-1})+f[x_{i-1},x_i,x_{i+1}]
+(x-x_{i-1})(x-x_i).
+\end{equation}
+
+\entry 分段二次插值的误差估计：
+\begin{equation}
+R_{2i}(x)=\frac{f'''(\xi)}{3!}(x-x_{i-1})(x-x_i)(x-x_{i+1})\leq\frac{M_3}6\cdot
+\frac14\Delta^2\cdot2\Delta=\frac1{12}M_3\Delta^3
+\end{equation}
+其中$M_3$为$f'''(x)$在插值区间上的最大值，$\Delta$为各相邻插值节点的最大距离。
+
+\entry 分段二次插值的缺陷：在一半的节点上导数仍不连续；要求有偶数个插值节点。
+
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{分段二次插值图示}\label{4-f3}
+\end{figure}
+
+\entry 分段三次 Hermite 插值：在相邻插值节点处利用两个函数值、两个导数值构造插值多项式。
+
+\entry 分段三次 Hermite 插值的误差估计：
+\begin{equation}
+R_{3,i}(x)=\frac{f^{(4)}(\xi)}{4!}(x-x_{i-1})^2(x-x_i)^2\leq\frac{M_4}{24}
+\left[\frac14(x-x_{i-1})^2\right]^2\leq\frac{M_4}{384}\Delta^4.
+\end{equation}
+
+\entry 分段三次 Hermite 插值的缺陷：二阶导数仍不连续；导数条件太苛刻，不一定能得到。
+
+\entry \key{三次样条插值}：给定$n+1$个数据点，要求分段插值曲线的二阶导数连续。
+由此可知，插值函数及其导数也应连续。此时：
+\begin{itemize}
+    \item 需求：在$n$个插值子区间上构造三次插值函数，共计$4n$个未知数；
+    \item 约束条件：$n+1$个数据点，$3(n-1)$个各阶导数连续条件，共计$4n-2$个方程；
+    \item 补充两个边界条件：一阶导数边界条件$f'(a)$、$f'(b)$，或二阶导数边界条件
+    $f'(a)$、$f'(b)$，或周期性边界条件$f'(a)=f'(b)$、$f''(a)=f''(b)$。
+\end{itemize}
+由此即可求解出所有的分段三次插值函数，称这些函数为\key{三次样条函数}。
+
+\entry \key{三弯矩方程}
+
+\entry \key{三次样条插值的误差估计}
+
+\chapter{函数最优逼近}
+
+\chapter{数值微分与数值积分}
+
+\chapter{非线性方程迭代解法}
+
+\chapter{常微分方程数值解}
 
 \backmatter
 \chapter*{后记}
