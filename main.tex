@@ -867,6 +867,180 @@ R_{3,i}(x)=\frac{f^{(4)}(\xi)}{4!}(x-x_{i-1})^2(x-x_i)^2\leq\frac{M_4}{24}
 \entry \key{三次样条插值的误差估计}
 
 \chapter{函数最优逼近}
+\entry 逼近与插值的区别：插值要求通过数据点，逼近则不要求；逼近追求整个区间或所有取值点
+上的总体误差最小。
+
+\entry 用多项式逼近：便于计算，便于做微积分。
+
+\section{内积、范数与正交多项式}
+\define \setkey{函数在点集上的内积}{函数内积（点集）}：设$f(x)$，$g(x)$在$X=\{x_1,x_2,
+\ldots,x_m\}$上有定义，并有相应的$m$个权系数$\omega_i$，则定义
+\[(f,g)=\sum_{i=1}^m\omega_if(x_i)g(x_i)\]
+为$f$与$g$在$X$上关于权系数$\omega_i$的内积。
+
+\define \setkey{函数在区间上的内积}{函数内积（区间）}：设$f,g\in C[a,b]$，$\omega(x)
+\in C[a,b]$为权系数，定义
+\[(f,g)=\int_a^b\omega(x)f(x)g(x)\di x\]
+为$f$与$g$在$[a,b]$上关于$\omega(x)$的内积。
+
+\entry 对权系数的要求：$\omega_i>0$或$\omega(x)\geq0$。常取$\omega_i=1$及
+$\omega(x)\equiv1$。
+
+\trm 内积的性质：
+\begin{enumerate}
+    \item （对称性）$(f,g)=(g,f)$。
+    \item （齐性）对任意的常数$\alpha$，$(\alpha f,g)=(f,\alpha g)=\alpha\cdot(f,g)$。
+    \item （可加性）$(f+h,g)=(f,g)+(h,g)$。
+    \item （正定性）$(f,f)\geq0$，且仅当$f\equiv0$时$(f,f)=0$。
+\end{enumerate}
+
+\define \setkey{函数在点集或区间上的范数}{函数范数}：对点集$X$上所有函数，或对区间上
+所有连续函数$C[a,b]$定义的运算$\|f\|$，满足：
+\begin{enumerate}
+    \item （正定性）$\|f\|\geq0$，且仅当$f\equiv0$时$\|f\|=0$。
+    \item （线性）对任意的常数$\alpha$，$\|\alpha f\|=|\alpha|\cdot\|f\|$。
+    \item （三角不等式）$\|f+g\|\leq\|f\|+\|g\|$。
+\end{enumerate}
+
+\entry 常用范数：
+\begin{itemize}
+    \item 由函数内积导出的$2$-范数：$\|f(x)\|_2=\sqrt{(f,f)}$。
+    \item $1$-范数：$\|f\|_1=\sum_{i=1}^m|f(x_i)|$或$\|f\|_1=\int_a^b|f(x)|\di x$。
+    \item $\infty$-范数：$\|f\|_\infty=\max\limits_{1\leq i\leq m}|f(x_i)|$或
+    $\|f\|_\infty=\max\limits_{a\leq x\leq b}|f(x)|$。
+\end{itemize}
+
+\entry 函数的\key{正交}：
+\begin{itemize}
+    \item 在权函数$\omega_i$（或$\omega(x)$）下，若$(f,g)=0$，则称两函数关于权函数
+    $\omega_i$（或$\omega(x)$）正交，称$f$与$g$为\key{正交函数}。
+    \item 设有函数族$\{g_k\}$，若其中各函数$g_0(x),g_1(x),\cdots,g_k(x),\cdots$满足
+    $(g_i,g_j)=0\,(i\neq j)$，则称$\{g_k\}$为关于$\omega$\setkey{正交}{正交函数族}的函数族。
+    \item 若正交函数族$\{g_k\}$进一步满足$\|g_i(x)\|=1\,(\forall i)$，则称其为一个
+    \key{标准正交函数族}。
+    \item 若正交函数族$\{g_k\}$中的$g_k(x)$为$k$次多项式，则称$g_0(x),\cdots,g_k(x),
+    \cdots$为\key{正交多项式}。
+\end{itemize}
+
+\trm 正交多项式基本性质：各正交多项式之间线性无关。（证明：利用正交性与正定性。）
+
+\trm 推论 1：设$k<n$，则$k$次多项式$P_k(x)$必与$n$次正交多项式$g_n(x)$正交。
+（证明：$P_k(x)$可用$g_0(x),\cdots,g_k(x)$线性表出，进而由正交性得其与$g_n(x)$正交。）
+
+\trm 推论 2：在区间$[a,b]$（连续）或$[\min x_i,\max x_i]$（离散）上，$n$次正交多项式
+$g_n(x)$恰有$n$个不同实零点。（证明思路：有实根\sothat 无偶重根\sothat 均为实根\sothat
+无多于$1$重的奇实根。）
+
+\trm 推论 3：设$g_0(x),g_1(x),\cdots,g_k(x),\cdots$均为首一正交多项式，则
+\begin{gather}
+g_{k+1}(x)=(x-b_x)g_k(x)-c_kg_{k-1}(x)\\b_k=\frac{\beta_k}{\gamma_k},
+c_k=\frac{\gamma_k}{\gamma_{k-1}},\beta_k=(xg_k,g_k),\gamma_k=(g_k,g_k).\notag
+\end{gather}
+
+\entry 推论 3 的证明：
+
+\entry \key{Legendre 多项式}：在区间$[-1,1]$上，定义
+\begin{equation}
+P_k(x)=\frac1{2^k\cdot k!}\frac{\di^k}{\di x^k}\left[(x^2-1)^k\right].\quad(k=0,
+1,2,\ldots)
+\end{equation}
+其关于权函数$\omega(x)\equiv1$正交。最高次项系数为$\alpha_k=\frac{(2k)!}{2^k\cdot
+(k!)}$。
+
+\entry 其他常见正交多项式：
+\begin{itemize}
+    \item Laguerre 多项式：$L_k(x)=\e^x\frac{\di(x^k\e^{-x})}{\di x^k}$，正交区间
+    为$[0,+\infty)$，权函数为$\omega(x)=\e^{-x}$。
+    \item Hermite 多项式：$H_k(x)=(-1)^k\e^{x^2}\frac{\di^k\e^{-x^2}}{\di x^k}$，
+    正交区间为$(-\infty,+\infty)$，权函数为$\omega(x)=\e^{-x^2}$。
+    \item Cheybyshev 多项式：$T_k(x)=\cos(k\arccos x)$，正交区间为$[-1,1]$，权函数
+    为$\omega(x)=\frac1{\sqrt{1-x^2}}$。
+\end{itemize}
+
+\section{最优平方逼近}
+\entry 最优平方逼近：对函数$f(x)$，构造多项式$p(x)$使按$2$-范数度量得到的误差$S=
+(\|p-f\|_2)^2$最小。
+
+\entry 为系统地实现这一构造过程，常用一多项式函数族$\{\vphi_k(x)\}$表出：
+\begin{equation}\label{5-e2}
+    p(x)=c_0\vphi_0(x)+\cdots+c_n\vphi_n(x),
+\end{equation}
+从而问题落实为：
+\begin{enumerate}
+    \item 多项式族$\{\vphi_k(x)\}$的选取或导出；
+    \item 系数$c_k$的求解。
+\end{enumerate}
+
+\define 若$f$为列表函数，则称逼近其的$p(x)$为\key{最小二乘拟合多项式}，误差表达式为
+\[\|p-f\|_2=\sqrt{\sum_{i=1}^m\omega_i[p(x_i)-y_i]^2}.\]
+
+\define 若$f$为连续函数，则称逼近其的$p(x)$为\key{最优平方逼近多项式}，误差为
+\[\|p-f\|_2=\sqrt{\int_a^b(p-f)^2\di x}.\]
+
+\entry \key{正规方程组}：按定义将$S=\|p-f\|_2^2$拆开：
+\begin{gather}
+S=(p-f,p-f)=(p,p)-2(p,f)+(f,f)\notag\\
+S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
+(f,f).\label{5-e3}
+\end{gather}
+视$S$为系数$c_0,\cdots,c_n$的函数，欲令$S$达到极小值，则令
+\[\frac{\del S}{\del c_k}=2\sum_{i=0}^nc_j(\vphi_k,\vphi_j)-2(\vphi_k,f)=0\]
+从而可得求解系数$c_i$的\key{正规方程组}
+\begin{equation}
+\sum_{i=0}^nc_j(\vphi_k,\vphi_j)=(\vphi_k,f)
+\end{equation}
+或
+\begin{equation}
+\begin{pmatrix}(\vphi_0,\vphi_0)&(\vphi_0,\vphi_1)&\cdots&(\vphi_0,\vphi_n)\\
+(\vphi_1,\vphi_0)&(\vphi_1,\vphi_1)&\cdots&(\vphi_1,\vphi_n)\\
+\vdots&\vdots&\ddots&\vdots\\
+(\vphi_n,\vphi_0)&(\vphi_n,\vphi_1)&\cdots&(\vphi_n,\vphi_n)\end{pmatrix}
+\begin{pmatrix}c_0\\c_1\\\vdots\\c_n\end{pmatrix}=
+\begin{pmatrix}(\vphi_0,f)\\(\vphi_1,f)\\\vdots\\(\vphi_n,f)\end{pmatrix}.
+\end{equation}
+
+\entry 正规方程组中，系数矩阵为对称正定阵，有唯一解。故最优平方逼近的结果存在且唯一。
+
+\entry 正规方程组可改写为
+\begin{equation}
+(\vphi_k,p-f)=0\quad(k=0,1,\ldots,n).
+\end{equation}
+意义：误差向量$(p-f)$在由有限个向量$\vphi_k$张成的空间下无投影，控制「低维误差」。
+
+\entry 正规方程组解法 1：选取$\{\vphi_k\}$为一组正交多项式，则正规方程组简化为
+\[(\vphi_k,\vphi_k)c_k=(\vphi_k,f),\]
+从而易得$c_k=\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}$，进而得逼近多项式为
+\begin{equation}
+p(x)=\sum_{k=0}^n\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}\vphi_k(x).
+\end{equation}
+
+\entry 离散的正规方程组（最小二乘法）：记
+\[G=\begin{pmatrix}\vphi_0(x_1)&\vphi_1(x_1)&\cdots&\vphi_n(x_1)\\
+\vphi_0(x_2)&\vphi_1(x_2)&\cdots&\vphi_n(x_2)\\
+\vdots&\vdots&\ddots&\vdots\\
+\vphi_0(x_m)&\vphi_1(x_m)&\cdots&\vphi_n(x_m)\end{pmatrix},\,
+W=\diag(\omega_1,\omega_2,\cdots,\omega_m),\,y=
+\begin{pmatrix}y_1\\y_2\\\cdots\\y_m\end{pmatrix},\,c=
+\begin{pmatrix}c_0\\c_2\\\cdots\\c_n\end{pmatrix},\]
+则原正规方程组化为
+\begin{equation}
+(G^TWG)c=(G^TW)y.
+\end{equation}
+特别地，若取$\omega_i=1$，则方程进一步简化为
+\begin{equation}
+G^TGc=G^Ty,
+\end{equation}
+此即最小二乘方程，具体形式为
+\begin{equation}
+\begin{pmatrix}\sum_{i=1}^m1&\sum_{i=1}^mx_i&\cdots&\sum_{i=1}^mx_i^n\\
+\sum_{i=1}^mx_i&\sum_{i=1}^mx_i^2&\cdots&\sum_{i=1}^mx_i^{n+1}\\
+\vdots&\vdots&\ddots&\vdots\\
+\sum_{i=1}^mx_i^n&\sum_{i=1}^mx_i^{n+1}&\cdots&\sum_{i=1}^mx_i^{2n}\end{pmatrix}
+\begin{pmatrix}c_0\\c_1\\\vdots\\c_n\end{pmatrix}=
+\begin{pmatrix}\sum_{i=1}^my_i\\\sum_{i=1}^mx_iy_i\\\sum_{i=1}^mx_i^ny_i\end{pmatrix}
+\end{equation}
+
+\entry 当$m=n+1$时，方程
 
 \chapter{数值微分与数值积分}
 
