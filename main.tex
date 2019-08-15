@@ -31,6 +31,7 @@
 \newcommand{\setkey}[2]{\textbf{#1}\index{#2}}
 \newcommand{\vphi}{\varphi}
 \newcommand{\vepsilon}{\varepsilon}
+\newcommand{\dsum}{\sum\limits}
 
 \renewcommand{\emph}[1]{\underline{#1}}
 
@@ -839,7 +840,7 @@ R_{2i}(x)=\frac{f'''(\xi)}{3!}(x-x_{i-1})(x-x_i)(x-x_{i+1})\leq\frac{M_3}6\cdot
 \begin{figure}[htbp]
 \small\centering
 \includegraphics[width=\defwidth]{default.png}
-\caption{分段二次插值图示}\label{4-f3}
+\caption{分段二次插值图示}\label{4-f4}
 \end{figure}
 
 \entry 分段三次 Hermite 插值：在相邻插值节点处利用两个函数值、两个导数值构造插值多项式。
@@ -933,9 +934,11 @@ $g_n(x)$恰有$n$个不同实零点。（证明思路：有实根\sothat 无偶�
 
 \trm 推论 3：设$g_0(x),g_1(x),\cdots,g_k(x),\cdots$均为首一正交多项式，则
 \begin{gather}
-g_{k+1}(x)=(x-b_x)g_k(x)-c_kg_{k-1}(x)\\b_k=\frac{\beta_k}{\gamma_k},
-c_k=\frac{\gamma_k}{\gamma_{k-1}},\beta_k=(xg_k,g_k),\gamma_k=(g_k,g_k).\notag
+g_0(x)=1,\,g_1(x)=x-b_0,\,g_{k+1}(x)=(x-b_x)g_k(x)-c_kg_{k-1}(x)\label{5-e1}\\
+b_k=\frac{\beta_k}{\gamma_k},c_k=\frac{\gamma_k}{\gamma_{k-1}},\beta_k=(xg_k,g_k),
+\gamma_k=(g_k,g_k).\notag
 \end{gather}
+称此式为正交多项式的\key{三项递推关系}。
 
 \entry 推论 3 的证明：
 
@@ -990,7 +993,7 @@ S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
 \sum_{i=0}^nc_j(\vphi_k,\vphi_j)=(\vphi_k,f)
 \end{equation}
 或
-\begin{equation}
+\begin{equation}\label{5-e4}
 \begin{pmatrix}(\vphi_0,\vphi_0)&(\vphi_0,\vphi_1)&\cdots&(\vphi_0,\vphi_n)\\
 (\vphi_1,\vphi_0)&(\vphi_1,\vphi_1)&\cdots&(\vphi_1,\vphi_n)\\
 \vdots&\vdots&\ddots&\vdots\\
@@ -1010,20 +1013,29 @@ S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
 \entry 正规方程组解法 1：选取$\{\vphi_k\}$为一组正交多项式，则正规方程组简化为
 \[(\vphi_k,\vphi_k)c_k=(\vphi_k,f),\]
 从而易得$c_k=\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}$，进而得逼近多项式为
-\begin{equation}
-p(x)=\sum_{k=0}^n\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}\vphi_k(x).
+\begin{equation}\label{5-e4.5}
+P(x)=\sum_{k=0}^n\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}\vphi_k(x).
 \end{equation}
 
+\entry 函数族$\vphi_k(x)$的选取原则：
+\begin{enumerate}
+    \item 直观性原则：观察$(x_i,y_i)$的分布，选取函数族。
+    \item 比较性原则：对不同的函数族，可分别拟合，再比较它们的误差向量之大小
+    \[\|p-f\|_2=\sqrt{\sum_{i=1}^m\omega_i[p(x_i)-y_i]^2}\]
+    \item 根据实际问题背景选择函数族（如对周期性变化的函数，可用三角函数族）。
+\end{enumerate}
+
 \entry 离散的正规方程组（最小二乘法）：记
-\[G=\begin{pmatrix}\vphi_0(x_1)&\vphi_1(x_1)&\cdots&\vphi_n(x_1)\\
+\begin{gather*}
+G=\begin{pmatrix}\vphi_0(x_1)&\vphi_1(x_1)&\cdots&\vphi_n(x_1)\\
 \vphi_0(x_2)&\vphi_1(x_2)&\cdots&\vphi_n(x_2)\\
 \vdots&\vdots&\ddots&\vdots\\
 \vphi_0(x_m)&\vphi_1(x_m)&\cdots&\vphi_n(x_m)\end{pmatrix},\,
-W=\diag(\omega_1,\omega_2,\cdots,\omega_m),\,y=
-\begin{pmatrix}y_1\\y_2\\\cdots\\y_m\end{pmatrix},\,c=
-\begin{pmatrix}c_0\\c_2\\\cdots\\c_n\end{pmatrix},\]
+W=\diag(\omega_1,\omega_2,\cdots,\omega_m),\\
+y=(y_1\,y_2\,\cdots\,y_m)^T,\,c=(c_0\,c_2\,\cdots\,c_n)^T,
+\end{gather*}
 则原正规方程组化为
-\begin{equation}
+\begin{equation}\label{5-e5}
 (G^TWG)c=(G^TW)y.
 \end{equation}
 特别地，若取$\omega_i=1$，则方程进一步简化为
@@ -1032,15 +1044,75 @@ G^TGc=G^Ty,
 \end{equation}
 此即最小二乘方程，具体形式为
 \begin{equation}
-\begin{pmatrix}\sum_{i=1}^m1&\sum_{i=1}^mx_i&\cdots&\sum_{i=1}^mx_i^n\\
-\sum_{i=1}^mx_i&\sum_{i=1}^mx_i^2&\cdots&\sum_{i=1}^mx_i^{n+1}\\
+\begin{pmatrix}\dsum_{i=1}^m1&\dsum_{i=1}^mx_i&\cdots&\dsum_{i=1}^mx_i^n\\
+\dsum_{i=1}^mx_i&\dsum_{i=1}^mx_i^2&\cdots&\dsum_{i=1}^mx_i^{n+1}\\
 \vdots&\vdots&\ddots&\vdots\\
-\sum_{i=1}^mx_i^n&\sum_{i=1}^mx_i^{n+1}&\cdots&\sum_{i=1}^mx_i^{2n}\end{pmatrix}
+\dsum_{i=1}^mx_i^n&\dsum_{i=1}^mx_i^{n+1}&\cdots&\dsum_{i=1}^mx_i^{2n}\end{pmatrix}
 \begin{pmatrix}c_0\\c_1\\\vdots\\c_n\end{pmatrix}=
-\begin{pmatrix}\sum_{i=1}^my_i\\\sum_{i=1}^mx_iy_i\\\sum_{i=1}^mx_i^ny_i\end{pmatrix}
+\begin{pmatrix}\dsum_{i=1}^my_i\\\dsum_{i=1}^mx_iy_i\\\vdots\\\dsum_{i=1}^mx_i^ny_i
+\end{pmatrix}
 \end{equation}
 
-\entry 当$m=n+1$时，方程
+\entry 当$m=n+1$时，最小二乘拟合多项式即插值多项式。
+
+\example 对于若干数据点$(x_i,y_i)$，欲采用$y=b\e^{ax}$进行拟合，其中$a,b$为待定常数；
+可对该表达式取对数得
+\[\ln y=\ln b+ax\]
+再考虑误差函数
+\[S(a,b)=\sum_{i=1}^m(\ln b+ax_i-\ln y_i)^2\]
+令其对$a$、$b$的偏导数为$0$，即可解出参数值。
+
+\entry 最小二乘拟合/最优平方逼近的一般方法：
+\begin{enumerate}
+    \item 可自选一组线性无关的基函数，求解正规方程组(\ref{5-e4})或(\ref{5-e5})。
+    一般选取$\vphi_k(x)=x^k$。（难点在列、解方程）
+    \item 可利用三项递推关系(\ref{5-e1})求解一族首一正交多项式$g_0(x),\cdots,g_n(x)$，
+    利用式(\ref{5-e4.5})计算逼近的多项式。（难点在递推、计算内积。）
+    \item 可先通过变量代换$x=\frac{a+b}2+\frac{b-a}2t$将区间$[a,b]$替换为$[-1,1]$，
+    对变换后的函数$\overline{f}(t)$用正交的 Legendre 多项式求出$\overline{P}(t)$，
+    最后用$t=\frac{2x-a-b}{b-a}$还原到$P(x)$。（难点在记 Legendre 多项式、展开和计算
+    内积。）
+\end{enumerate}
+
+\example 求$y=\sqrt x$在$[0,1]$上最优平方逼近一次多项式。（答案：$p(x)=\frac45x+
+\frac4{15}$。）
+\begin{enumerate}
+    \item 用$\vphi_0(x)=1$，$\vphi_1(x)=x$，可列出正规方程组
+    \[
+    \begin{pmatrix}1&1/2\\1/2&1/3\end{pmatrix}\begin{pmatrix}c_0\\c_1\end{pmatrix}
+    =\begin{pmatrix}2/3\\2/5\end{pmatrix}
+    \]
+    容易求得$c_0=\frac45$，$c_1=\frac4{15}$，从而$p(x)=\frac45+\frac4{15}$。
+    \item 用三项递推式，有$g_0(x)=1$，
+    \begin{equation}
+    g_1(x)=x-\frac{(x,1)}{(1,1)}=x-\frac12,
+    \end{equation}
+    故可进一步计算
+    \begin{align*}
+    (g_1,g_2)&=(x-\frac12,x-\frac12)=\int_0^1(x-\frac12)^2\di x=\frac1{12}\\
+    (f,g_0)&=(\sqrt x,1)=\frac23\\
+    (f,g_1)&=(\sqrt x,x)-(\sqrt x,\frac12)=\frac25-\frac12\cdot\frac23=
+    \frac1{15},
+    \end{align*}
+    从而有
+    \[p(x)=\frac23+\frac{1/15}{1/12}\cdot\left(x-\frac12\right)=\frac45x-\frac4{
+    15}.\]
+    \item 用 Legendre 多项式求解，为此先作变量代换$x=\frac12+\frac12t$，被插函数变为
+    $\overline{f}(t)=\sqrt{\frac{1+t}2}$，进而可用前两个 Legendre 多项式
+    \[P_0(t)=1,\,P_1(t)=t\]
+    逼近$\overline{f}(t)$。可以计算各个内积为
+    \begin{align*}
+    (P_0,P_0)&=\int_{-1}^1\di t=2\\
+    (P_1,P_1)&=\int_{-1}^1t^2\di t=\frac23\\
+    (f,P_0)&=\int_{-1}^1\sqrt{\frac{1+t}2}=\frac{\sqrt2}2\int_{-1}^1\sqrt{1+t}
+    \di(1+t)=\frac{\sqrt2}2\cdot\frac23\cdot(2\sqrt2)=\frac43\\
+    (f,P_1)&=\int_{-1}^1\sqrt{\frac{1+t}2}=\frac{\sqrt2}2\int_{=1}^1(\sqrt{1+t})%
+    ^3\di(1+t)-(f,P_0)=\frac{\sqrt2}2\cdot\frac25\cdot(4\sqrt2)-\frac43=\frac4{15}
+    \end{align*}
+    从而
+    \[\overline{p}(t)=\frac{4/3}2+\frac{4/15}{2/3}t=\frac23+\frac25t\]
+    回代$t=2x-1$即得$p(x)=\frac45+\frac4{15}x$。
+\end{enumerate}
 
 \chapter{数值微分与数值积分}
 
