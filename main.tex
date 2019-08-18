@@ -65,7 +65,7 @@
 
 \begin{flushright}
 能动少C71 尤佳睿
-\footnote{个人博客：\url{https://www.cnblogs.com/xjtu-blacksmith/}，个人网站：\url{https://xjtu-blacksmith.cn/}（in English）。}
+\footnote{个人博客：\url{https://www.cnblogs.com/xjtu-blacksmith/}。}
 \\2019 年 6 月 6 日
 \end{flushright}
 \cleardoublepage
@@ -624,7 +624,7 @@ P(x_i)=y_i\sothat a_0+a_1x_i+\cdots+a_ix_i^n=y_i\quad(i=0,1,\cdots,m)
     \item $m<n$，方程有无穷多解；
     \item $m=n$时，系数矩阵对应的行列式是Van der monde行列式：
     \begin{equation}
-    |V|=\left\{\prod_{j=1}^n\left[\prod_{i=0}^{j-1}(x_j-x_i)\right]\right\}
+    |V|=\prod_{j=1}^n\left[\prod_{i=0}^{j-1}(x_j-x_i)\right]
     \end{equation}
     当$x_i\neq x_j\ (i\neq j)$时，$|V|\neq0$，方程组有唯一解。
 \end{itemize}
@@ -1457,7 +1457,8 @@ f'(x_2)=\frac1{2h}[f(x_0)-4f(x_1)+3f(x_2)]+\frac{h^2}3f'''(\xi_2).
 等距节点即得 
 \begin{gather}
 f''(x_0)=\frac1{h^2}[f(x_0)-2f(x_1)+f(x_2)]-hf'''(\xi_1)+\frac{h^2}6f^{(4)}(\xi_2)\\
-f''(x_1)=\frac1{h^2}[f(x_2)-2f(x_1)+f(x_2)]-\frac{h^2}{12}f^{(4)}(\xi)\\
+f''(x_1)=\frac1{h^2}[f(x_2)-2f(x_1)+f(x_2)]-\frac{h^2}{12}f^{(4)}(\xi)
+\label{7-e-mid}\\
 f''(x_2)=\frac1{h^2}[f(x_0)-2f(x_1)+f(x_2)]+hf'''(\xi_1)+\frac{h^2}6f^{(4)}(\xi_2).
 \end{gather}
 
@@ -1675,7 +1676,7 @@ $x^\ast$ 的充分小邻域内局部收敛。（或：当初值 $x_0$ 充分靠�
 
 \entry 加速收敛方法：促使原来收敛较慢的算法更快收敛，或使原来发散的迭代格式变为收敛。
 
-\entry 松弛因子加速法：对迭代格式 $x=\vphi(x)$，在方程左右减去一带松弛因子 $\omega<1$
+\entry 松弛因子加速法：对迭代格式 $x=\vphi(x)$，在方程左右减去一带松弛因子 $\omega$
 的项 $\omega x$，得
 \[ x-\omega x=\vphi(x)-\omega x \]
 进而可得新的收敛格式
