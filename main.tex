@@ -1107,14 +1107,400 @@ G^TGc=G^Ty,
     (f,P_0)&=\int_{-1}^1\sqrt{\frac{1+t}2}=\frac{\sqrt2}2\int_{-1}^1\sqrt{1+t}
     \di(1+t)=\frac{\sqrt2}2\cdot\frac23\cdot(2\sqrt2)=\frac43\\
     (f,P_1)&=\int_{-1}^1\sqrt{\frac{1+t}2}=\frac{\sqrt2}2\int_{=1}^1(\sqrt{1+t})%
-    ^3\di(1+t)-(f,P_0)=\frac{\sqrt2}2\cdot\frac25\cdot(4\sqrt2)-\frac43=\frac4{15}
+    ^3\di(1+t)-(f,P_0)\\
+    &=\frac{\sqrt2}2\cdot\frac25\cdot(4\sqrt2)-\frac43=\frac4{15}
     \end{align*}
     从而
     \[\overline{p}(t)=\frac{4/3}2+\frac{4/15}{2/3}t=\frac23+\frac25t\]
     回代$t=2x-1$即得$p(x)=\frac45+\frac4{15}x$。
 \end{enumerate}
 
-\chapter{数值微分与数值积分}
+\chapter{数值积分与数值微分}
+
+\entry 常规积分的局限性：往往难以求得原函数，无法应用 Newton-Leibniz 公式；有时
+仅知函数在个别离散点的取值。
+
+\entry 数值积分/数值微分的共同思路：用个别点处函数值$f(x_i)$的线性组合，来估计整个区
+间上的积分值或个别点附近的微分值。
+\begin{gather}
+\int_a^bf(x)\di x=\sum_{i=0}^nA_if(x_i)\\
+f'(x)=\sum_{i=0}^nB_if(x_i)
+\end{gather}
+
+\entry 主要问题：
+\begin{enumerate}
+    \item 节点$x_i$的选取；
+    \item 求积系数$A_k$的计算；
+    \item 误差估计与评价。
+\end{enumerate}
+
+\entry 记号：对于$f(x)$，记其准确积分值为
+\[I[f]=\int_a^bf(x)\di x\]
+而记其数值估计公式为
+\[Q[f]=\sum_{i=0}^nA_if(x_i)\approx I[f].\]
+将数值积分公式的误差记为$R[f]=I[f]-Q[f]$
+
+\section{插值型积分及其延伸}
+\entry 两种近似积分思路：
+\begin{enumerate}
+    \item 按 Riemann 积分定义，作区间的划分，按若干小矩形估算：
+    \[\int_a^bf(x)\di x\approx\sum_{i=o}^nf(x_i)(x_{i+1}-x_i)\]
+    \item 取若干数据点插值，用插值多项式$p(x)$的积分估计函数的积分：
+    \[\int_a^bf(x)\di x\approx\int_a^bp(x)\di x=\int_a^b\left[\sum_{i=0}^n
+    l_i(x)f(x_i)\right]\di x=\sum_{i=0}^n\left(\int_a^bl_i(x)\di x\right)\cdot
+    f(x_i).\]
+\end{enumerate}
+共同特点是：用若干点上函数值$f(x_i)$之线性组合估计整个区间上的积分值。问题：无法估计
+误差。因此，应当从此种思路出发，直接构造估计公式，进而就可估计误差。
+
+\entry \key{Newton-Cotes 型求积公式}：在区间上等距取定若干插值点，构造插值多项式并以
+其积分代替$f(x)$的积分。
+
+\entry 设节点数为$n+1$个（$x_0,x_1,\cdots,x_n$），一般常取$n=1,2,4$，记
+此时各点的距离为$h=\frac{b-a}n$。
+
+\entry \key{梯形公式}：当$n=1$时，取定区间的左右两端点为$x_0$与$x_1$，可得到
+\begin{equation}
+Q_1[f]=\frac{b-a}2\left[f(a)+f(b)\right].
+\end{equation}
+此即梯形求积公式，常将$Q_1[f]$记为$T_1$。。由广义积分中值定理
+\footnote{设$f,g\in C[a,b]$且$g$在$[a,b]$不变号，则存在$\eta\in[a,b]$使
+$\int_a^bf(x)g(x)\di x=f(\eta)\int_a^bg(x)\di x$。}
+可估计误差为
+\begin{equation}
+R_1[f]=\frac{(b-a)^3}{12}f''(\eta),\,\eta\in(a,b)
+\end{equation}
+
+\entry \key{Simpson 公式}：当$n=2$时，$h=\frac{b-a}2$，将取得以下等距节点：
+\[x_0=a,\,x_1=\frac{a+b}2,\,x_2=b.\]
+作插值多项式并积分，可得求积公式为
+\begin{equation}
+Q_2[f]=\frac h3\left[f(a)+4f\left(\frac{a+b}2\right)+f(b).\right]
+\end{equation}
+此即 Simpson 公式，常将$Q_2[f]$简记为$S_1$。利用之后的结果可估计误差为
+\begin{equation}
+R_2[f]=-\frac{(b-a)^5}{2880}f^(4)(\eta).
+\end{equation}
+
+\entry \key{Cotes 求积公式}：当$n=4$时，$h=\frac{b-a}4$，插值并积分可得
+\begin{equation}
+Q_4[f]=\frac{b-a}{90}[7f(a)+32f(a+h)+12f(a+2h)+32f(a+3h)+7f(b).]
+\end{equation}
+此即 Cotes 求积公式，常将$Q_4[f]$简记为$C_1$。利用之后的结果可估计误差为
+\begin{equation}
+R_4[f]=-\frac{(b-a)^7}{1935360}f^{(6)}(\eta).
+\end{equation}
+
+\entry \key{代数精度}：设有一数值积分公式，$m$为一正整数。若对于不超过$m$次的多项式均
+有$R[f]=0$成立，而对某$m+1$次多项式即有$R[f]\neq0$，则称该数值积分公式的代数精度为$m$。
+
+\entry 对梯形公式，其代数精度为 $1$；对 Simpson 公式，其代数精度为 $2$；对 Cotes 公式，
+其代数精度为 $4$。
+
+\entry 不宜采用次数过高的多项式插值：Runge 现象
+\footnote{且根据后面的内容可知，次数过高的 Newton-Cotes 公式稳定性差，结果易发散}。
+
+\entry 复化求积公式：对每个小区间 $[x_{k-1},x_k]$ 分别运用积分公式，再将结果求和。
+
+\entry 公式表述：对由 $n+1$ 个数据点所划分的 $n$ 个小区间，对以上三种插值型积分公式的
+结果如下。
+\begin{itemize}
+    \item 取 $n=1$，得复化梯形公式
+    \begin{equation}
+    T_n=\frac h2\left[f(a)+2\dsum_{i=1}^{n-1}f(x_i)+f(b)\right],
+    \end{equation}
+    其误差估计为 $R_{T_n}=-\frac{b-a}{12}h^2f''(\eta)$。
+    \item 取 $n=2$，得复化 Simpson 公式
+    \begin{equation}
+    S_n=\frac h2\left[f(a)+2\dsum_{i=1}^{n-1}f(x_i)+f(b)\right],
+    \end{equation}
+    其误差估计为 $R_{S_n}=-\frac{b-a}{2880}h^4f^{(4)}(\eta)$。
+    \item 取 $n=4$，得复化 Cotes 公式
+    \begin{equation}\begin{aligned}
+    C_n=&\frac h{90}\left\{7f(a)+32\dsum_{i=0}^{n-1}\left[
+    f\left(x_i+\frac h4\right)+f\left(x_i+\frac{3h}4\right)\right]+\right.\\
+    &\left.12\dsum_{i=0}^{n-1}f\left(x_i+\frac h2\right)+14\dsum_{i=1}^{n-1}f(x_i)
+    +7f(b)\right\}.
+    \end{aligned}\end{equation}
+    其误差估计为 $R_{c_n}=-\frac{b-a}{1935360}h^6f^{(6)}(\eta)$。
+\end{itemize}
+
+\entry 变步长积分法：为进一步减小误差，考虑在用复化求积公式时不断缩小步长。为此考虑先凑
+出一个近似的误差估计式。设用复化梯形公式 $T_n$ 求积分，当取得 $n+1$ 个点时的误差估计式为
+\begin{equation}
+R_n[f]=I[f]-T_n=-\frac{b-a}{12}h^2f''(\eta_1)
+\end{equation}
+若将间隔数翻倍，则当取得 $2n+1$ 个点时的误差估计式为
+\begin{equation}
+R_{2n}[f]=I[f]-T_{2n}=-\frac{b-a}{12}\left(\frac h2\right)^2f''(\eta_2)
+\end{equation}
+若估计$f''(\eta_1)\approx f''(\eta_2)$，则联立两式即可得到
+\begin{equation}\label{6-e1}
+R_{2n}[f]=I[f]-T_{2n}\approx\frac13(T_{2n}-T_n)
+\end{equation}
+即积分误差可以用变步长结果间的差距 $T_{2n}-T_n$ 所估计。因此，若希望实现 $R[f]<
+\vepsilon$，可按如下步骤实施变步长复化积分：
+\begin{enumerate}
+    \item $n=1$，$h=b-a$，计算$T_n$；
+    \item 缩小步长$h$至原来的一半，计算$T_{2n}$；
+    \item 验证误差估计条件 $|T_{2n}-T_n|<\vepsilon$ 是否满足，若满足则停止，若不满足
+    则重复上一步。
+\end{enumerate}
+
+\entry $T_{2n}$的迭代算法：
+\begin{equation}
+T_{2n}=\frac12T_n+\frac h2\sum_{k=1}^nf\left(\frac{x_{k-1}+x_k}2\right)
+\end{equation}
+
+\entry 变步长积分公式中，同样可采用复化 Simpson 公式或复化 Cotes 公式：
+\begin{gather}
+I-S_{2n}\approx\frac1{4^2-1}(S_{2n}-S_n),\\
+I-C_{2n}\approx\frac1{4^3-1}(C_{2n}-C_n).
+\end{gather}
+
+\entry 启发：由误差估计式 (\ref{6-e1}) 可以猜想，以下的估计式同样成立：
+\[ I\approx T_{2n}+\frac1{4-1}(T_{2n}-T_n) \]
+而将 $T_n$ 与 $T_{2n}$ 的表达式代入之后可得
+\begin{equation}
+T_{2n}+\frac1{4-1}(T_{2n}-T_n)=S_n
+\end{equation}
+由此说明，可以用低精度的积分公式组合出高精度的积分公式
+\footnote{本质上是由插值点的增加所致。}
+。对复化 Simpson 公式实行类似操作可推得
+\begin{equation}
+S_{2n}+\frac1{4^2-1}(S_{2n}-S_n)=\frac{4^2S_{2n}-S_n}{4^2-1}=C_n
+\end{equation}
+
+
+\entry \key{Romberg 积分}：进一步考虑对 Cotes 公式的结果，将得到一个新的积分公式：
+\begin{equation}
+C_{2n}+\frac1{4^3-1}(C_{2n}-C_n)=\frac{4^3C_{2n}-C_n}{4^3-1}=R_n
+\end{equation}
+称由上式表述的 $R_n$ 为 Romberg 积分，其代数精度 $m=7$，其误差估计式为
+\begin{equation}
+R[f]=K\cdot h^8f^{(8)}(\eta).
+\end{equation}
+
+\entry 一般不在 Romberg 积分的基础上进一步递推，因被积函数的高阶导数性态不易估计，可能
+出现 Runge 现象；且$R_{2n}-R_n$ 一项很小，舍入误差较大；计算量也过大。
+
+\entry Romberg 积分可由最基本的复化梯形公式逐阶递推而来，常用 \key{Romberg 计算图}辅助
+计算。
+
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{Romberg 计算图}\label{6-f1}
+\end{figure}
+
+\section{待定系数法与 Gauss 型积分}
+\trm 积分公式 $Q[f]$ 之代数精度为 $m$ 的充要条件是
+\[R[x^k]=0,\,(k=0,1,2,\cdots,m),\,R[x^{m+1}]\neq0.\]
+可利用此结果，在积分公式中分别代入$f(x)=x^k$，验算积分公式的代数精度。
+
+\entry \key{待定系数法}：根据数值积分公式的一般形式 $Q[f]=\dsum_{i=0}^kA_if(x_i)$，
+在给定条件下（如达到指定的代数精度、给定一些已知的节点），求解处公式中未知的节点$x_i$与
+系数$A_i$。
+
+\example 待定系数法导出梯形公式：设 $Q[f]=A_1f(a)+A_2f(b)$，希望其代数精度为 $1$，则有
+\begin{itemize}
+    \item 令 $f(x)=1$，由 $I[f]=Q[f]$ 有 $A_1-A_2=b-a$；
+    \item 令 $f(x)=x$，由 $I[f]=Q[f]$ 有 $A_1\cdot a + A_2\cdot b=\frac12(b^2-a^2)$。
+\end{itemize}
+解得 $A_1=A_2=\frac{b-a}2$。故积分公式为
+\[Q[f]=\frac{b-a}2[f(a)+f(b)],\]
+此即梯形公式。
+
+\entry 广义 Peano 定理：设 $Q[f]$ 的截断误差为 $R[f]$是区间上 $m+1$ 阶导数连续之函数
+的线性泛函\footnote{线性泛函满足：$R[c_1f_1+c_2f_2]=R[c_1f_1]+R[c_2f_2]$。}，且近似
+公式代数精度为 $m$，则有 $R[f(x)]=R[e(x)]$，其中
+\begin{equation}\label{6-e2}
+e(x)=\frac{f^{(m+1)}(\xi)}{(m+1)!}(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots
+(x-\tilde{x}_m)
+\end{equation}
+$\tilde{x}_0,\tilde{x}_1,\cdots,\tilde{x}_m$ 为 $[a,b]$ 上任意一点，$\xi\in[a,b]$
+与这 $m+1$ 个点的选取有关。
+
+\entry 通过合适的取点，可由广义 Peano 定理求得各积分公式的误差估计。一般要求：$e(x)$表
+达式中的 $(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots(x-\tilde{x}_m)$ 项在 $[a,b]$ 不变号；
+选取 $\tilde{x}_0,\tilde{x}_1,\cdots,\tilde{x}_m$ 最好使 $Q[e]$ 为 $0$，从而有
+$R[f]=I[e]$ 可直接算出。
+
+\example 用广义 Peano 定理估计 Simpson 公式
+\[ \int_{-1}^1f(x)\di x\approx Q[f]=\frac13[f(-1)+4f(0)+f(1)] \]
+的误差，可考虑取 $-1,0,0,1$（其中 $0$ 为重节点），代入 (\ref{6-e2}) 式即得
+\[ e(x)=\frac{f^{(4)}(\xi)}{4!}(x+1)x^2(x-1) \]
+而可以算得 $Q[e]=0$，故直接有
+\[ R[f]=I[e]=\int_{-1}^1\frac{f^{(4)}(\xi)}{4!}(x+1)(x-1)x^2\di x=
+\frac1{90}f^{(4)}(\eta)\,(\eta\in[a,b]) \]
+其中在 $(x+1)(x-1)x^2$ 不变号的前提下应用了广义积分中值定理。
+
+\entry 简化解法：设数值积分公式 $Q[f]$ 的代数精度为 $m$，根据广义 Peano 定理其误差项
+一定为 $Kf^{(m+1)}(\eta)$ 的形式；代入 $f(x)=x^{m+1}$ 即有
+\[ K\cdot m! = R[f] = I[f] - Q[f] \]
+将 $I[f]$ 与 $Q[f]$ 算出，即可求得系数 $K$。
+（当 $m=4$ 时，方程左侧为 $24K$，故戏称此法为「24K金法」。
+
+\example 用「24K金法」估计 Simpson 公式的误差。
+
+\example 估计积分公式
+\[ \int_{-1}^1f(x)\di x\approx Q[f]=\frac43f\left(-\frac12\right)-\frac23f(0)+
+\frac43f\left(\frac12\right) \]
+的误差。（答案：$R[f]=\frac7{720}f^{(4)}(\eta)$。）
+
+\entry 在一般的积分公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 中，全部的待定参数共 $2n+2$ 个，
+可将它们全部通过待定系数法解出（而不必预先给定）；因此，对由 $n+1$ 个节点确定的积分公式，
+可以期望其最高具有 $m=2n+1$ 的代数精度，进而列出 $m+1=2n+2$ 个方程将待定参数解出。
+
+\entry 最高精度为 $2n+1$：对代数精度为 $2n+1$ 的积分公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$，
+可代入以下的 $2n+2$ 次多项式
+\[ p(x)=(x-x_0)^2(x-x_1)^2\cdots(x-x_n)^2 \]
+则有 $Q[p(x)]=\dsum_{i=0}^nA_ip(x_i)=0$，而 $I[p(x)]$ 必然为正数，故可见 $Q[f]$ 的
+代数精度不可能达到 $2n+2$。
+
+\example 求解使积分公式
+\[ \int_{-1}^1f(x)\di x=Q[f]=A_0f(x_0)+A_1f(x_1) \]
+代数精度尽可能高的 $A_0,A_1,x_0,x_1$，并估计误差。
+（答案：$Q[f]=f(-1/\sqrt3)+f(1/\sqrt3)$，$m=3$，$R[f]=\frac1{135}f^{(4)}(\eta)$）
+
+\entry Gauss 求积公式：具有 $n+1$ 个节点，代数精度达到 $2n+1$ 的数值积分公式。相应的
+节点称为 Gauss 点。
+
+\trm 求积公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 是 Gauss 求积公式的充要条件为：
+\begin{itemize}
+    \item $x_i$ 为 $[a,b]$ 上关于权系数 $\omega(x)$ 正交的多项式 $g_{n+1}(x)$ 之零点；
+    \item 求积系数 $A_i$ 按下式确定：
+    \begin{equation}
+    A_i=\int_a^b\omega(x)l_i(x)\di x
+    \end{equation}
+\end{itemize}
+
+\trm 引理：设$\{g_k(x)\}$ 为 $[a,b]$ 上关于 $\omega(x)$ 正交的首一正交多项式，则有
+\begin{equation}
+\frac{g_{k+1}(x)}{x-x_i}=\frac{\gamma_n}{g_n(x_i)}\sum_{k=0}^n\frac{g_k(x)
+g_n(x_i)}{\gamma_k}
+\end{equation}
+
+\trm 推论 1：求积公式中的系数 $A_i$ 可按
+\begin{equation}\label{6-e3}
+A_i=\frac{\gamma_n}{g'_{n+1}(x_i)g_n(x_i)}\quad(i=0,1,\ldots,n)
+\end{equation}
+计算。
+
+\trm 推论 2：若 $f\in C^{2n+2}[a,b]$，且 $g_{n+1}(x)$ 为一个首一多项式，则有
+\begin{equation}\label{6-e4}
+R[f]=\frac{\gamma_{n+1}}{(2n+2)!}f^{(2n+2)}(\eta).
+\end{equation}
+
+\trm 推论 3：Gauss 型求积公式的系数全大于 $0$。
+
+\entry Gauss 型求积公式的求解过程：
+\begin{enumerate}
+    \item 按三项递推关系 (\ref{5-e1}) 求出在 $[a,b]$ 上关于 $\omega(x)$ 正交的
+    多项式 $g_{n+1}(x)$；
+    \item 求出 $g_{n+1}(x)$ 的 $n+1$ 个根 $x_0,x_1,\cdots,x_n$。
+    \item 按式 (\ref{6-e3}) 求解积分公式中的系数。
+    \item 按 (\ref{6-e4}) 式的结果求解误差。
+\end{enumerate}
+
+\entry Gauss 求积公式的稳定性：设计算函数值时的舍入误差
+\[ |f(x_i)-\tilde{f}(x_i)|\leq\vepsilon \]
+其中 $\vepsilon$ 为各子区间上最大的舍入误差限，则总的舍入误差估计为
+\begin{equation}
+E=\left|\sum_{i=0}^nA_if(x_i)-\sum_{i=0}^nA_i\tilde{f}(x_i)\right|\leq\sum_{i=0}%
+^n|A_i|\vepsilon.
+\end{equation}
+对 Gauss 求积公式，所有的 $A_i$ 均为正，故有
+\[ \sum_{i=0}^n|A_i|=\sum_{i=0}^nA_i=\int_a^b\omega(x)\di x=\gamma_0 \]
+从而说明 $E\leq\gamma_0\vepsilon$，即舍入误差是可控的。这说明 Gauss 求积公式是稳定的。
+
+\section{数值微分公式}
+\entry 最基本的算法：割线代切线
+\[ f'(x_i)\approx\frac{f(x_{i+1})-f(x_i)}{x_{i+1}-x_i}=A_if(x_i)+A_{i+1}f(x_{i+1}) \]
+可见数值微分公式与数值积分公式本质相同，均为个别点函数值的组合。
+
+\entry 以上方法的缺陷，与之前所提的朴素近似积分法相同：误差无法估计。为此，应直接从一般
+的公式入手，自行求解节点与系数，并估计误差。
+
+\entry 插值型数值微分公式：用插值多项式 $L_n(x)$ 代替原有函数 $f(x)$ ，求其导数：
+\[ f(x)=L_n(x)+R_n(x)\,\Rightarrow\,f^{(k)}(x)=L_n^{(k)}(x)+R_n^{(k)}(x).\]
+
+\entry 插值型公式的误差估计：
+\[ R_n^{(k)}(x)=\frac{\di^k}{\di x^k}\left[\frac{f^{(n+1)}(\xi)}{(n+1)!}
+\pi_{n+1}(x)\right]=\frac{\di^k}{\di x^k}\left(f[x_0,x_1,\cdots,x_n,x]\pi_{n+1}(x)
+\right) \]
+
+\trm 差商的导数有如下性质：
+\begin{equation}
+\frac{\di^k}{\di x^k}f[x_0,x_1,\cdots,x_m,x]=(k!)f[x_0,x_1,\cdots,x_m,x,x,\cdots,x].
+\end{equation}
+
+\entry 两点数值微分公式（$n=1,k=1$）：采用 Newton 插值多项式可求得
+\[ f'(x)=f[x_0,x_1] + f[x_0,x_1,x,x](x-x_0)(x-x_1)+ f[x_0,x_1,x](2x-x_0-x_1) \]
+分别代入 $x_0$ 与 $x_1$ 可得两个数值微分公式：
+\begin{gather}
+f'(x_0)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_0)(x_0-x_1)\\
+f'(x_1)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_1)(x_0-x_1)
+\end{gather}
+可通过记 $h=x_1-x_0$ 来简化以上公式的写法。
+
+\entry 三点数值微分公式（$n=2,k=1$）：设三个等距节点分别为 $x_0,x_1,x_2$，可得到相同
+结论为
+\begin{gather}
+f'(x_0)=\frac1{2h}[-3f(x_0)+4f(x_1)-f(x_1)]+\frac{h^2}3f'''(\xi_0)\\
+f'(x_1)=\frac1{2h}[-f(x_0)+f(x_2)]-\frac{h^2}6f'''(\xi_1)\\
+f'(x_2)=\frac1{2h}[f(x_0)-4f(x_1)+3f(x_2)]+\frac{h^2}3f'''(\xi_2).
+\end{gather}
+
+\entry 三点二阶数值微分公式（$n=2,k=2$）：在以上公式推导过程中再求一次导，分别代入三个
+等距节点即得 
+\begin{gather}
+f''(x_0)=\frac1{h^2}[f(x_0)-2f(x_1)+f(x_2)]-hf'''(\xi_1)+\frac{h^2}6f^{(4)}(\xi_2)\\
+f''(x_1)=\frac1{h^2}[f(x_2)-2f(x_1)+f(x_2)]-\frac{h^2}{12}f^{(4)}(\xi)\\
+f''(x_2)=\frac1{h^2}[f(x_0)-2f(x_1)+f(x_2)]+hf'''(\xi_1)+\frac{h^2}6f^{(4)}(\xi_2).
+\end{gather}
+
+\entry 一般，常用以下两个在区间中点$x_1$取得的数值微分公式：
+\begin{gather}
+f'(x)=\frac{f(x+h)-f(x-h)}{2h}-\frac{h^2}6f'''(\xi),\\
+f''(x)=\frac{f(x+h)-2f(x)+f(x+h)}{h^2}-\frac{h^2}{12}f^{(4)}(\xi).
+\end{gather}
+
+\entry 数值微分的待定系数法：类似于数值积分，可用待定系数法追求更高的代数精度。（此处，
+代数精度的定义与数值积分中的相同。）
+
+\example 给定 $x_0,x_1$，为求得下列形式的数值微分公式
+\[ f''(x_0)\approx c_0f(x_0)+c_1f'(x_0)+c_2f(x_1) \]
+中系数 $c_0,c_1,c_2$ 的值，首先期望该公式具有 $m=1+1=2$ 的代数精度，进而可依次代入
+$f(x)=1$、$f(x)=x$、$f(x)=x^2$：
+\[\begin{cases}-c_0-c_2=0\\-c_1-c_2h=0\\2-c_2h^2=0\end{cases}\sothat
+\begin{cases}c_0=-\frac{2}{h^2}\\c_1=-\frac2h\\c_2=\frac2{h^2}\end{cases}\]
+可将 $f(x)=x^3$ 代入最终的公式中，解得 $R[f]=-2h\neq0$，故该公式的代数精度止于 $2$。
+此处可用广义 Peano 定理，取$x_0,x_0,x_1$ 三个节点构筑 $e(x)$，从而
+\[R[f]=R[e(x)]=e''(x_0)-\left[-\frac2{h^2}e(x_0)+\frac2he'(x_0)-\frac2{h^2}e(x_1)
+\right]=e''(x_0)=-\frac h3f'''(\xi).\]
+（当然，也可以用「24K金法」，将 $f(x)=x^3$ 直接代入 $I[f]=R[f]$ 之中，
+求得系数 $K=-\frac h3$。）
+
+\entry 外推法：类似于 Romberg 积分法，用低精度公式递推出高精度公式。
+
+\entry 变步长微分法：类于数值积分中的类似方法。
+
+\example 欲求得数值微分公式
+\[ f''(x)\approx Af(x-h)+Bf(x)+Cf(x+h) \]
+中的系数 $A,B,C$，可利用 Taylor 公式展开等式右侧的 $f(x-h)$ 与 $f(x-h)$：
+\[ f''(x)=(A+B+C)f(x)+(-A+C)hf'(x)+(A+C)\frac{h^2}2f''(x)+R(x) \]
+其中 $R(x)$ 为余项。左右对应项相等，故有
+\[
+\begin{cases}A+B+C=0\\-A+C=0\\A+C=\frac2{h^2}\end{cases}\sothat
+\begin{cases}A=-\frac1{h^2}\\B=-\frac2{h^2}\\C=\frac1{h^2}\end{cases}
+\]
+故可推出数值微分公式为
+\[ D_h[f]=\frac1{h^2}[f(x-h)-2f(x)+f(x+h)] \]
+为提高该公式的精度，可再 $h/2$ 为步长，能递推出近似关系
+\[ f''(x)-D_{\frac12h}[f]\approx\frac14(f''(x)-D_h[f])\sothat
+f''(x)\approx\frac13\left[4D_{\frac h2}[f]-D_h[f]\right]. \]
+记 $\overline{D}[f]=4D_{\frac h2}[f]-D_h[f]$，该公式相较于上式更为精确。
 
 \chapter{非线性方程迭代解法}
 
