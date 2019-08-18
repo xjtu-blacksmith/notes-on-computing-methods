@@ -1691,6 +1691,234 @@ x=\frac{\vphi(x)-\omega x}{1-\omega}=\psi(x)
 \entry Aitken 加速法。
 
 \chapter{常微分方程数值解}
+\entry 本章只涉及一阶常微分方程初值问题：
+\begin{equation}\label{8-e1}
+\begin{cases}
+y'(x)=f(x,y(x)),\quad x\in[a,b]\\
+y(a)=y_0.
+\end{cases}
+\end{equation}
+
+\trm 解的存在唯一性：在由式 (\ref{8-e1}) 所述的初值问题中，若 $f(x,y)$ 在区域
+\[D=\{(x,y)|a\leq x\leq b,-\infty<y<+\infty\}\]
+中连续，且存在一个常数 $L$ 使得对任意选取的 $y$ 与 $\bar{y}$ 都有
+\footnote{不等式中的第一个不等号，来自于多元函数的拟微分中值定理。}
+\[ |f(x,y)-f(x,\bar{y})|\leq|\frac{\del f}{\del y}(y-\bar{y})|\leq L|y-\bar{y}|,
+\quad x\in[a,b] \]
+则该初值问题在 $[a,b]$ 上存在唯一连续可微解 $y=y(x)$。
+
+\entry 用数值计算方法，求出初值问题 (\ref{8-e1}) 在给定的若干节点 $x_i\in[a,b]$ 上之
+数值解 $y_i\approx y(x_i)$。
+
+\entry 一般记 $x_i$ 处的精确解为 $y(x_i)$，数值近似解则记为
+$y_i$。
+
+\section{常用解法的导出}
+\entry 数值微分法：在初值问题 (\ref{8-e1}) 中，用某一数值微分公式
+\[ y'(x_i)=y'_i+R[y] \]
+（其中 $y'_i$ 为近似解，$R[y]$ 为误差项）替换原方程中的 $y'(x_i)$，进而求出一个求解
+$y_i$ 的数值公式。
+
+\entry Euler 法：在 (\ref{8-e1}) 中代入 $x=x_i$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点
+数值微分公式替换 $y'(x_i)$，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_i)h=f(x_i,y(x_i)) \]
+作局部化假设 $y(x_i)=y_i$ （即认为 $x_i$ 处的解已准确算出），并略去关于 $h$ 的高阶项，
+则可最终获得关于 $y_{i+1}$ 的递推关系
+\begin{equation}
+y_{i+1}=y_i+hf(x_i,y_i)
+\end{equation}
+此法称为 Euler 法。
+
+\entry 局部截断误差：根据两点数值微分公式的误差，可知 Euler 法的截断误差为
+\begin{equation}
+R[x_i]=\frac{h^2}2y''(\xi_i).
+\end{equation}
+
+\entry 全局截断误差：在局部化假设处处成立（即每一步所用的前提条件都准确无误）之前提下，
+全局误差可估计为
+\begin{equation}
+R(x_N)=\sum_{i=0}^{N-1}R[x_i]=\frac{b-a}2\cdot hf''(\xi).
+\end{equation}
+
+\entry 后退 Euler 法：在初值问题中代入 $x=x_{i+1}$，并利用 $x_i$ 与 $x_{i+1}$ 间的两
+点数值微分公式替换 $y'(x_i)$，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_{i})h=f(x_{i+1},y(x_{i+1})) \]
+作局部化假设 $y_{i+1}=y(x_{i+1})$并略去关于 $h$ 的高阶项，可获得关系式
+\begin{equation}
+y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
+\end{equation}
+此法称为后退 Euler 法。
+
+\entry 后退 Euler 法中，$y_{i+1}$ 不能显式解出，在 $f$ 为非线性函数时必须采用迭代解法，
+称该法为\key{隐式解法}；Euler 法中可直接由 $x_i$ 解出 $y_{i+1}$，故称为\key{显式解法}。
+
+\entry 后退 Euler 法的局部截断误差为
+\begin{equation}
+R[x_i]=-\frac{h^2}2y''(\xi_i),
+\end{equation}
+与 Euler 法的符号相反。
+
+\entry 中点法：在初值问题中代入 $x=x_{i+1}$，并代入中点处的三点微分中值公式
+(\ref{7-e-mid})，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_{i-1})}{2h}-\frac{h^2}6y'''(\xi_i)=f(x_i,y(x_i)) \]
+作局部化假设 $y_{i+1}=y(x_{i+1})$并略去关于 $h$ 的高阶项，可获得关系式
+\begin{equation}
+y_{i+1}=y_{i-1}+2hf(x_i,y_i)
+\end{equation}
+此法称为中点法。
+
+\entry 中点法中，应用了 $x_{i-1}$ 与 $x_i$ 两个前提条件，为此需在初值条件 $y_0$ 的
+基础上额外补充\key{表头元素} $y_1$，为此称中点法为一个\key{多步法}。与此相对，两种
+Euler 法都是\key{单步法}。
+
+\entry 多步法的表头元素，常用单步法提供。
+
+\entry 一般不采用点数更多的数值微分公式：精度提高优先，且需要补充更多表头元素。
+
+\define 公式的精度：若某一微分方程的数值解法的局部截断误差记为 $R[x_i]$，其满足
+\[ R[x_i]=y(x_{i+1})-y_{i+1}=O(h^{p+1}) \]
+则称该解法（公式、方法）的精度为 $p$ 阶。
+
+\entry 在数值微分法的各方法中：两种 Euler 法的精度均为一阶，中点法为二阶。
+
+\entry 数值积分法：对微分方程初值问题 (\ref{8-e1}) 作积分，得到同解的积分方程问题
+\begin{equation}
+y(x)=y(a)+\int_a^xf(x,y(x))\di x\quad(x\in[a,b])\\
+\end{equation}
+在问题中替换区间 $[a,b]$ 为$[x_i,x_{i+1}]$，再利用数值积分公式替代方程中的积分表达式，
+求得关于 $y_{i+1}$ 的关系式。
+
+\entry 对子区间上积分 $\int_{x_i}^{x_{i+1}}f(x,y(x))\di x$，采用
+\begin{itemize}
+    \item 矩形数值积分公式近似：可分别获得数值解法
+    \begin{gather}
+    y_{i+1}=y_i+hf(x_i,y_i)\\
+    y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
+    \end{gather}
+    此即 Euler 法与倒退 Euler 法，均为一阶公式。
+    \item 梯形公式近似：可获得数值解法
+    \begin{equation}
+    y_{i+1}=y_i+\frac h2[f(x_i,y_i)+f(x_{i+1},y_{i+1})]
+    \end{equation}
+    此公式也称梯形公式，是一个二阶隐式公式，误差估计为
+    \begin{equation}
+    R[x_i]=-\frac{h^3}{12}f'''(\xi_i).
+    \end{equation}
+    \item Simpson 公式：可获得数值解法
+    \begin{equation}
+    y_{i+1}=y_{i-1}+\frac h3[f(x_{i-1},y_{i-1})+4f(x_i,y_i)+f(x_{i+1},y_{i+1})]
+    \end{equation}
+    此公式也称为 Simpson 公式，是一个四阶两步隐式公式，误差估计为
+    \begin{equation}
+    R[x_i]=-\frac{h^5}{90}y^{(5)}(\xi_i).
+    \end{equation}
+\end{itemize}
+
+\entry Adams 显式公式：为求 $y_{i+1}$ 的值，给定之前的 $(x_{i-k},f_{i-k}),(x_{i-k+1},
+f_{i-k+1}),\cdots,(x_i,f_i)$ 共 $(k+1)$ 个点（其中 $f_n=f(x_n,y_n)$），作插值多项式
+\[ f(x,y)=L_k(x)+R_k(x) \]
+以获得 $y'(x)$ 的近似表示，进而在同解积分问题中近似代入
+\[ \int_{x_i}^{x_{i+1}}y'(x)\di x=\int_{x_i}^{x_{i+1}}L_k(x)\di x \]
+从而可以获得一显式的数值解公式
+\begin{gather}
+y_{i+1}=y_i+\frac hA\cdot(b_0f_i+b_1f_{i-1}+\cdots+b_kf_{i-k})\quad(i\geq k)\\
+R[x_i]=B_kh^{k+2}y^{(k+2)}(\xi_i)
+\end{gather}
+称为 Adams 显式公式。式中的系数 $A$、$f_i$、$B_k$ 可据实推导，亦可直接查现成的系数表。
+
+\entry Adams 隐式公式：与 Adams 显式公式推导类似，但在给定的 $k+1$ 数据点中，将最前的
+$(x_{i-k},y_{i-k})$ 替换为待求的 $(x_{i+1},y_{i+1})$，仍作插值多项式，进而可求解得到
+一隐式的数值解公式
+\begin{gather}
+y_{i+1}=y_i+\frac h{A^\ast}\cdot(b^\ast_0f_{i+1}+b^\ast_1f_i+\cdots+b^\ast_kf_{i
+-k+1})\quad(i\geq k)\\
+R[x_i]=B^\ast_kh^{k+2}y^{(k+2)}(\xi_i)
+\end{gather}
+称为 Adams 隐式公式。式中系数可据实推导，也可直接查表。
+
+\section{预测-校正方法与一般性理论}
+\entry 一般而言，显式法易于计算，但隐式法的稳定性较显式法高。
+
+\entry 可以考虑在求解过程中，先用（低阶）显式公式初步求得 $y_{i+1}$ 的近似值，再直接代
+入（高阶）隐式公式中以直接求得更稳定的解。此类方法统称预估-校正法。
+
+\entry 改进 Euler 法：用 Euler 法预估，再用倒退 Euler 法校正：
+\begin{equation}
+\begin{cases}
+p_{i+1}=y_i+h(x_i,y_i)\\
+y_{i+1}=y_i+h(x_{i+1},p_{i+1})
+\end{cases}.
+\end{equation}
+此法仍是一阶解法，但稳定性比 Euler 法更高，也不用像倒退 Euler 法一样隐式求解。
+
+\entry Heun 方法：用 Euler 法预估，用梯形公式校正：
+\begin{equation}
+\begin{cases}
+p_{i+1}=y_i+h(x_i,y_i)\\
+y_{i+1}=y_i+\frac h2[f(x_i,y_i)+f(x_{i+1},p_{i+1})]
+\end{cases}
+\end{equation}
+此法是二阶方法。
+
+\entry 为考虑更一般的情形，可将 Heun 方法改写为
+\begin{equation}
+\begin{cases}
+y_{i+1}=y_i+\frac12K_1+\frac12K_2\\
+K_1=hf(x_i,y_i)\\
+K_2=hf(x_i+h,y_i+K_1)
+\end{cases}
+\end{equation}
+式中，$K_1$ 与 $K_2$ 是利用已有的 $(x_i,y_i)$ 信息依次用 $f$ 推演所得的「补充信息」。
+
+\entry Runge-Kutta 法（RK 法）：将以上所言的「补充信息」一般化，可得如下的解法：
+\begin{equation}
+\begin{cases}
+y_{i+1}&=y_i+\lambda_1K_1+\lambda_2K_2+\cdots+\lambda_mK_m\\
+K_1&=hf(x_i,y_i)\\
+K_2&=hf(x_i+\alpha_2h,y_i+\beta_{21}K_1)\\
+K_3&=hf(x_i+\alpha_3h,y_i+\beta_{31}K_1+\beta_{32}K_2)\\
+\vdots&\\
+K_m&=hf(x_i+\alpha_mh,y_i+\beta_{m1}K_1+\cdots+\beta_{m,m-1}K_{m-1})
+\end{cases}
+\end{equation}
+式中的 $\lambda_k,\alpha_k,\beta_{ij}$等系数待定。为追求 $m$ 阶的精度，即达到
+\begin{equation}
+R[x_i]=o(h^{m+1})
+\end{equation}
+的截断误差，可将 $R[x_i]$ 的表达式在 $x_i$ 处展开，使其低于 $m+1$ 次各项系数为 $0$，
+进而列解方程确定方法。
+
+\entry 实际问题中，方程数往往小于系数个数，此时可自由选取个别系数，以确定其他系数。
+（由此得到的是不同的解法。）
+
+\example 二阶 Runge-Kutta 法。
+
+\example 四阶 Runge-Kutta 法。
+
+\entry Runge-Kutta 是单步显式方法，可直接求解，精度很高。缺点是计算量大。
+
+\entry 可将之前所提的所有解法统一成以下的形式：
+\begin{equation}\label{8-e2}
+y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+K\sum_{j=-1}^K\beta_jf_{i-j}.
+\end{equation}
+当 $K=0$ 时，其表示了一个单步法，否则表示了一个多步法。当 $\beta_{-1}=0$ 时，其表示了
+一个显式公式，否则表示的是隐式公式。含 $y_{i-j}$ 的项决定了方程的步数，而含 $f_{i-j}$
+的项决定了方程的阶数。
+
+\entry 待定系数法：对由 (\ref{8-e2}) 概括的数值解法，可计算其截断误差
+\begin{equation}
+R[x_i]=y(x_{i+1})-y_{i+1}=y(x_{i+1})-\sum_{j=0}^K\alpha_jy(x_{i-j})-h\sum{j=-1}%
+^K\beta_jy'(x_{i-j}).
+\end{equation}
+利用 Taylor 公式将 $R[x_i]$ 中各项在 $x_i$ 处展开，为尽可能地使方法有高的精度，设其各
+低次项的系数为 $0$，由此即可列解系数方程。进而可用广义 Peano 定理或「24K金法」求解截断
+误差的系数。
+
+\example 为确定所有可能的三阶两步方法，根据一般形式 (\ref{8-e2}) 可设出如下形式的解法：
+\[ y_{i+1}=\alpha_0y_i+\alpha_1y_{i-1}+h(\beta_{-1}f_{i+1}+\beta_0f_i+\beta_1
+f_{i-1}) \]
+
+\section{解与解法的分析方法}
 
 \backmatter
 \chapter*{后记}
