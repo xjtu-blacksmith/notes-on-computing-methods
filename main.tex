@@ -37,6 +37,7 @@
 
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\cond}{Cond}
+\DeclareMathOperator{\sgn}{sgn}
 
 \begin{document}
 
@@ -1500,9 +1501,193 @@ $f(x)=1$、$f(x)=x$、$f(x)=x^2$：
 为提高该公式的精度，可再 $h/2$ 为步长，能递推出近似关系
 \[ f''(x)-D_{\frac12h}[f]\approx\frac14(f''(x)-D_h[f])\sothat
 f''(x)\approx\frac13\left[4D_{\frac h2}[f]-D_h[f]\right]. \]
-记 $\overline{D}[f]=4D_{\frac h2}[f]-D_h[f]$，该公式相较于上式更为精确。
+记 $\overline{D}[f]=\frac43D_{\frac h2}[f]-\frac13D_h[f]$，该公式相较于上式更为精确。
 
 \chapter{非线性方程迭代解法}
+\entry 非线性方程：在化简方程为
+\[ f(x)=0 \]
+的形式后，$f(x)$ 中含有 $x$ 的非线性项，如 $x^2$、$\sin x$、$\e^x$ 等。
+线性方程以外的代数、函数方程均是非线性方程。
+
+\entry 迭代解法：泛指在已知结果的基础上，利用统一的迭代格式，从给定初值 $\{x^{(0)}\}$
+出发，使递推数列 $\{x^{(k)}\}$ 逼近方程解的解法。
+
+\entry 迭代解的要素：
+\begin{enumerate}
+    \item 迭代格式的构造；
+    \item 初值 $x^{(0)}$ 的选取；
+    \item 迭代数列 $\{x^{(k)}\}$ 的选取；
+    \item 迭代终止条件与误差估计。
+\end{enumerate}
+
+\section{迭代法简述}
+\entry 二分法：根据零点存在定理，不断二分方程之解所在的区间，用「区间套」逼近方程之解。
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{二分法示意}\label{7-f1}
+\end{figure}
+二分法过程稳定，但运算量大（需反复计算函数值），且收敛较慢
+\footnote{每迭代 $10$ 次，解所在的区间范围缩小到原来的 $1/1024\approx1/1000$，相当于
+提高了 $3$ 位有效数字。也即：需要迭代超过 $3$ 次才能增加解的一位有效数字。}
+，故常用于初步确定初值 $x^{(0)}$ 的范围（而不用于最终确定解）。
+
+\entry 简单迭代法：构造非线性方程 $f(x)=0$ 的同解变形 $x=\vphi(x)$，例如
+\[ x = x - f(x),\quad x=x-kf(x) \]
+等，再构造迭代格式为
+\begin{equation}
+x_{k+1}=\vphi(x_k).
+\end{equation}
+若 $\{x_k\}$ 收敛到 $x^\ast$，$\vphi(x)$ 也在 $x^\ast$ 处连续，则对以上方程左右取极
+限即得 $x^\ast=\vphi(x^\ast)$，说明该迭代法可以逼近方程之解。
+
+\entry Newton 法：设非线性方程 $f(x)=0$ 之解为 $x^\ast$，即 $x^\ast = 0$，将其
+在 $x_k$ 处展开可得
+\[ f(x_k)+f'(x_k)(x^\ast-x_k)+\cdots = 0 \]
+舍去二阶项，有 $f(x_k)+f'(x_k)(x^\ast-x_k)\approx0$，进而可变换得到
+\[x^\ast\approx x_k-\frac{f(x_k)}{f'(x_k)}\]
+改写其为一个迭代格式即得
+\begin{equation}\label{7-e1}
+x_{k+1} = x_k-\frac{f(x_k)}{f'(x_k)}
+\end{equation}
+可验证该方程确为 $f(x)=0$ 的同解变形，故该迭代格式收敛时必能得到方程之解。
+
+\entry 根据 Newton 法的几何意义，其又被称为\key{切线法}。
+
+\entry 改进 Newton 法：在上面的展开式中，若进一步保留到二次项，可解得：
+\[ x^\ast\approx x_k+\frac{-f'(x_k)\pm\sqrt{f'(x_k)^2-2f(x_k)f''(x_k)}}{f''(x_k)} \]
+分母中的正负号不定，故可改写出两种迭代格式：
+\begin{gather}
+\tilde{x}_{k+1}=x_k-\frac{f'(x_k)+\sgn(f'(x_k))\sqrt{f'(x_k)^2-2f(x_k)f''(x_k)}
+}{f''(x_k)},\\
+\overline{x}_{k+1}=x_k-\frac{2f(x_k)}{f'(x_k)+\sgn(f'(x_k))\sqrt{f'(x_k)^2-2f(x_k)
+f''(x_k)}}.
+\end{gather}
+选取 $\tilde{x}_{k+1}$ 与 $\overline{x}_{k+1}$ 中距离 $x_k$ 更近者，作为下一步迭代
+时的 $x_{k+1}$ 即可。
+
+\entry 简化 Newton 法：若 $f'(x)$ 难以计算，可将迭代格式 (\ref{7-e1}) 改写为
+\begin{equation}
+x_{k+1}=x_k-\frac{f(x_k)}{f'(x_0)}
+\end{equation}
+即始终采用初值点处导数近似表示 $f'(x_k)$。
+
+\entry 弦割法：将迭代格式 (\ref{7-e1}) 中的导数 $f'(x_k)$ 用两点数值微分公式代替，可
+得到：
+\begin{itemize}
+    \item 若用 $x_k$ 与 $x_{k-1}$ 作为迭代格式中的两点，则得
+    \begin{equation}
+    x_{k+1} = x_k-\frac{f(x_k)}{\frac{f(x_k)-f(x_{k-1})}{x_k-x_{k-1}}} =
+    x_k-\frac{f(x_k)(x_k-x_{k-1})}{f(x_k)-f(x_{k-1})}
+    \end{equation}
+    此即\key{两点弦割法}。
+    \item 若用 $x_k$ 与 $x_0$ 作为迭代格式中的两点，则得
+    \begin{equation}
+    x_{k+1} = x_k-\frac{f(x_k)}{\frac{f(x_k)-f(x_0)}{x_k-x_0}} =
+    x_k-\frac{f(x_k)(x_k-x_0)}{f(x_k)-f(x_0)}
+    \end{equation}
+    此即\key{单点弦割法}。
+\end{itemize}
+
+\entry 弦割法需要给定两步初值 $x_0$ 与 $x_1$ 才能进行，该初值通常由其他方法获得。
+
+\entry 切线法与弦割法的几何意义：
+\begin{figure}[htbp]
+\small\centering
+\includegraphics[width=\defwidth]{default.png}
+\caption{迭代解法的几何意义}\label{7-f2}
+\end{figure}
+
+\section{迭代法的收敛理论}
+\entry 迭代法的两种收敛性：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，取定迭
+代格式 $x_{k+1}=\vphi(x_k)$ 与初值 $x_0$。若
+\begin{itemize}
+    \item 存在 $x^\ast$ 的一个小邻域，使得只要 $x_0$ 在此邻域中就能保证 $\{x_k\}$ 收
+    敛\footnote{根据迭代格式的意义，当 $\{x_k\}$ 收敛时其必收敛于 $x^\ast$。}
+    ，则称迭代格式局部收敛；
+    \item 对任意的 $x_0\in[a,b]$，都有 $\{x_k\}$ 收敛，则称迭代格式全局收敛。
+\end{itemize}
+
+\trm 全局收敛定理（压缩映射原理）：设 $\vphi(x)\in C[a,b]$，且满足：
+\begin{enumerate}
+    \item $x\in[a,b]$ 时，$\vphi(x)\in[a,b]$；
+    \item 存在 $L\in[0,1)$，使得对任意的 $x\in[a,b]$都有
+    \begin{equation}
+    |\vphi'(x)|\leq L<1.
+    \end{equation}
+\end{enumerate}
+则由 $\vphi(x)$ 所构造的 $x_{k+1}=\vphi(x_k)$ 将是一个在 $[a,b]$ 上全局收敛的迭代
+数列，且其满足以下误差估计式：
+\begin{gather}
+|x^\ast-x_k|\leq\frac{L^k}{1-L}|x_1-x_0|,\quad\text{（先验估计）}\\
+|x^\ast-x_k|\leq\frac1{1-L}|x_{k+1}-x_k|.\quad\text{（事后估计）}
+\end{gather}
+
+\entry 以上定理的结果，仅是全局收敛的充分条件，而非必要条件。
+
+\trm 局部收敛定理：设方程 $f(x)=0$ 有解 $x^\ast$，构造了一个迭代格式
+$x_{k+1}=\vphi(x_k)$。若存在 $x^\ast$ 的某邻域 $[x^\ast-\delta,x^\ast+\delta]$ 使
+\[ |\vphi'(x)|\leq L<1 \]
+则迭代格式 $x_{k+1}=\vphi(x_k)$ 在该邻域上局部收敛。
+
+\trm Newton 迭代法的局部收敛定理：设非线性方程 $f(x)=0$ 有解 $x^\ast$，在 $x^\ast$
+附近 $f(x)$ 二阶连续可微，$f'(x^\ast)\neq0$，则 Newton 迭代格式 (\ref{7-e1}) 在 
+$x^\ast$ 的充分小邻域内局部收敛。（或：当初值 $x_0$ 充分靠近 $x^\ast$ 时，Newton
+迭代法收敛。）
+
+\trm Newton 迭代法的全局收敛定理：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，
+且 $f(x)$ 在 $[a,b]$ 上二阶连续可微。则 Newton 迭代格式 (\ref{7-e1}) 在 $[a,b]$ 上
+全局收敛的充分条件是：
+\begin{enumerate}
+    \item $f(a)f(b)<0$；
+    \item 对任意的$x\in[a,b]$，$f'(x)\neq0$；
+    \item $f''(x)$ 在 $[a,b]$ 上不变号；
+    \item 初值 $x_0$ 满足 $f(x_0)f''(x_0)>0$。
+\end{enumerate}
+
+\trm 弦割法局部收敛的条件与 Newton 法类似，只要 $x_0,x_1$ 两步初值充分靠近 $x^\ast$。
+
+\trm 弦割法全局收敛定理：在 Newton 法的所有条件之基础上，还应附加满足 $f(x_1)f''(x_1)
+>0$。
+
+\define 收敛阶：设 $\{x_k\}$ 按某种迭代格式收敛于方程的解 $x^\ast$，若存在常数 $p\geq1$
+与 $c>0$ 使条件
+\begin{equation}
+\lim_{k\to\infty}\frac{|x^\ast-x_{k+1}|}{|x^\ast-x_k|^p}=c\neq0
+\end{equation}
+成立，则称 $\{x_k\}$ 以 $p$ 阶收敛到方程之解。称 $c$ 为渐进误差常数。
+
+\entry $p=1$时，称为线性收敛，否则称为超线性收敛。
+
+\trm （整数）收敛阶定理：设 $\vphi(x)$ 在不动点上 $x^\ast$ 的邻域内有连续的 $p$ 阶
+导数，则由 $x_{n+1}=\vphi(x_k)$ 生成的 $\{x_k\}$ 以 $p$ 阶收敛的充要条件是：
+\[\vphi'(x^\ast)=\vphi''(x^\ast)=\cdots=\vphi^{(p-1)}(x^\ast)=0,\,\vphi^{(p)}
+(x^\ast)\neq0.\]
+
+\entry 常见迭代格式的收敛阶：
+\begin{itemize}
+    \item 简单迭代法：当 $0<|\vphi'(x^\ast)|<1$时线性收敛。
+    \item Newton 法：当 $f'(x)\neq0$时二阶收敛。
+    \item 两点弦割法：满足收敛条件时具有 $p=\frac{1+\sqrt5}2\approx1.618$ 的收敛阶，
+    超线性收敛。
+    \item 单点弦割法：满足收敛条件时线性收敛。 
+\end{itemize}
+
+\entry 加速收敛方法：促使原来收敛较慢的算法更快收敛，或使原来发散的迭代格式变为收敛。
+
+\entry 松弛因子加速法：对迭代格式 $x=\vphi(x)$，在方程左右减去一带松弛因子 $\omega<1$
+的项 $\omega x$，得
+\[ x-\omega x=\vphi(x)-\omega x \]
+进而可得新的收敛格式
+\begin{equation}
+x=\frac{\vphi(x)-\omega x}{1-\omega}=\psi(x)
+\end{equation}
+为检查该迭代格式的收敛性，可以对其求导得
+\[ \psi'(x)=\frac1{1-\omega}(\vphi'(x)-\omega) \]
+若代入 $\omega=\vphi'(x^\ast)$，则在 $x^\ast$ 附近时 $|\psi(x^\ast)|$ 相当小，由此即
+可保证 $|\psi'(x)|\leq L<1$ 的条件成立（将发散的迭代格式改进为收敛的），并提高收敛速率。
+
+\entry Aitken 加速法。
 
 \chapter{常微分方程数值解}
 
