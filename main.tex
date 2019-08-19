@@ -39,6 +39,8 @@
 \DeclareMathOperator{\cond}{Cond}
 \DeclareMathOperator{\sgn}{sgn}
 
+% 建议加入一些算法——长期计划。
+
 \begin{document}
 
 \maketitle
@@ -1826,6 +1828,8 @@ R[x_i]=B_kh^{k+2}y^{(k+2)}(\xi_i)
 \end{gather}
 称为 Adams 显式公式。式中的系数 $A$、$f_i$、$B_k$ 可据实推导，亦可直接查现成的系数表。
 
+% 系数表呢？
+
 \entry Adams 隐式公式：与 Adams 显式公式推导类似，但在给定的 $k+1$ 数据点中，将最前的
 $(x_{i-k},y_{i-k})$ 替换为待求的 $(x_{i+1},y_{i+1})$，仍作插值多项式，进而可求解得到
 一隐式的数值解公式
@@ -1838,6 +1842,8 @@ R[x_i]=B^\ast_kh^{k+2}y^{(k+2)}(\xi_i)
 
 \section{预测-校正方法与一般性理论}
 \entry 一般而言，显式法易于计算，但隐式法的稳定性较显式法高。
+
+% 此处应当举例绘图表明稳定性的差异。
 
 \entry 可以考虑在求解过程中，先用（低阶）显式公式初步求得 $y_{i+1}$ 的近似值，再直接代
 入（高阶）隐式公式中以直接求得更稳定的解。此类方法统称预估-校正法。
@@ -1899,7 +1905,7 @@ R[x_i]=o(h^{m+1})
 
 \entry 可将之前所提的所有解法统一成以下的形式：
 \begin{equation}\label{8-e2}
-y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+K\sum_{j=-1}^K\beta_jf_{i-j}.
+y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+h\sum_{j=-1}^K\beta_jf_{i-j}.
 \end{equation}
 当 $K=0$ 时，其表示了一个单步法，否则表示了一个多步法。当 $\beta_{-1}=0$ 时，其表示了
 一个显式公式，否则表示的是隐式公式。含 $y_{i-j}$ 的项决定了方程的步数，而含 $f_{i-j}$
