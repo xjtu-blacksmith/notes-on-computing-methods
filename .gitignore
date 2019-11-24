@@ -246,3 +246,4 @@ TSWLatexianTemp*
 
 # generated if using elsarticle.cls
 *.spl
+test.*

@@ -1,30 +1,34 @@
 \documentclass[opensource,b5paper,sourcefont]{qyxf-book}
 \usepackage{makeidx}
 \usepackage{etoolbox}
-\makeindex
+\usepackage{subcaption}
 
-\title{计算方法笔记}
+\usepackage[noautomatic]{imakeidx}
+\makeindex[title=索引,intoc,columns=2,columnsep=5pt,options={-s sy.ist}]
+
+\title{计算方法撷英}
 \subtitle{Notes on Computing Methods}
-\author{王天浩，吴思源，尤佳睿}
+\author{王天浩，尤佳睿}
 \typo{xjtu-blacksmith}
 \date{2019 年 6 月 6 日}
-\sourcepage{\url{https://github.com/qyxf/Tutorials}}
+\sourcepage{\url{https://github.com/qyxf/notes-on-computing-methods}}
+\version{1.0}
 
 \newcounter{entry}
 \counterwithin*{entry}{chapter}
 
-\newcommand{\example}{\stepcounter{entry}\noindent$\text{\ding{48}}{}_{\makebox%
+\newcommand{\example}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{48}}{}_{\makebox%
 [10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
-\newcommand{\entry}{\stepcounter{entry}\noindent$\text{\ding{226}}_{\makebox%
+\newcommand{\entry}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{226}}_{\makebox%
 [10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
 \newcommand{\defwidth}{.2\textwidth}
 \newcommand{\tl}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \newcommand{\add}[1]{\textsf{[#1]}}
 \newcommand{\e}{\mathrm{e}}
 \newcommand{\di}{\mathrm{d}}
-\newcommand{\del}{\mathrm{}}
+\newcommand{\del}{\partial}
 \newcommand{\sothat}{\ \Rightarrow\ }
-\newcommand{\trm}{\stepcounter{entry}\noindent$\text{\ding{43}}_{\makebox%
+\newcommand{\trm}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{43}}_{\makebox%
 [10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
 \newcommand{\define}{\trm}
 \newcommand{\key}[1]{\textbf{#1}\index{#1}}
@@ -33,7 +37,9 @@
 \newcommand{\vepsilon}{\varepsilon}
 \newcommand{\dsum}{\sum\limits}
 
-\renewcommand{\emph}[1]{\underline{#1}}
+\newenvironment{spmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+
+\renewcommand{\emph}[1]{\uline{#1}}
 
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\cond}{Cond}
@@ -46,24 +52,39 @@
 \maketitle
 
 \frontmatter
-\chapter*{前言}
-计算方法是本校钱学森班、少年班等试验班的同学必修的一门数学基础课程，其内容包括解决一些计算问题（如解线性方程组、插值与逼近、数值微积分等）的常用算法，以及针对这些算法之误差与稳定性的相关数学理论。相较于其他的数学课程，计算方法课程具有内容丰富、实用性强等特点，但也兼有一般数学课程内容深、考点多的性质。可以说，计算方法课程是工科学生在走向专业课程之前所要翻越的最后一座数学理论「大山」。
+\chapter{前言}
+计算方法是本校钱学森班、少年班等拔尖班的同学必修的一门数学基础课程，其内容包括解决一些计算问题（如解线性方程组、插值与逼近、数值微积分等）的常用算法，及针对这些算法之误差与稳定性的相关数学理论。相较于其他的数学课程，计算方法课程具有内容丰富、实用性强等特点，但也兼有一般数学课程内容深、考点多的性质。可以说，计算方法课程是工科学生在走向专业课程之前所要翻越的最后一座数学理论「大山」。
 
-基于以上的特点，在计算方法课程的学习与复习过程中，便非常需要一本\textbf{详略适中}、\textbf{重点突出}的课程笔记，以资参考。2014级少年班的王天浩同学，于此方面做了相当好的工作，在学习本课程期间整理了十分详尽的课程笔记，基本上达到了以上所提到的要求。……
-
-为方便之后的同学复习计算方法课程，经与王天浩学长协商，我自2019年6月6日开始将原有的纸质扫描笔记以\LaTeX 整理为电子版，补足了语言上的一些省略、缺失，并增写了许多注记、说明。……
+2014级少年班的王天浩同学，于此方面做了相当好的工作，在学习本课程期间尽心尽力整理了十分详尽的课程笔记，基本上达到了以上所提到的要求。尽管该份笔记是纸质版扫描而成，但一经发布便广泛流传开来，成为当届及本届学生复习时重要的参考资料。为方便之后的同学复习计算方法课程，经与王天浩学长协商，我自2019年6月6日开始将原有的纸质扫描笔记以\LaTeX 整理为电子版，补足了语言上的一些省略、缺失，增写了许多注记、说明、插图，并扩充了一些新的条目。新的电子版本定名为《计算方法撷英》，以示此份文档与「计算方法」课程之关系。
 
 \subsection*{正文格式说明}
 电子版笔记基本上遵循了原有纸质笔记的框架，但相较与原来的样式更为清晰、简明。这份笔记的正文中包含了这样几类内容：
-\begin{description}
-    \item[零碎的知识点] 用无序号列表的形式列出。
-    \item[例题] 以加粗的「\textbf{例}」字引导，通常是对其正上方那一个或几个知识点的具体呈现与演示。
-    \item[注记] 用脚注的方式给出，通常是对正文内容的进一步阐释。大部分注记标明了「——编者注」的字样，这些都是编者所加上的。
-    % \item[正文补正] 用方括号包围的黑体字呈现，这些内容是编者在原有笔记之基础上所做的补充与删改。凡未这样改动的部分，则都保持了原来的模样。
+\begin{description}\tl
+    \item[条目] 用 \ding{226} 符号引导的内容，附有编号，为一般性质的知识点、说明。
+    \item[例题] 用 \ding{48} 符号引导的内容，附有编号，通常是对其正上方那一个或几个知识点的具体呈现与演示。一些给出详细过程，一些仅给出答案（供读者自行练习时参考）。
+    \item[定理/定义] 用 \ding{43} 符号引导的内容，附有编号，表示一些比较重要的定理和概念定义。
+    \item[关键词] 用\textbf{粗体}标注的内容，表示比较关键的概念。可在本笔记后的「索引」栏目查找本笔记中所有的关键词。 
+    \item[强调] 用\emph{下划线}标注的内容，表示强调，以与其他内容区分开来。 
+    \item[注记] 用脚注的方式给出，通常是对正文内容的进一步阐释，或对正文中略去之内容的说明。
 \end{description}
 
+\subsection*{撰写说明}
+此份笔记自2019.6.6开始撰写，期间编者尚在美国交流，只能利用课余时间零碎增补；至9月回国时，正文内容几近完成。在编者缓考完成后，对内容的润色工作暂时搁置，直至11时才重新启动，并最终完成。在编者整理稿件的过程中，除以王天浩同学的纸质笔记为底稿之外，也在获得许可的情况下参考了 2017 级钱班吴思源同学的计算方法笔记，在此向二位深表感谢！
+
+在此之外，编者还要向授课的马军老师，及编撰本校计算方法相关教材的李乃成、邓建中、梅立泉等诸位老师表示敬意。作为一门与科技前沿紧密相关的数学基础课，授课者们担负的责任异常重大，而他们的表现则异常令人钦佩！
+
 \subsection*{帮助我们改进这份笔记}
-一本好的教科书，来自于相关教师历经数代、数十年的逐次再版改进；一份好的笔记，同样也需要长期的维护、改进才能够最终创造出来。……
+一本好的教科书，来自于相关教师历经数代、数十年的逐次再版改进；一份好的笔记，同样也需要长期的维护、改进才能够最终创造出来。本份笔记还未经这样久的磨砺，在内容、布局、细节等方面都相当欠缺；因此，恳请诸位读者在使用本份笔记时，留意以下几点：
+
+\begin{itemize}\tl
+    \item 检查正文中存在的笔误、错别字、公式错误等；
+    \item 考察此份笔记是否缺少课程相关的知识点、章节内容；
+    \item 评价本笔记中是否有详略不得体、例题过少、描述不明晰的内容。
+\end{itemize}
+
+以上三点，「境界」逐次提高，却都能够有效提高这份笔记的可用程度。若读者在阅读过程中发现以上三点问题，请将问题整理好，寄送到编者的电子邮箱：\url{yjr134@163.com}；如您常年使用 GitHub，也可在本份笔记的开源仓库页面 \url{https://github.com/qyxf/notes-on-computing-methods} 上发布 issue 或 pull request，提出改进建议。
+
+非常感谢各位读者的贡献。祝愿大家在考试中取得令人满意的成绩，并能够在实际问题中更为熟练的应用各类数值计算方法。
 
 \begin{flushright}
 能动少C71 尤佳睿
@@ -86,7 +107,7 @@
 \entry 相对误差较小时，有近似计算式\footnote{在估计误差时，真值$x$往往难以确定，但绝对误差$|\Delta x|$或绝对误差限$\varepsilon$往往能够确定下来。}
 ：$|\delta x|\approx\frac{|x-\tilde{x}|}{\tilde{x}}=\frac{\Delta x}{\tilde{x}}\leq\frac{|\varepsilon|}{\tilde{x}}$
 
-\entry 若$|\Delta x|=|x-\tilde{x}|\leq0.5\times10^{-n}$，则称$x$的近似值$\tilde{x}$\emph{准确到第$n$位小数}。
+\entry 若$|\Delta x|=|x-\tilde{x}|\leq0.5\times10^{-n}$，则称$x$的近似值$\tilde{x}$ \emph{准确到第 $n$ 位小数}。
 
 \example 设$x=0.31682$，则$\tilde{x}_1=0.3$精确到$1$位有效数字，$\tilde{x}_2=0.32$精确到$2$位，$\tilde{x}_3=0.317$精确到$3$位，$\tilde{x}_4=0.3168$精确到$4$位。若取$\tilde{x}_5=0.3169$为$x$的近似值，则其仅精确到$3$位小数。
 
@@ -95,12 +116,8 @@
 
 \entry \key{浮点运算量}：记\emph{一次加法和一次乘法}（如$a+b\times c$）所需的时间为一个\key{时间单位}，记为flop。
 
-\example 设$\mathbf{A}_1$为一$10\times20$的矩阵，$\mathbf{A}_2$为一$20\times50$的矩阵，欲计算$\mathbf{A}_1\cdot\mathbf{A}_2$，则运算量为$10\times20\times50=10000$ flop，如图\ref{1-1}所示。
-\begin{figure}[htbp]
-\small\centering
-\includegraphics[width=\defwidth]{default.png}
-\caption{矩阵乘法运算量示意图}\label{1-1}
-\end{figure}
+\example 设$\mathbf{A}_1$为一$10\times20$的矩阵，$\mathbf{A}_2$为一$20\times50$的矩阵，欲计算$\mathbf{A}_1\cdot\mathbf{A}_2$，则运算量为$10\times20\times50=10000$ flop
+\footnote{$\mathbf{A}_1$的行乘以$\mathbf{A}_2$的列，每次的浮点运算量为 $20$ flop，总计 $10\times50$ 种组合。}。
 
 \entry \key{浮点数集}：在10进制中，浮点数$\tilde{x}$（或一实数$x$的近似$t$位有效数字的浮点数$\tilde{x}$）可表示如下：
 \[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{10}+\frac{x_2}{10^2}+\frac{x_3}{10^3}+\cdots+\frac{x_t}{10^t}\right\}\times10^l\ (\tilde{x}=0.x_1x_2x_3\cdots x_t\times10^l)\]
@@ -113,10 +130,35 @@
 F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right)\times\beta^l:L\leq l\leq U\right\}
 \end{equation}
 
-\example \textsf{C++}里的\verb|float|：4字节内存，32个二进制bit，如图\ref{1-2}所示。可以将这一浮点数集记为$F(2,23,-128,127)$。
+\example \textsf{C++}里的 \verb|float|：4 字节、32 位，如图 \ref{1-2} 所示。可以将这一浮点数集记为$F(2,23,-128,127)$。
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\begin{tikzpicture}[scale=.8]
+  \draw (0, 0) rectangle (1, 1);
+  \draw (1, 0) rectangle (2, 1);
+  \draw (2, 0) rectangle (3, 1);
+  \draw[dashed] (3, 0) rectangle (4, 1);
+  \draw (4, 0) rectangle (5, 1);
+  \draw (5, 0) rectangle (6, 1);
+  \draw[dashed] (6, 0) rectangle (7, 1);
+  \draw (7, 0) rectangle (8, 1);
+  \draw (8, 0) rectangle (9, 1);
+  \node at (0.5, 0.5) {$0$}; \node at (0.5, 1.3) {$31$};
+  \node at (1.5, 0.5) {$0$}; \node at (1.5, 1.3) {$30$};
+  \node at (2.5, 0.5) {$1$}; \node at (2.5, 1.3) {$29$};
+  \node at (3.5, 0.5) {\ldots};
+  \node at (4.5, 0.5) {$0$}; \node at (4.5, 1.3) {$23$};
+  \node at (5.5, 0.5) {$0$}; \node at (5.5, 1.3) {$22$};
+  \node at (6.5, 0.5) {\ldots};
+  \node at (7.5, 0.5) {$1$}; \node at (7.5, 1.3) {$1$};
+  \node at (8.5, 0.5) {$1$}; \node at (8.5, 1.3) {$0$};
+  \node at (0.5, -0.3) {$\downarrow$};
+  \node at (0.5, -0.8) {底数符号};
+  \draw (3, -0.3) node [xscale=3.5, rotate=90] {$\Biggl\{$};
+  \node at (3, -0.8) {指数位（含符号）};
+  \draw (7, -0.3) node [xscale=3.5, rotate=90] {$\Biggl\{$};
+  \node at (7, -0.8) {底数位}; 
+\end{tikzpicture}
 \caption{\textsf{C++}中\texttt{float}类型变量的储存原理}\label{1-2}
 \end{figure}
 
@@ -133,11 +175,11 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \begin{enumerate}\tl
     \item $l\notin[L,U]$：\key{上溢}（$l\geq L$）会出错，\key{下溢}（$l\leq U$）变为$0$。
     \item 尾数多于$t$位：自动进行舍入处理，造成误差
-    \item 有效数字丢失（\emph{「大数吃小数」}）
+    \item 有效数字丢失：「\emph{大数吃小数}」
 \end{enumerate}
 
 
-\example 设计算时保留4位有效数字，则$1234+0.3678=1234.3678=1234.3678\approx1234$，在此发生了「大数吃小数」的现象。
+\example 设计算时保留4位有效数字，则$1234+0.3678=1234.3678\approx1234$，在此发生了「大数吃小数」的现象。
 
 \entry 设计数值计算的算法时，应结合浮点数具有的特性，避免上面所提到的各类计算错误。为此，提出以下几条\emph{浮点运算原则}：
 \begin{enumerate}\tl
@@ -147,7 +189,6 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
     \item 简化运算步骤，减少运算次数
     \footnote{由此避免各类误差的逐次累计。——编者注}。
 \end{enumerate}
-
 若原有的计算公式不符合以上的这些原则，则可以通过对原式的等价变换或近似处理，使之符合上面的原则。
 
 \example 设$|x|\ll1$，则可改写数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
@@ -205,14 +246,86 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \entry 整体思路：
 \begin{enumerate}\tl
     \item 先推得$\mathbf{Ax}=\mathbf{b}\sothat\mathbf{x}=\mathbf{A}^{-1}\mathbf{b}$，再求$\mathbf{A}^{-1}$（初等行变换法、伴随矩阵法、Gauss-Jordan消去法）
-    \item Crammer法则：$\mathbf{Ax}=\mathbf{b}\sothat x_i=\frac{|\mathbf{A}_i|}{|\mathbf{A}|}$，浮点运算数$N=(n^2-1)\cdot n!+n$ flop（很大）
+    \item Crammer法则：$\mathbf{Ax}=\mathbf{b}\sothat x_i=\frac{|\mathbf{A}_i|}{|\mathbf{A}|}$，浮点运算量 $N=(n^2-1)\cdot n!+n$ flop（很大）
 \end{enumerate}
 
-\entry Gauss消去法：降维（$n\to n-1\to\cdots\to1$）
+\entry \key{Gauss消去法}：降维（$n\to (n-1)\to\cdots\to1$）
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
-\caption{Gauss消去法步骤示意图}\label{2-f1}
+\begin{align*}\scriptstyle
+\phantom{\displaystyle\ \Rightarrow\ }\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     &      & \ast & \ast & \ast \\
+     &      &      & \ast & \ast \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}\\[0.5ex]\scriptstyle
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast &      \\
+     & \ast & \ast & \ast &      \\
+     &      & \ast & \ast &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast &      &      \\
+     & \ast & \ast &      &      \\
+     &      & \ast &      &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast &      &      &      &      \\
+     & \ast &      &      &      \\
+     &      & \ast &      &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+\end{align*}
+\caption{Gauss消去法步骤示意图（上排降维消元，下排回代求解）}\label{2-f1}
 \end{figure}
 \begin{itemize}\tl
 \item 消去运算量：$N_1=\sum\limits_{k=1}^{n-1}(n-k)(n-k+2)=\frac{n^3}3+n^2-\frac{5n}6$
@@ -225,15 +338,15 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
     \item $a_{kk}^{(k-1)}=0$，无法进行
     \item $|a_{kk}^{(k-1)}|\ll|a_{ik}^{(k-1)}|\ (i=k+1,k+2,\cdots,n)$，误差极大（大/小=大，误差被放大）
 \end{enumerate}
-对 Problem 1，只要满足：(1)$\mathbf{A}$是方阵；(2)$|\mathbf{A}|\neq0$，则可通过换行达到解决问题。
+对问题 1，只要满足：(1)$\mathbf{A}$是方阵；(2)$|\mathbf{A}|\neq0$，即可通过换行达到解决问题。
+对问题 2，则不易解决\footnote{参见下一节中的「列主元Gauss消元法」。}。
 
-\trm $a_{kk}^{(k-1)}$不为$0$的充要条件是$\mathbf{A}$的$1$阶与$k$阶主子式均不为$0$，即
+\trm $a_{kk}^{(k-1)}$不为$0$的\emph{充要条件}是：$\mathbf{A}$的$1$阶与$k$阶主子式均不为$0$，即
 \[a_{kk}^{(k-1)}\neq0\ \Leftrightarrow\ D_1=a_{11}\neq0,\ D_k=\left|\begin{array}{cccc}a_{11}&a_{12}&\cdots&a_{1k}\\a_{21}&a_{22}&\cdots&a_{2k}\\\vdots&\vdots&\ddots&\vdots\\a_{k1}&a_{k2}&\cdots&a_{kk}\end{array}\right|\]
-对 Problem 2，则不易解决\footnote{可参见下一节中的「列主元Gauss消元法」}。
 
-\define 设矩阵$\mathbf{A}$满足$\sum\limits_{j=1,j\neq i}^n|a_{ij}|<|a_{ii}|$~，则称$\mathbf{A}$是严格对角占优矩阵。
+\define 设矩阵$\mathbf{A}$满足$\sum\limits_{j=1,j\neq i}^n|a_{ij}|<|a_{ii}|$~，则称$\mathbf{A}$是\key{严格对角占优矩阵}。
 
-\entry Gauss消去法顺利进行条件：
+\entry Gauss消去法\emph{顺利进行条件}（满足其一即可）：
 \begin{enumerate}\tl
     \item $\mathbf{A}$各阶顺序主子式不等于$0$。
     \item $\mathbf{A}$是对称正定阵。
@@ -246,13 +359,15 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 \[\begin{pmatrix}a_{11}^{(k-1)}&a_{12}^{(k-1)}&\cdots&a_{1k}^{(k-1)}&\cdots&a_{1n}^{(k-1)}\\0&a_{22}^{(k-1)}&\cdots&a_{2k}^{(k-1)}&\cdots&a_{2n}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{kk}^{(k-1)}&\cdots&a_{kn}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{nk}^{(k-1)}&\cdots&a_{nn}^{(k-1)}\end{pmatrix}\]
 选取$\max(|a_{ik}^{(k-1)}|)\ i=k,k+1,\cdots,n$的一行与第$k$行互换，继续消去（算法较稳定）
 
-\entry Gauss消去法矩阵形式：
+\entry \emph{Gauss消去法矩阵形式}：将消去前后过程用矩阵表示，可以有
 \[\mathbf{A}=\mathbf{A}^{(0)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\end{pmatrix}\sothat\mathbf{A}^{(1)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\end{pmatrix}\]
-则$\mathbf{A}^{(1)}=\mathbf{L}_1\mathbf{A}^{(0)}$，其中$L_1=\begin{pmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{pmatrix}$。按此方式依次变换得
+则存在唯一的单位下三角阵
+\footnote{即线性代数中用于表征初等行变换的\emph{初等矩阵}。}
+$\mathbf{L}_1$ 使 $\mathbf{A}^{(1)}=\mathbf{L}_1\mathbf{A}^{(0)}$，其中$\mathbf{L}_1=\begin{spmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{spmatrix}$。按此方式依次变换得一系列 $\mathbf{L}_i$：
 \[\mathbf{A}^{(n)}=\mathbf{L}_n\mathbf{A}^{(n-1)}=\cdots=\mathbf{L}_n\mathbf{L}_{n-1}\cdots\mathbf{L}_2\mathbf{L}_1\mathbf{A}^{(0)}\]
 反推得到
 \[\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{A}^{(n-1)}\]
-记$\mathbf{U}=\mathbf{A}^{(n-1)}$，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$。
+记 $\mathbf{U}=\mathbf{A}^{(n-1)}=\begin{spmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\0&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\mu_{nn}\end{spmatrix}$ 为一上三角阵，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$。
 
 \trm 设$\mathbf{A}$为$n$阶矩阵，$D_k\neq0$，则$\mathbf{A}$可唯一分解为一单位下三角阵$\mathbf{L}$与一上三角阵$\mathbf{U}$之积
 \begin{equation}\label{2-e1}
@@ -262,7 +377,7 @@ F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\c
 
 % 此处缺少 L 与 U 的元素表示。
 
-\entry LU分解的算法实现：根据式(\ref{2-e1})可知，$\mathbf{A}$中的元素$a_{ij}$满足
+\entry LU分解的算法实现：设 $\mathbf{L}=\begin{spmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{spmatrix}$，$\mathbf{U}=\mathbf{A}^{(n-1)}=\begin{spmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\0&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\mu_{nn}\end{spmatrix}$，根据式(\ref{2-e1})可知：$\mathbf{A}$中的元素$a_{ij}$满足
 \begin{align*}
 a_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_{2j}\ \cdots\ \mu_{jj}\ 0\ \cdots\ 0)^{\mathrm{T}}\\
 &=\begin{cases}\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}+\mu_{ij}&,j\geq i,\ i=1,2,\cdots,n\\\sum\limits_{k=1}^jl_{ik}\mu_{kj}&,j<i,\ i=1,2,\cdots,n\end{cases}
@@ -271,105 +386,145 @@ a_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_
 \begin{align}
 &\mu_{1j}=a_{1j}&j=1,2,\cdots,n\label{2-e2}\\
 &l_{i1}=a_{i1}/\mu_{11}&i=2,3,\cdots,n\label{2-e3}\\
-&\mu_{ij}=a_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e4}\\
-&l_{ki}=(a_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti})/\mu_{ii}&k=i+1,\cdots,n\ i=2,3,\cdots,n\label{2-e5}
+&\mu_{ij}=a_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n;\ i=2,3,\cdots,n\label{2-e4}\\
+&l_{ki}=\frac1{\mu_{ii}}\left(a_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti}\right)&k=i+1,\cdots,n;\ i=2,3,\cdots,n\label{2-e5}
 \end{align}
 
-\entry 实用算法：
+\entry \key{LU分解算法}：
 \begin{enumerate}\tl
     \item 照抄\footnote{即利用式(\ref{2-e2})。}系数矩阵$\mathbf{A}$第$1$行；
-    \item 用式(\ref{2-e3})写出第$1$列；
-    \item 用式(\ref{2-e4})写出第$2$行；
-    \item 用式(\ref{2-e5})写出第$2$列；
-    \item 重复应用式(\ref{2-e4})、式(\ref{2-e5})，生成行与列。
-    \item 分成$\mathbf{L}$、$\mathbf{U}$两矩阵。
+    \item 用式(\ref{2-e3})写出第$1$列（$\mathbf{A}$对应位置元素除以 $\mu_{ii}$ 后再照抄）；
+    \item 用式(\ref{2-e4})写出第$2$行（$\mathbf{A}$对应位置元素减去一系列LU乘积）；
+    \item 用式(\ref{2-e5})写出第$2$列（$\mathbf{A}$对应位置元素减去一系列LU乘积，最终除以 $\mu_{ii}$）；
+    \item 以此类推，重复应用式(\ref{2-e4})、式(\ref{2-e5})，生成行与列。
+    \item 沿对角线分成$\mathbf{L}$、$\mathbf{U}$两矩阵。
 \end{enumerate}
 
+\begin{figure}[htbp]
+\small\centering
 \begin{gather*}
     \begin{pmatrix}a_{11}&a_{12}&\cdots&a_{1n}\\&&&\\&&&\\&&&\end{pmatrix}\sothat
     \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&&&\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\sothat
     \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\\
-    \ \overset{\cdots\ }{\Rightarrow}\ 
-    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&&\vdots\\l_{n1}&l_{n2}&\cdots&\mu_{nn}\end{pmatrix}=\mathbf{L}+\mathbf{U}=
-    \begin{pmatrix}&&&\\l_{21}&&&\\\vdots&\vdots&&\\l_{n1}&l_{n2}&\cdots&\end{pmatrix}+
+    \ \overset{\cdots\ }{\Rightarrow}
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&&\vdots\\l_{n1}&l_{n2}&\cdots&\mu_{nn}\end{pmatrix}=
+    \begin{pmatrix}1&&&\\l_{21}&1&&\\\vdots&\vdots&\ddots&\\l_{n1}&l_{n2}&\cdots&1\end{pmatrix}+
     \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\&\mu_{22}&\cdots&\mu_{2n}\\&&\ddots&\vdots\\&&&\mu_{nn}\end{pmatrix}
 \end{gather*}
+\caption{LU分解算法示意图}
+\end{figure}
 
 \entry 需注意：重复第5步时，有如下的小妙招。
 \begin{enumerate}\tl
-    \item 我们注意到，按此方法生成的顺序如左下图所示，为「┌」状的生成顺序。那么我们以第$k$步时的生成为例。
-    \item 在第$k$步生成行时，对第$k$步的行的某个元素，首先向上找，应该能找到$k-1$个元素的列向量；再向左找，能找到一个$k-1$个元素的行向量，则该处应生成的值即为矩阵$\mathbf{A}$对应位置的元素值减去找到的两个向量的内积。
-    \item 类似的，在第$k$步生成时，先向左找$k-1$个元素的行向量，再向上找$k-1$个元素的列向量，生成值为矩阵$\mathbf{A}$对应位置元素值减两向量内积之后\textbf{除以}$\mu_{kk}$。
-    \item \emph{千万不要忘记生成列时要除以$\mu_{kk}$！！！}
+    \item 在第$m$步生成行时，对某个元素 $\mu_{ij}$，首先在其上方\emph{紧贴顶部的位置}\footnote{而非紧贴该元素的位置。} 找到 $m-1$ 个元素的列向量 $(\mu_{1j},\mu_{2j},\ldots,\mu_{m-1,j})$；再向左\emph{靠近左边缘位置}，找到$m-1$个元素的行向量 $(l_{i1},l_{i2},\ldots,l_{i,m-1})$，则$\mu_{ij}$ 等于 $\mathbf{A}$对应位置元素减去以上两向量的内积。
+    \item 类似的，在第$m$步生成列时，先在其左侧靠边缘部找 $m-1$ 个元素的行向量，再向上靠顶部位置找到 $m-1$ 个元素的列向量，生成值为矩阵$\mathbf{A}$对应位置元素值减两向量内积之后\emph{除以 $\mu_{kk}$}。
+    \item 易错点：生成列时，\emph{不要忘记除以 $\mu_{kk}$}！
 \end{enumerate}
 
+\begin{figure}[htbp]
+\centering\small
+\begin{tikzpicture}
+\node at (0,0)
+{$\begin{bmatrix}
+\mu_{11}&\mu_{12}&\cdots&\mu_{1j}&\cdots&\mu_{1n}\\
+l_{21}&\mu_{22}&\cdots&\mu_{2j}&\cdots&\mu_{2n}\\
+\vdots&\vdots&      &\vdots&      &\vdots\\
+l_{i1}&l_{i2}&\cdots&\mu_{ij}&\cdots&\mu_{in}\\
+\vdots&\vdots&      &\vdots&      &\vdots\\
+l_{n1}&l_{n2}&\cdots&l_{nj}&\cdots&\mu_{nn}
+\end{bmatrix}$};
+\draw[fill=black,opacity=0.2,draw=white] (-2.1,-0.5) rectangle (0, 0);
+\draw[fill=black,opacity=0.2,draw=white] (0.1,0.05) rectangle (0.75,1.35);
+\draw (-1.4,-1.4) -- (-1.4,0.9) -- (2.2,0.9);
+\draw (-0.7,-1.4) -- (-0.7,0.45) -- (2.2,0.45);
+\draw (0.1,0) -- (2.2,0);
+\draw (0.1,-0.5) -- (2.2,-0.5);
+\draw (1.5,-1.4) -- (1.5,-1.1) -- (2.2,-1.1);
+\end{tikzpicture}
+\caption{LU分解算法图示（以一个行元素$\mu_{ij}$的生成为例）}
+\end{figure}
 
-\example 分解矩阵$\mathbf{LU}$，其中：$\mathbf{A}=\begin{pmatrix}4&-2&0&4\\-2&2&-3&1\\0&-3&13&-7\\4&1&-7&23\end{pmatrix}$
 
-（答案：$\mathbf{L}=\begin{pmatrix}1&&&\\-\frac12&1&&\\0&-3&1&\\1&3&\frac12&1\end{pmatrix},\mathbf{U}=\begin{pmatrix}4&-2&0&4\\&1&-3&3\\&&4&2\\&&&9\end{pmatrix}$）
+\example 分解矩阵$\mathbf{A}$为$\mathbf{LU}$，其中：$\mathbf{A}=\begin{spmatrix}4&-2&0&4\\-2&2&-3&1\\0&-3&13&-7\\4&1&-7&23\end{spmatrix}$
 
+（答案：$\mathbf{L}=\begin{spmatrix}1&&&\\-\frac12&1&&\\0&-3&1&\\1&3&\frac12&1\end{spmatrix}$，$\mathbf{U}=\begin{spmatrix}4&-2&0&4\\&1&-3&3\\&&4&2\\&&&9\end{spmatrix}$）
 
-\entry 利用LU分解可解线性方程组：
+\entry 利用LU分解\emph{求解线性方程组}：
 \[\mathbf{Ax=b}\sothat\mathbf{LUx=b}\sothat
 \begin{cases}\mathbf{Ux=y}\\\mathbf{Ly=b}\end{cases}\]
-转化为两个对角阵方程，易于求解。
+转化为两个对角阵方程，易于求解。（计算量仍为 $O(n^3)$，来自于 LU 分解本身。）
 
-\entry 平方根法和改进平方根法。
-
-\entry LDU分解：令$\mathbf{D}=\diag(\mu_{11},\mu_{22},\cdots,\mu_{nn})$，则有：
+\entry \key{LDU分解}：令$\mathbf{D}=\diag(\mu_{11},\mu_{22},\cdots,\mu_{nn})$，则有：
 \[\mathbf{A}=\mathbf{LU}=\mathbf{L\cdot I\cdot U}=\mathbf{LDD}^{-1}\mathbf{U}=\mathbf{LDM}^{\mathrm{T}}\]
 其中$\mathbf{M}^{\mathrm{T}}=\mathbf{D}^{-1}\mathbf{U}$，$\mathbf{M}^{\mathrm{T}}$是一单位上三角阵。则：
 \begin{equation}
-\mathbf{M}=\begin{pmatrix}1&&&\\m_{21}&1&&\\\vdots&\vdots&\ddots&\\m_{n1}&m_{n2}&\cdots&1\end{pmatrix},\ m_{ji}=\frac{\mu_{ij}}{\mu_{ii}}\text{\ （即每行元素除以排头元素）}
+\mathbf{M}=\begin{spmatrix}1&&&\\m_{21}&1&&\\\vdots&\vdots&\ddots&\\m_{n1}&m_{n2}&\cdots&1\end{spmatrix},\ m_{ji}=\frac{\mu_{ij}}{\mu_{ii}}\ \text{（即每行元素除以排头元素）}
 \end{equation}
-称$\mathbf{A=LDM}^{\mathrm{T}}$为矩阵的LDU分解。
+称$\mathbf{A=LDM}^{\mathrm{T}}$为矩阵的\emph{LDU分解}。
 
-\entry 对于对称阵，可分解为：$\mathbf{A=LDL}^{\mathrm{T}}$（前提：各阶顺序主子式非$0$）
+\entry LDU计算式不必死记，只需在LU分解后变换为相应形式即可。
 
-\entry 对于对称正定阵，$\mathbf{D}$的元素均非负（且对角线非$0$），$\mathbf{A}=\mathbf{GG}^{\mathrm{T}}$（Cholesky分解）
+\entry 对于\emph{对称阵}，可分解为：$\mathbf{A=LDL}^{\mathrm{T}}$（前提：各阶顺序主子式非$0$）
 
-\entry LDU计算式不必死记，只需记住LU分解然后变换即可。
+\entry 对于\emph{对称正定阵}，$\mathbf{D}$的元素均非负（且对角线非$0$），则进一步有 $\mathbf{A}=\mathbf{GG}^{\mathrm{T}}$（Cholesky分解）
 
-\entry 平方根法：$\mathbf{A=GG}^{
-\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{GG}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Gy=b}\sothat\text{解出}\mathbf{y}\\\mathbf{G}^{\mathrm{T}}\mathbf{x=y}\sothat\text{解出}\mathbf{x}\end{cases}$
+\entry \key{平方根法}：$\mathbf{A=GG}^{
+\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{GG}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Gy=b}\\\mathbf{G}^{\mathrm{T}}\mathbf{x=y}\end{cases}$
 
-\entry 改进平方根法：$\mathbf{A=LDL}^{\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{LDL}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Ly=b}\sothat\text{解出}\mathbf{y}\\\mathbf{Dz=y}\sothat\text{解出}\mathbf{z}\\\mathbf{L}^{\mathrm{T}}\mathbf{x=b}\sothat\text{解出}\mathbf{x}\end{cases}$
+\entry \key{改进平方根法}
+\footnote{相较于平方根法少去若干开方运算，故称「改进」。}
+：$\mathbf{A=LDL}^{\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{LDL}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Ly=b}\\\mathbf{Dz=y}\\\mathbf{L}^{\mathrm{T}}\mathbf{x=b}\end{cases}$
 
-\entry 稀疏矩阵：大量元素为$0$，非零元很少。
+\entry \key{稀疏矩阵}：大量元素为$0$，非零元很少。以\emph{带状矩阵}为例：
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
-\caption{稀疏矩阵做LU分解示意图}\label{2-f2}
+\begin{tikzpicture}
+\node at (0,0)
+{$\begin{pmatrix}
+\ast&\ast&\ast&&&\\
+\ast&\ast&\ast&\ast&&\\
+\ast&\ast&\ast&\ast&\ast&\\
+&\ast&\ast&\ast&\ast&\ast\\
+&&\ast&\ast&\ast&\ast\\
+&&&\ast&\ast&\ast\\
+\end{pmatrix}$};
+\node [rotate=90,scale=1.4] at (-0.75,1.5) {$\Biggr\}$};
+\node at (-0.75,1.8) {$q+1$};
+\node [scale=1.4] at (-1.8,0.75) {$\Biggl\{$};
+\node at (-2.3,0.75) {$p+1$};
+\end{tikzpicture}
+\caption{上带宽为 $q$，下带宽为 $p$ 的带状矩阵}\label{2-f2}
 \end{figure}
-$p=q=1$时的带状矩阵称为三对角阵，通常为严格对角占优矩阵。
 
-\entry 解三对角系数矩阵线性方程组的追赶法：设系数矩阵$\mathbf{T}$为三对角阵，则有
+\noindent $p=q=1$时的带状矩阵称为\key{三对角矩阵}，通常为\emph{严格对角占优矩阵}。
+
+\entry 解三对角系数矩阵线性方程组的\key{追赶法}：设系数矩阵$\mathbf{T}$为三对角阵，则可用LU分解求解方程组：
 \[\mathbf{T=LU},\mathbf{Tx=d}\sothat\mathbf{LUx=d}\sothat\begin{cases}\mathbf{Ly=d}&\text{（追）}\\\mathbf{Ux=y}&\text{（赶）}\end{cases}\]
-
+其中 $\mathbf{L}$ 是带宽为 $p$ 的下三角阵，$\mathbf{U}$ 是带宽为 $q$ 的上三角阵
+\footnote{对于三对角阵，其 LU 分解的结果可用简单的表达式直接写出，参见李乃成、梅立泉《数值分析》第36页；但若是针对考试做准备，则可仅按一般的LU分解处理三对角矩阵。}
+。求解前一方程时，从上至下依次带入（「追」）；求解后一方程时，从下至上依次回代（「赶」）。
 
 \section{病态问题理论}
 
-\entry 残向量：$\mathbf{r=b-A}\tilde{\mathbf{x}}$
+\entry \key{误差向量} $\mathbf{e=x^{\ast}}-\tilde{\mathbf{x}}$ 与 \key{残向量} $\mathbf{r=b-A}\tilde{\mathbf{x}}$：前者为里，后者为表。
 
-\entry 误差向量：$\mathbf{e=x^{\ast}}-\tilde{\mathbf{x}}$
+\entry 如何衡量误差（向量）的大小？可采用向量的\key{范数}衡量。
 
-\entry 如何衡量误差（向量）的大小？可采用向量的范数衡量。
-
-\entry 向量范数：称$\|\mathbf{x}\|$为一个向量的范数，若$\|\mathbf{x}\|\in\mathbb{R}$满足：
+\define \key{向量范数}：称$\|\mathbf{x}\|$为一个向量的范数，若$\|\mathbf{x}\|\in\mathbb{R}$满足：
 \begin{enumerate}\tl
     \item 非负性：$\forall \mathbf{x}\in\mathbb{R}^n,\|\mathbf{x}\|\geq0\text{且}\|\mathbf{x}\|=0$ $\Leftrightarrow$ $\mathbf{x=0}$
     \item 齐次性：$\forall\alpha\in\mathbb{R},x\in\mathbb{R}^n,\|\alpha\mathbf{x}\|=|\alpha|\cdot\|\mathbf{x}\|$
     \item 三角不等式：$\forall\mathbf{x,y}\in\mathbb{R}^n,\|\mathbf{x+y}\|\leq\|\mathbf{x}\|+\|\mathbf{y}\|$
 \end{enumerate}
 
-\entry 常用范数：
+\entry 常用向量范数：
 \begin{itemize}\tl
     \item $1$-范数：$\|\mathbf{x}\|_1=|x_1|+|x_2|+\cdots+|x_n|.$
     \item $2$-范数：$\|\mathbf{x}\|_2=\sqrt{x_1^2+x_2^2+\cdots+x_n^2}.$
     \item $\infty$-范数：$\|\mathbf{x}\|_{\infty}=\max\limits_{1\leq i\leq n}|x_i|.$
 \end{itemize}
 
-\entry 矩阵范数：称$\|\mathbf{A}\|\in\mathbb{R}$为一个矩阵范数，若其满足：
+\define \key{矩阵范数}：称$\|\mathbf{A}\|\in\mathbb{R}$为一个矩阵范数，若其满足：
 \begin{enumerate}\tl
     \item 非负性：$\forall\mathbf{A},\|\mathbf{A}\|\geq0$且$\|\mathbf{A}\|=0\ \Leftrightarrow\ \mathbf{A=O}$
     \item 齐次性：$\forall\alpha\in\mathbb{R},\|\alpha\mathbf{A}\|=|\alpha|\cdot\|\mathbf{A}\|$
@@ -377,48 +532,48 @@ $p=q=1$时的带状矩阵称为三对角阵，通常为严格对角占优矩阵�
     \item $\|\mathbf{AB}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{B}\|$
 \end{enumerate}
 
-\entry 定义：若$\|\mathbf{Ax}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}\|$，则称矩阵范数$\|\mathbf{A}\|$与向量范数$\|\mathbf{x}\|$为相容或协调的。
+\define 向量范数与矩阵范数的\key{相容性}：若$\|\mathbf{Ax}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}\|$，则称矩阵范数$\|\mathbf{A}\|$与向量范数$\|\mathbf{x}\|$为\emph{相容}或\emph{协调}的。
 
-\entry 算子范数：$\|\mathbf{A}\|_p=\max\dfrac{\|\mathbf{Ax}\|_p}{\|\mathbf{x}\|_p}=\max\limits_{\|\mathbf{x}\|_p=1}\|\mathbf{Ax}\|_p$，容易证明$\|\mathbf{A}\|_p$满足相容条件。
+\entry \key{算子范数}：称 $\|\mathbf{A}\|_p=\max\dfrac{\|\mathbf{Ax}\|_p}{\|\mathbf{x}\|_p}=\max\limits_{\|\mathbf{x}\|_p=1}\|\mathbf{Ax}\|_p$ 为（由向量范数 $\|\mathbf{x}\|_p$ 诱导的）矩阵范数，容易证明 $\|\mathbf{A}\|_p$ 与 $\|\mathbf{x}\|_p$ 满足相容条件。
 \begin{enumerate}\tl
-    \item $1$-范数：$\|\mathbf{A}\|_1=\max\limits_{1\leq j\leq n}\left\{\sum\limits_{i=1}^n|a_{ij}|\right\}$即列和最大值
-    \item $2$-范数：$\|\mathbf{A}\|_2=\sqrt{\mathbf{A}^{\mathrm{T}}\mathbf{A}\text{的最大特征值}}$
-    \item $\infty$-范数：$\|\mathbf{A}\|_{\infty}=\max\limits_{1\leq i\leq n}\left\{\sum\limits_{j=1}^n|a_{ij}|\right\}$即行和最大值
+    \item $1$-范数：$\|\mathbf{A}\|_1=\max\limits_{1\leq j\leq n}\left\{\sum\limits_{i=1}^n|a_{ij}|\right\}$，即列和最大值。
+    \item $2$-范数：$\|\mathbf{A}\|_2=\sqrt{\mathbf{A}^{\mathrm{T}}\mathbf{A}\text{的最大特征值}}$.
+    \item $\infty$-范数：$\|\mathbf{A}\|_{\infty}=\max\limits_{1\leq i\leq n}\left\{\sum\limits_{j=1}^n|a_{ij}|\right\}$，即行和最大值。
 \end{enumerate}
 
-\entry 矩阵的谱半径：$\rho(\mathbf{A})=\max\limits_{1\leq i\leq n}|\lambda_i|$，性质：$\rho(\mathbf{A})\leq\|\mathbf{A}\|$
+\entry 矩阵的\key{谱半径}：$\rho(\mathbf{A})=\max\limits_{1\leq i\leq n}|\lambda_i|$，性质：$\rho(\mathbf{A})\leq\|\mathbf{A}\|$
 
-\entry 定理：设$\|\mathbf{B}\|\leq1$，则$\mathbf{I-B}$可逆，且
+\trm\label{I-B} 设$\|\mathbf{B}\|\leq1$，则$\mathbf{I-B}$可逆，且有
 \begin{equation}
 \|(\mathbf{I-B})^{-1}\|\leq\frac1{1-\|\mathbf{B}\|}
 \end{equation}
 
-\entry 舍入误差对解的影响：
+\entry \emph{舍入误差}对解的影响：
 \[\mathbf{r=b-A}\tilde{\mathbf{x}}\sothat\mathbf{A}\tilde{\mathbf{x}}=\mathbf{b-r}\neq\mathbf{b}\]
 为分析舍入误差的相对水平，先分析误差向量的大小：
 \[\mathbf{e}=\\\mathbf{A}^{-1}\mathbf{r}\sothat\|\mathbf{e}\|=\|\mathbf{A}^{-1}\mathbf{r}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{r}\|\]
 由于$\mathbf{Ax}^{\ast}=\mathbf{b}$，故
 \[\|\mathbf{b}\|=\|\mathbf{Ax}^{\ast}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}^{\ast}\|\sothat\frac1{\|\mathbf{x}^{\ast}\|}\leq\frac{\|\mathbf{A}\|}{\|\mathbf{b}\|}\]
-故相对误差水平$\dfrac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\leq\|\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|\cdot\dfrac{\|\mathbf{r}\|}{\|\mathbf{b}\|}$，其中的系数即可定义为矩阵的条件数$\cond(\mathbf{A})=\|\mathbf{A}\|\|\mathbf{A}^{-1}\|$
+故相对误差水平$\dfrac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\leq\|\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|\cdot\dfrac{\|\mathbf{r}\|}{\|\mathbf{b}\|}$，其中的系数即可定义为矩阵的\key{条件数} $\cond(\mathbf{A})=\|\mathbf{A}\|\|\mathbf{A}^{-1}\|$.
 
-\entry 易知$\cond(\mathbf{A})>1$（$\|\mathbf{A}\|\|\mathbf{A}^{-1}\|\geq\|\mathbf{A\cdot A}^{-1}\|=1$）
+\entry 易知$\cond(\mathbf{A})\geq1$（$\|\mathbf{A}\|\|\mathbf{A}^{-1}\|\geq\|\mathbf{A\cdot A}^{-1}\|=1$）
 
 \entry 残向量$\mathbf{r}$不能完全反映偏差水平，因$\mathbf{r}$小，$\mathbf{e}$也不一定小。
 
-\entry 系数矩阵扰动对解的影响：
+\entry \emph{系数扰动}对解的影响：设系数矩阵 $\mathbf{A}$ 有扰动 $\Delta\mathbf{A}$，则
 \[(\mathbf{A}+\Delta\mathbf{A})\mathbf{x=b}\sothat\mathbf{r=b-A}\tilde{\mathbf{x}}=\Delta\mathbf{A}\tilde{\mathbf{x}}\sothat\|\mathbf{r}\|\leq\|\Delta\mathbf{A}\|\|\tilde{\mathbf{x}}\|\]
-可见若$\Delta\mathbf{A}$小，$\mathbf{r}$也小。故相对误差水平
+可见若$\Delta\mathbf{A}$小，则$\mathbf{r}$也小。故相对误差水平
 \[\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\cond(\mathbf{A})\frac{\|\mathbf{r}\|}{\|\mathbf{b}\|}\leq\cond(\mathbf{A})\cdot\frac{\|\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\]
 
-\entry 共同影响：$(\mathbf{A}-\Delta\mathbf{A})(\mathbf{x}-\Delta\mathbf{x})=\mathbf{b}-\Delta\mathbf{b}$，当$\|\Delta\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|<1$时：
+\entry 舍入误差与系数扰动的共同影响：假设总的影响可归结为 $(\mathbf{A}-\Delta\mathbf{A})(\mathbf{x}-\Delta\mathbf{x})=\mathbf{b}-\Delta\mathbf{b}$，当$\|\Delta\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|<1$时，记 $\varepsilon_{\mathbf{A}}=\|\Delta\mathbf{A}\|/\|\mathbf{A}\|$ 与 $\varepsilon_{\mathbf{b}}=\|\Delta\mathbf{b}\|/\|\mathbf{b}\|$ 为各系数在范数意义下的相对偏差，则有
 \begin{equation}
-\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\frac{\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|}{1-\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}}\left(\frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}+\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\right)
+\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\frac{\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|}{1-\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}}\left(\frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}+\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\right)=\frac{\varepsilon_{\mathbf{b}}+\varepsilon_{\mathbf{A}}}{[\cond(\mathbf{A})]^{-1}-\varepsilon_{\mathbf{A}}}
 \end{equation}
-$\cond(\mathbf{A})$较大时，方程组为病态方程组；反之，$\cond(\mathbf{A})$较小时，方程组仍为良态方程组。
+易见当$\cond(\mathbf{A})$较大时，方程组为\emph{病态方程组}；反之，当$\cond(\mathbf{A})$较小时，方程组仍为\emph{良态方程组}。
 
-\entry $\cond(\mathbf{A})$的估计：
+\entry $\cond(\mathbf{A})$的估计：利用算子范数的相容性，有
 \[\mathbf{Ax=b}\sothat\mathbf{x=A}^{-1}\mathbf{b}\sothat\|\mathbf{x}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{b}\|\sothat\frac{\|\mathbf{x}\|}{\|\mathbf{b}\|}\leq\|\mathbf{A}^{-1}\|\]
-随机选取$p$个向量$\mathbf{b}_1,\mathbf{b}_2,\cdots,\mathbf{b}_p$，解方程$\mathbf{Ax}^{(k)}=\mathbf{b}_k$，得到$\mathbf{x}^{(k)}$，由上面结论得到
+随机选取$p$个向量$\mathbf{b}_1,\mathbf{b}_2,\cdots,\mathbf{b}_p$，解方程$\mathbf{Ax}^{(k)}=\mathbf{b}_k$（$1\leq k\leq p$），得到$\mathbf{x}^{(k)}$，由上面结论可知
 \[\max_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}\leq\|\mathbf{A}^{-1}\|\]
 故可近似认为：$\cond(\mathbf{A})\approx\|\mathbf{A}\|\cdot\max\limits_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}.$
 
@@ -429,25 +584,24 @@ $\cond(\mathbf{A})$较大时，方程组为病态方程组；反之，$\cond(\ma
 
 \entry 思想：$f(x^{\ast})=0\sothat\cdots\sothat x^{\ast}=\phi(x^{\ast})$，给出初值$x_0$和递推公式$x_{k+1}=\phi(x_k)$，假设$\{x_k\}$收敛，求极限——设$\lim\limits_{k\to\infty}x_k=x$，则有$x=\phi(x)$，从而必有$f(x)=0$。
 
-\entry 向量序列收敛：$\mathbf{x}^{(k)}=(x_1^{(k)},x_2^{(k)},\cdots,x_n^{(k)})^{\mathrm{T}}$，若$\lim\limits_{k\to\infty}x_i^{(k)}=x_i^{\ast}$，则$\mathbf{x}^{(k)}\to\mathbf{x}^{\ast}\ (k\to\infty)$，记作$\lim\limits_{k\to\infty}\mathbf{x}^{(k)}=\mathbf{x}^{\ast}$。
+\define \key{向量序列收敛}：$\mathbf{x}^{(k)}=(x_1^{(k)},x_2^{(k)},\cdots,x_n^{(k)})^{\mathrm{T}}$，若$\lim\limits_{k\to\infty}x_i^{(k)}=x_i^{\ast}$，则$\mathbf{x}^{(k)}\to\mathbf{x}^{\ast}\ (k\to\infty)$，记作$\lim\limits_{k\to\infty}\mathbf{x}^{(k)}=\mathbf{x}^{\ast}$。
 
-\entry 矩阵序列收敛：$\mathbf{A}^{(k)}=(a_{ij}^{(k)})_{m\times n}$，若$\lim\limits_{k\to\infty}a_{ij}^{(k)}=a_{ij}$，则称$\mathbf{A}^{(k)}\to\mathbf{A}=(a_{ij})_{m\times n}$
-\footnote{不用$\mathbf{A}^\ast$，是怕与伴随矩阵的符号弄混。——作者注}
-，记作$\lim\limits_{k\to\infty}\mathbf{A}^{(k)}=\mathbf{A}$。
+\define \key{矩阵序列收敛}：$\mathbf{A}^{(k)}=(a_{ij}^{(k)})_{m\times n}$，若$\lim\limits_{k\to\infty}a_{ij}^{(k)}=a_{ij}$，则称$\mathbf{A}^{(k)}\to\mathbf{A}=(a_{ij})_{m\times n}$记作$\lim\limits_{k\to\infty}\mathbf{A}^{(k)}=\mathbf{A}$。
+\footnote{此处不用$\mathbf{A}^\ast$，以免与伴随矩阵的符号$\mathbf{A}^\ast$弄混。}
 
-\entry 序列收敛定理：
+\trm \key{序列收敛定理}：
 \begin{itemize}\tl
     \item 对向量，$\mathbf{x}^{(k)}\to\mathbf{x}^\ast\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{x}^\ast-\mathbf{x}^{(k)}\|=0$
     \item 对矩阵，$\mathbf{A}^{(k)}\to\mathbf{A}\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{A}-\mathbf{A}^{(k)}\|=0$
 \end{itemize}
 
-\entry 定理：设$\mathbf{B}\in\mathbb{R}^{m\times n}$，则$\lim\limits_{k\to\infty}\mathbf{B}^k=0\ \Leftrightarrow\ \rho(\mathbf{B})<1$。
+\trm 定理：设$\mathbf{B}\in\mathbb{R}^{m\times n}$，则$\lim\limits_{k\to\infty}\mathbf{B}^k=0\ \Leftrightarrow\ \rho(\mathbf{B})<1$。
 
-\entry 设$\mathbf{Ax=b}$，变形得$\mathbf{x=Bx+g}$，可构造迭代格式
+\entry \key{迭代格式}的构造：设$\mathbf{Ax=b}$，\emph{同解变形}得$\mathbf{x=Bx+g}$，可构造对应的\emph{迭代格式}：
 \begin{equation}\label{3-e1}
     \mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}
 \end{equation}
-则$\mathbf{x}^\ast=\lim\limits_{k\to\infty}\mathbf{x}^{(k)}$满足$\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}\sothat\mathbf{Ax}^\ast=\mathbf{b}$\ ，故可以通过(\ref{3-e1})式不断迭代以逼近方程的解。
+由于是同解变形，故$\mathbf{x}^\ast=\lim\limits_{k\to\infty}\mathbf{x}^{(k)}$满足$\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}\sothat\mathbf{Ax}^\ast=\mathbf{b}$\ ，从而可通过(\ref{3-e1})式不断迭代以逼近方程的解。
 
 
 \section{三种基本迭代法}
@@ -480,11 +634,13 @@ x_n^{(k+1)}&=\frac1{a_{nn}}(b_2-a_{n1}\fbox{$x_1^{(k+1)}$}-a_{n2}\fbox{$x_2^{(k+
 \end{aligned}
 \right.
 \end{equation}
-$\mathbf{x=Bx+g}$形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了「新解」（即上式中用方框框出的部分）。
+形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了「新解」（即上式中框出的部分）。
 
-\entry \key{超松弛迭代法}：对Gauss-Seidel法的通用格式分析改写；若记每次迭代时的误差为$\mathbf{r_i^{(k+1)}}$，即
+\entry \key{超松弛迭代法}（SOR
+\footnote{Successive over-relaxation.}
+法）：对Gauss-Seidel法的通用格式进行改写；若记每次迭代时的误差为$\mathbf{r}^{(k+1)}$，即
 \[x_i^{(k+1)}=x_i^{(k)}+\frac1{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)}\right]=x_i^{(k)}+\frac{r_i^{(k+1)}}{a_{ii}}\]
-当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以乘一个系数$\omega$以加快收敛：
+当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以乘一个系数$\omega$以\emph{加快收敛}：
 \[x_i^{(k+1)}=x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)} \right] \]
 整理得
 \begin{equation}
@@ -502,19 +658,21 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
 \right.
 \end{equation}
 
-\entry 迭代的矩阵表示法：将$\mathbf{A}$分解为$\mathbf{D,E,F}$三部分：$\mathbf{A=D-E-F}$，其中
+\entry 迭代的\emph{矩阵表示法}：将$\mathbf{A}$分解为$\mathbf{D,E,F}$三部分：$\mathbf{A=D-E-F}$，其中
 \begin{equation}
-\mathbf{D}=\left(\begin{smallmatrix}a_{11}&&&\\&a_{22}&&\\&&\ddots&\\&&&a_{nn}\end{smallmatrix}\right),\quad\mathbf{E}=\left(\begin{smallmatrix}0&&&&&\\-a_{21}&0&&&\\-a_{31}&-a_{32}&0&&\\\vdots&\vdots&\vdots&\ddots&\\-a_{n1}&-a_{n2}&-a_{n3}&\cdots&0 \end{smallmatrix}\right),\quad\mathbf{F}=\left(\begin{smallmatrix}0&-a_{12}&-a_{13}&\cdots&-a_{1n}\\&0&-a_{23}&\cdots&-a_{2n}\\&&0&\cdots&-a_{3n}\\&&&\ddots&\vdots\\&&&&0 \end{smallmatrix}\right)
+\mathbf{D}=\begin{spmatrix}a_{11}&&&\\&a_{22}&&\\&&\ddots&\\&&&a_{nn}\end{spmatrix},\quad\mathbf{E}=\begin{spmatrix}0&&&&&\\-a_{21}&0&&&\\-a_{31}&-a_{32}&0&&\\\vdots&\vdots&\vdots&\ddots&\\-a_{n1}&-a_{n2}&-a_{n3}&\cdots&0 \end{spmatrix},\quad\mathbf{F}=\begin{spmatrix}0&-a_{12}&-a_{13}&\cdots&-a_{1n}\\&0&-a_{23}&\cdots&-a_{2n}\\&&0&\cdots&-a_{3n}\\&&&\ddots&\vdots\\&&&&0 \end{spmatrix}
 \end{equation}
 \begin{itemize}\tl
-    \item Jacobi法：用矩阵形式推导Jacobi迭代公式，有
+    \item \emph{Jacobi迭代法}：迭代格式中除对角阵 $\mathbf{D}$ 以外的系数均挪到了方程右侧，相当于
     \[\mathbf{(D-E-F)x=b}\sothat\mathbf{Dx=(E+F)x+b}\sothat\mathbf{x=D}^{-1}\mathbf{(E+F)x+D}^{-1}\mathbf{b}\]
     可见有
     \begin{equation}
     \begin{cases}\mathbf{B=D}^{-1}\mathbf{(E+F)=D}^{-1}(\mathbf{D-A})=\mathbf{I-D}^{-1}\mathbf{A}\\\mathbf{g=D}^{-1}\mathbf{b}\end{cases}
     \end{equation}
-    \item Gauss-Seidel法：
-    \[\mathbf{(D-E-F)x=b}\sothat\mathbf{(D-E)x=Fx+b}\sothat\mathbf{x=(D-E)}^{-1}\mathbf{Fx+(D-E)}^{-1}\mathbf{b}\]
+    \item \emph{Gauss-Seidel迭代法}：与 Jacobi 法不同的是，迭代中表示预先求得之「新解」的系数阵 $\mathbf{E}$ 留在方程左侧，相当于
+    \begin{align*}
+    \mathbf{(D-E-F)x=b}&\sothat\mathbf{(D-E)x=Fx+b}\\&\sothat\mathbf{x=(D-E)}^{-1}\mathbf{Fx+(D-E)}^{-1}\mathbf{b}
+    \end{align*}
     可见有
     \begin{equation}
     \begin{cases}
@@ -522,7 +680,7 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
     \mathbf{g=(D-E)}^{-1}\mathbf{b}
     \end{cases}
     \end{equation}
-    \item SOR法：
+    \item \emph{超松弛迭代法}：在 Gauss-Seidel 法的基础上，将 $(1-\omega)$ 大小的对角系数 $\mathbf{D}$ 移至方程右侧（作为误差），相当于
     \begin{gather*}
     \omega\mathbf{(D-E-F)x}=\omega\mathbf{b}\sothat(\mathbf{D}-\omega\mathbf{E})\mathbf{x}=[(1-\omega)\mathbf{D}+\omega\mathbf{F}]\mathbf{x}+\omega\mathbf{b}\\
     \sothat\mathbf{x}=(\mathbf{D}-\omega\mathbf{E})^{-1}[(1-\omega)\mathbf{D}+\omega \mathbf{F}]\mathbf{x}+(\mathbf{D}-\omega\mathbf{E})^{-1}\omega\mathbf{b}
@@ -539,32 +697,35 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
 
 
 \section{迭代收敛理论}
-\entry 下面给出迭代格式收敛的条件（非常重要！个人猜测必考）。
+\entry 下面给出迭代格式收敛的条件（非常重要！个人猜测必考
+\footnote{王天浩的评论。}
+）。
 
-\entry 定理1：若$\|\mathbf{B}\|\leq1$，则$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$，且有误差估计式：
+\trm 定理1：若$\|\mathbf{B}\|\leq1$，则$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$，且有误差估计式：
 \begin{gather}
-\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(k)}-\mathbf{x}^{(k-1)}\|\quad\text{（事后估计）}\\
-\|\mathbf{x}-\mathbf{x}^{(k)}\|\leq\frac{\|\mathbf{B}\|^k}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(1)}-\mathbf{x}^{(0)}\|\quad\text{（事前估计）}
+\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(k)}-\mathbf{x}^{(k-1)}\|\quad\text{（\emph{事后估计}或\emph{后验估计}）}\\
+\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|^k}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(1)}-\mathbf{x}^{(0)}\|\quad\text{（\emph{事前估计}或\emph{先验估计}）}
 \end{gather}
 
-\entry 定理2：$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$的充要条件是下列两条件至少有一个成立：
+\entry 估计式的推导：利用迭代格式及 $\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}$ 条件将 $\mathbf{x}^\ast-\mathbf{x}^{(k)}$ 展开并变形，最终在等式两侧取范数，应用范数若干性质和条目 2.\ref{I-B} 的结果获得不等号。
+
+\trm 定理2：$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$的充要条件是下列两条件之一成立：
 \begin{enumerate}\tl
     \item $\mathbf{B}^k\to\mathbf{O}$；
     \item $\mathbf{B}$的谱半径$\rho(\mathbf{B})<1$。
 \end{enumerate}
 
-\entry 推论：SOR法收敛的必要条件是$0<\omega<2$。
+\trm 推论：SOR法收敛的必要条件是$0<\omega<2$。
 \begin{gather*}
-\|\mathbf{B}\|=\|(D-\omega\mathbf{E})^{-1}\|\cdot\|(1-\omega)\mathbf{D}+\omega\mathbf{F}\|=\frac{\|(1-\omega)\mathbf{D}\|}{\|\mathbf{D}\|}=(1-\omega)^n\\
+\|\mathbf{B}\|=\|(\mathbf{D}-\omega\mathbf{E})^{-1}\|\cdot\|(1-\omega)\mathbf{D}+\omega\mathbf{F}\|=\frac{\|(1-\omega)\mathbf{D}\|}{\|\mathbf{D}\|}=(1-\omega)^n\\
 \rho(\mathbf{B})<1\sothat|\lambda_1\cdots\lambda_n|<1\sothat|1-\omega|<1\sothat0<\omega<2.
 \end{gather*}
 
-
-\entry 对于三种常用迭代法，还有更为实用的结论可供应用：
+\trm 对于三种常用迭代法，有更为实用的结论：
 \begin{itemize}\tl
     \item 引理：若$\mathbf{A}$是严格对角占优矩阵，$0\le\omega\leq1$且$\lambda\geq1$时，矩阵$(\lambda+\omega-1)\mathbf{D}-\lambda\omega\mathbf{E}-\omega\mathbf{F}$也是严格对角占优矩阵。
-    \item 推论2：若$\mathbf{A}$是严格对角占优矩阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法、G-S法、SOR法（$0<\omega\leq1$）均收敛
-    \footnote{可由其上的引理推出：通过反设$|\lambda|\geq1$推出$|\lambda\mathbf{I-B}|\neq0$，故$|\lambda|<1$，$\rho(\mathbf{B})<1$。}
+    \item 推论2：若$\mathbf{A}$是\emph{严格对角占优矩阵}，则$\forall\mathbf{x}^{(0)}$，Jacobi法、G-S法、SOR法（$0<\omega\leq1$）均收敛
+    \footnote{推导：反设$\mathbf{B}$ 有一特征值 $|\lambda|\geq1$，代入上面的推论中，推出$|\lambda\mathbf{I-B}|\neq0$，故所有的 $|\lambda|<1$，进而 $\rho(\mathbf{B})<1$。参见李乃成、梅立泉《数值分析》第 88 页推论 3.3.2 的证明。}
     。
     \item 推论3：若$\mathbf{A}$为对称正定阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法收敛的充要条件是：$2\mathbf{D-A}$也是对称正定阵。
     \item 推论4：若$\mathbf{A}$是对称正定阵，则$\forall\mathbf{x}^{(0)}$，SOR法收敛充要条件为$0<\omega<2$。
@@ -580,22 +741,23 @@ x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-
     \end{itemize}
     \item 一般矩阵$\mathbf{A}$：
     \begin{itemize}\tl
-        \item $\|\mathbf{B}\|<1$时三方法均收敛；
-        \item $\mathbf{B}^k\to\mathbf{O}$和$\rho(B)<1$中之一成立，则三方法均收敛。
+        \item $\|\mathbf{B}\|<1$时，$\mathbf{B}$ 的对应方法收敛；
+        \item $\mathbf{B}^k\to\mathbf{O}$和$\rho(B)<1$中之一成立，则$\mathbf{B}$ 的对应方法收敛。
         \item SOR法收敛的必要条件是$0<\omega<2$。
     \end{itemize}
 \end{enumerate}
 
-\example 判断系数矩阵为$\mathbf{A}=\begin{pmatrix}2&3&4\\3&6&10\\4&10&20\end{pmatrix}$时各迭代法的收敛性。
+\entry 针对考试而言，一般的系数矩阵仍需通过求 $\rho(\mathbf{B})$ 或 $\|\mathbf{B}\|$ 来判断收敛性。
+
+\example 判断系数矩阵为$\mathbf{A}=\begin{spmatrix}2&3&4\\3&6&10\\4&10&20\end{spmatrix}$时各迭代法的收敛性。（答案：Jacobi 法发散，Gauss-Seidel 迭代法及 $0<\omega<2$ 的 SOR 法收敛。）
 
 \chapter{插值法}
 \section{插值法思想概要}
-\entry 插值的动机：
-\begin{enumerate}
+\entry 插值的\emph{动机}：
+\begin{enumerate}\tl
     \item 离散型：给定$m+1$个数据点$(x_0,y_0)$、$(x_1,y_1)$、……$(x_m,y_m)$，找到一个函数$P(x)$通过所有的点。
     \item 连续型：给定一未知函数$f(x)$及其$m+1$个数据点，要求另一已知函数$P(x)$在这
-    些数据点上与$f(x)$一致，并使其在定义与上与$f(x)$的偏差尽量小。（称$f(x)$为\key{
-    被插函数}。）
+    些数据点上与$f(x)$一致，并使其在定义与上与$f(x)$的偏差尽量小。（称$f(x)$为\key{被插函数}。）
 \end{enumerate}
 
 \define 设以上的$P(x)$满足
@@ -605,7 +767,7 @@ P(x_i)=y_i\quad(i=0,1,\cdots,m),
 则称$P(x)$为这$m+1$个数据点上的\key{插值函数}，称数据点为\key{插值点}，并称式
 (\ref{4-e1})为\key{插值条件}。
 
-\entry 多项式插值：要求插值函数$P(x)$为一个多项式
+\entry \emph{多项式插值}：要求插值函数$P(x)$为一个多项式
 \begin{equation}
 P(x)=\sum_{k=0}^na_kx^k=a_0+a_1x+\cdots+a_nx^n,
 \end{equation}
@@ -621,10 +783,10 @@ P(x_i)=y_i\sothat a_0+a_1x_i+\cdots+a_ix_i^n=y_i\quad(i=0,1,\cdots,m)
 \end{equation}
 
 \entry 关于方程组(\ref{4-e2})的解分析：
-\begin{itemize}
+\begin{itemize}\tl
     \item $m>n$，方程一般无解；
     \item $m<n$，方程有无穷多解；
-    \item $m=n$时，系数矩阵对应的行列式是Van der monde行列式：
+    \item $m=n$时，系数矩阵对应的行列式是 \emph{Van der monde行列式}：
     \begin{equation}
     |V|=\prod_{j=1}^n\left[\prod_{i=0}^{j-1}(x_j-x_i)\right]
     \end{equation}
@@ -633,8 +795,8 @@ P(x_i)=y_i\sothat a_0+a_1x_i+\cdots+a_ix_i^n=y_i\quad(i=0,1,\cdots,m)
 
 \trm 对于给定的$n+1$个插值点，对应的$n$次插值多项式$P_n(x)$唯一存在。
 
-\entry 误差多项式：若被插函数$f(x)$满足$f^{(n)}(x)$在$[a,b]$上连续，$f^{(n+1)}$在
-$(a,b)$内存在，则误差多项式可估计为
+\entry \key{误差多项式}：若被插函数$f(x)$满足$f^{(n)}(x)$在$[a,b]$上连续，$f^{(n+1)}$在
+$(a,b)$内存在，则\emph{误差（多项式）}可估计为
 \begin{equation}
 R_n(x)=f(x)-P_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)(x-x_1)\cdots(x-x_n).
 \end{equation}
@@ -647,8 +809,8 @@ R_n(x)=f(x)-P_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)(x-x_1)\cdots(x-x_n).
 R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}\pi_{n+1}(x).
 \end{equation}
 
-\entry 实用误差估计式：设$P_n(x)$为在$x_0,x_1,\cdots,x_n$上的插值多项式，$P_n^\ast(x)$
-为在$x_0,x_1,\cdots,x_n,x_{n+1}$上的插值多项式，则
+\entry \emph{实用误差估计式}：设$P_n(x)$为在$(x_0,x_1,\cdots,x_n)$上的插值多项式，$P_n^\ast(x)$
+为在$(x_0,x_1,\cdots,x_n,x_{n+1})$上的插值多项式，则
 \begin{gather}
 f(x)-P_n(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_0)\\
 f(x)-P_n^\ast(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_{n+1})
@@ -657,30 +819,27 @@ f(x)-P_n^\ast(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_{n+1})
 \entry 采用式(\ref{4-e2})求解插值多项式的问题：方程条件数随$n$的增加而急剧上升，解不
 稳定、不精确；计算量太大。
 
-\section{Lagrange 插值法}
-\entry Lagrange 插值法思想：对$n+1$个数据点，构造对应的$n+1$个\key{Lagrange插值基函
-数}$l_0(x),l_1(x),\cdots,l_n(x)$使
+\section{Lagrange 插值法与 Newton 插值法}
+\entry \key{Lagrange 插值法}：对$n+1$个数据点，构造对应的$n+1$个\key{Lagrange插值基函数} $l_0(x),l_1(x),\cdots,l_n(x)$使
 \begin{equation}\label{4-e3}
 P_n(x)=y_0\cdot l_0(x)+y_1\cdot l_1(x)+\cdots+y_n\cdot l_n(x).
 \end{equation}
 
-\entry 插值基函数的形式：由式(\ref{4-e3})易知插值基函数应在数据点上满足
+\entry 插值基函数公式：由式(\ref{4-e3})易知，插值基函数应在数据点上满足
 \begin{equation}
 l_i(x_j)=\delta_{ij}=\begin{cases}1&,i=j\\0&,i\neq j\end{cases}
 \end{equation}
 又要求插值基函数为$n$次多项式（与最终插值多项式的次数一致），则可解出
 \begin{gather}
 l_i(x)=\frac{(x-x_0)(x-x_1)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)}{(x_i-x_0)
-(x_i-x_1)\cdots(x_i-x_{i-1})(x-x_{i+1})\cdots(x_i-x_n)}.
+(x_i-x_1)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)}.
 \end{gather}
-此即Lagrange插值基函数公式。由于其分母$\pi_{n+1}(x)/(x-x_i)$可直接写出，故只需计算
-插值基函数的系数
+此即\emph{Lagrange 插值基函数公式}。其分母$\pi_{n+1}(x)/(x-x_i)$可直接写出，故只需计算插值基函数的系数
 \begin{equation}
-c_i=\left[(x-x_0)(x-x_1)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)\right]^{-1}.
+c_i=\left[(x_i-x_0)(x_i-x_1)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)\right]^{-1}.
 \end{equation}
 
-\example 给定数据点$(-1,7)$、$(1,7)$、$(2,4)$、$(5,35)$，用Lagrange插值法求解各插值
-基函数的系数。（答案：$c_0=-\frac1{36}$，$c_1=\frac18$，$c_2=-\frac19$，
+\example 给定数据点$(-1,7)$、$(1,7)$、$(2,4)$、$(5,35)$，用Lagrange插值法求解各插值基函数的系数。（答案：$c_0=-\frac1{36}$，$c_1=\frac18$，$c_2=-\frac19$，
 $c_3=\frac1{72}$。）
 
 \entry 常将Lagrange基函数记为
@@ -688,19 +847,22 @@ $c_3=\frac1{72}$。）
 l_i(x)=\frac{\pi_{n+1}(x)}{(x-x_i)\pi'_{n+1}(x_i)}.
 \end{equation}
 
-\entry Lagrange插值法的特点：构造方便、格式统一；系数的计算方法简单，但乘除运算量大；
-插值基函数具有全局性质，「牵一发而动全身」，数据点变动后须全部重新计算。
+\entry Lagrange插值法的特点：
+\begin{itemize}\tl
+    \item 构造方便、格式统一；
+    \item 系数的\emph{表示}方法简单，但乘除\emph{运算}量大；
+    \item 插值基函数具有\emph{全局性质}，「牵一发而动全身」，数据点变动后须全部重新计算。
+\end{itemize}
 
 % P140 4.10：Lagrange 基函数的性质
 
-\section{Newton 插值法}
-\entry Newton 插值法思想：对$n+1$个数据点，采用「累进」的插值基函数
+\entry \key{Newton 插值法}：对$(n+1)$个数据点，采用「累进」的插值基函数
 \begin{equation}
 n_i(x)=\prod_{k=0}^{i-1}(x-x_k)=(x-x_0)(x-x_1)\cdots(x-x_{i-1}),
 \end{equation}
 构造得到的 \key{Newton 插值多项式}为
 \begin{equation}\label{4-e4}
-N_n(x)=c_0+c_1(x-x_0)+c_2(x-x_0)(x-x_1)+\cdots+c_n(x-x_0)(x-x_1)\cdots(x-x_n),
+N_n(x)=c_0+c_1(x-x_0)+c_2(x-x_0)(x-x_1)+\cdots+c_n(x-x_0)\cdots(x-x_n)
 \end{equation}
 再求解系数$c_i$。
 
@@ -723,7 +885,7 @@ N_n(x)=\sum_{k=0}^nf[x_0,\cdots,x_k]\cdot n_k(x).
 \end{equation}
 
 \entry 由插值多项式的唯一性，对同样的$n+1$个数据点构造的 Lagrange 插值多项式$P_n(x)$
-与 Newton 插值多项式$N_n(x)$，必有$P_n(x)=N_n(x)$，即两种方法得到的结果相同。
+与 Newton 插值多项式$N_n(x)$，必有$P_n(x)=N_n(x)$，即\emph{两种方法得到的结果相同}。
 
 \trm 推论：比较 Newton 插值多项式与 Lagrange 插值多项式的最高次（$n$次）项系数，有
 \begin{equation}
@@ -746,37 +908,56 @@ f[x_0,x_1,\ldots,x_n]=\sum_{i=0}^n\frac{f(x_i)}{\pi'_{n+1}(x_i)}.
 \example 设$f(x)=x^3+2px+5qx+c$，其中$p,q,c$均为实数。若$f[1,2,m]=0$，试求$f[0,1,m]$。
 （答案：$-2$）
 
-\entry \key{差商表}：依次计算差商的工具。
+\entry \key{差商表}：依次计算差商的工具，如图 \ref{4-f1} 所示。
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\[P_3(x)=y_0+y'_0\cdot(x-x_0)+y''_0\cdot(x-x_0)(x-x_1)+y'''_0\cdot(x-x_0)(x-x_1)(x-x_2)\]
+\begin{tabular}{ccccc}
+\toprule
+$x_i$ & $f[x_i]$ & $f[x_i,x_{i+1}]$ & $f[x_i,x_{i+1},x_{i+2}]$ & $f[x_i,x_{i+1},x_{i+2},x_{i+3}]$ \\
+\midrule
+$x_0$ & \fbox{$y_0$} & & & \\
+$x_1$ & $y_1$ & \fbox{$y'_0=\frac{y_1-y_0}{x_1-x_0}$} & & \\
+$x_2$ & $y_2$ & $y'_1=\frac{y_2-y_1}{x_2-x_1}$ & \fbox{$y''_0=\frac{y'_1-y'_0}{x_2-x_0}$} & \\
+$x_3$ & $y_3$ & $y'_2=\frac{y_3-y_2}{x_3-x_2}$ & $y''_1=\frac{y'_2-y'_1}{x_3-x_1}$ & \fbox{$y'''_0=\frac{y''_1-y''_0}{x_3-x_0}$} \\
+\bottomrule
+\end{tabular}
 \caption{差商表及其构造步骤}\label{4-f1}
 \end{figure}
 
-\entry Newton 插值法余项公式及估计：
+\entry \key{Newton 插值法余项公式}及估计：
 \begin{align*}
 R_n(x)&=f(x)-N_n(x)\\
 &=f[x_0,x_1,\ldots,x_n,x](x-x_0)(x-x_1)\cdots(x-x_n)\\
 &\approx f[x_0,x_1,\ldots,x_n,x_{n+1}](x-x_0)(x-x_1)\cdots(x-x_n)\\
 &=N_{n+1}(x)-N_n(x)
 \end{align*}
-即:Newton 插值公式$N_n(x)$的余项，可估计为高一阶的插值多项式$N_{n+1}(x)$之最后一项。
+即：Newton 插值公式$N_n(x)$的余项，可估计为高一阶的插值多项式$N_{n+1}(x)$之最后一项。
 
-\section{Hermite 插值多项式}
-\entry Hermite 插值多项式：满足导数条件$P'(x_j)=y'_j$的插值多项式。
+\entry \key{Hermite 插值多项式}：满足导数条件$P'(x_j)=y'_j$的插值多项式。
 
 \entry Newton 插值法构造 Hermite 插值多项式（\key{重节点法}）：在含导数条件的数据点处
 增加「重节点」，仍按差商表迭代，但利用条件(\ref{4-e5})计算含重节点的差商。
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\begin{tabular}{ccccc}
+    \toprule
+    $x_i$ & $f[x_i]$ & $f[x_i,x_{i+1}]$ & $f[x_i,x_{i+1},x_{i+2}]$ & $f[x_i,x_{i+1},x_{i+2},x_{i+3}]$ \\
+    \midrule
+    $x_0$ & $y_0$ & & & \\
+    $x_1$ & $y_1$ & $y'_0=\frac{y_1-y_0}{x_1-x_0}$ &  & \\
+    $x_1$ & $y_1$ & \fbox{$y'_1$} & $y''_0=\frac{y'_1-y'_0}{x_1-x_0}$ & \phantom{$\dfrac12$} \\
+    $x_2$ & $y_2$ & $y'_2=\frac{y_2-y_1}{x_2-x_1}$ & $y''_1=\frac{y'_2-y'_1}{x_2-x_1}$ & $y'''_0=\frac{y''_1-y''_0}{x_2-x_0}$ \phantom{$\dfrac12$} \\
+    \bottomrule
+    \end{tabular}
 \caption{重节点法示意}\label{4-f2}
 \end{figure}
 
-\entry Hermite 插值多项式的误差估计：利用 Newton 插值公式的余项估计即可。
+\entry Hermite 插值多项式的误差估计：利用 Newton 插值的余项估计即可。
 
 \example 对以下的数据点求解其 Hermite 插值多项式，并估计误差。
-\begin{center}\begin{tabular}{cccc}
+\begin{center}\small
+\begin{tabular}{cccc}
 \toprule
 $x_i$&$-1$&$0$&$1$\\
 \midrule
@@ -788,7 +969,7 @@ $y''_i$&$6$&&\\
 （答案：$H_5(x)=x^5-2x^3+3x^2-4$，
 $R_5(x)=\frac{f^{(6)}(\xi)}{6!}(x+1)(x-1)^2x^3$。）
 
-\entry Lagrange 插值法构造 Hermite 插值多项式：对$n+1$个含带导数条件的数据点，在导数
+\entry Lagrange 插值法构造 Hermite 插值多项式：对$n+1$个含导数条件的数据点，在导数
 条件下构造插值基函数$h_i(x)$与$\overline{h}_i(x)$：
 \begin{gather}
 H_{2n+1}(x)=\sum_{i=0}^nh_i(x)f(x_i)+\sum_{i=0}^n\overline{h}_i(x)f'(x_i)\\
@@ -801,16 +982,12 @@ h_i(x)=(ax+b)l_i^2(x),\quad\overline{h}_i(x)=(x-x_i)l_i^2(x)
 \end{gather}
 再求解系数$a$与$b$即可。
 
-\entry 不建议使用 Lagrange 插值法求解 Hermite 插值多项式：优势尽失。
+\entry 不建议使用 Lagrange 插值法求解 Hermite 插值多项式：\emph{优势尽失}。
 
 \section{分段插值与三次样条插值}
-\entry \key{Runge 现象}：采用高次的插值多项式，全局误差可能比低次多项式更大。
+\entry \key{Runge 现象}：采用高次的插值多项式，全局误差可能比低次多项式更大。（示例：对函数 $f(x)=\frac1{1+25x^2}\quad(-1\leq x\leq 1)$ 以越来越多的节点等距插值。）这表明，与其在全局应用高次插值多项式，不如采用分段低次插值多项式。
 
-\entry Runge 现象示例：对函数$f(x)=\frac1{1+25x^2}\quad(-1\leq x\leq 1)$等距插值。
-
-\entry Runge 现象表明，与其在全局应用高次插值多项式，不如采用分段低次插值多项式。
-
-\entry 分段线性插值的误差估计：
+\entry \key{分段线性插值}的误差估计：
 \begin{equation}
 R_{1,j}(x)=\left|\frac{f''(\xi)}2(x-x_{i-1})(x-x_i)\right|\leq\frac{M_2i}2\cdot
 \frac14(x_i-x_{i-1})^2\leq\frac18M_2\Delta^2
@@ -819,13 +996,17 @@ R_{1,j}(x)=\left|\frac{f''(\xi)}2(x-x_{i-1})(x-x_i)\right|\leq\frac{M_2i}2\cdot
 
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\begin{tikzpicture}
+\draw[->] (-0.2,0) -- (4.5,0) node[right] {$x$};
+\draw[->] (0,-0.2) -- (0,2.5) node[above] {$y$};
+\draw plot[mark=ball,ball color=black] coordinates {(0.5,1) (1,2) (2,1) (3,0.5) (4,0.3)};
+\end{tikzpicture}
 \caption{分段线性插值图示}\label{4-f3}
 \end{figure}
 
-\entry 分段线性插值的缺陷：在各个节点处导数不连续。
+\entry 分段线性插值的\emph{缺陷}：在各个节点处导数不连续。
 
-\entry 分段二次插值：在$[x_{i-1},x_{i+1}]$上作 Newton 二次插值多项式$N_{2i}(x)$，则
+\entry \key{分段二次插值}：在$[x_{i-1},x_{i+1}]$上作 Newton 二次插值多项式$N_{2i}(x)$，则
 \begin{equation}
 f(x)\approx N_{2i}(x)=y_{i-1}+f[x_{i-1},x_i](x-x_{i-1})+f[x_{i-1},x_i,x_{i+1}]
 (x-x_{i-1})(x-x_i).
@@ -838,15 +1019,21 @@ R_{2i}(x)=\frac{f'''(\xi)}{3!}(x-x_{i-1})(x-x_i)(x-x_{i+1})\leq\frac{M_3}6\cdot
 \end{equation}
 其中$M_3$为$f'''(x)$在插值区间上的最大值，$\Delta$为各相邻插值节点的最大距离。
 
-\entry 分段二次插值的缺陷：在一半的节点上导数仍不连续；要求有偶数个插值节点。
+\entry 分段二次插值的缺陷：在一半的节点上导数仍不连续；要求有奇数个插值节点。
 
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\begin{tikzpicture}
+\draw[->] (-0.2,0) -- (4.5,0) node[right] {$x$};
+\draw[->] (0,-0.2) -- (0,2.5) node[above] {$y$};
+\draw (0.5,1) parabola bend (1.25,2.125) (2,1);
+\draw (2,1) parabola[bend at end] (4,0.3);
+\draw[white] plot[mark=ball,ball color=black] coordinates {(0.5,1) (1,2) (2,1) (3,0.5) (4,0.3)};
+\end{tikzpicture}
 \caption{分段二次插值图示}\label{4-f4}
 \end{figure}
 
-\entry 分段三次 Hermite 插值：在相邻插值节点处利用两个函数值、两个导数值构造插值多项式。
+\entry \key{分段三次 Hermite 插值}：在相邻插值节点处利用两个函数值、两个导数值构造插值多项式。
 
 \entry 分段三次 Hermite 插值的误差估计：
 \begin{equation}
@@ -854,33 +1041,95 @@ R_{3,i}(x)=\frac{f^{(4)}(\xi)}{4!}(x-x_{i-1})^2(x-x_i)^2\leq\frac{M_4}{24}
 \left[\frac14(x-x_{i-1})^2\right]^2\leq\frac{M_4}{384}\Delta^4.
 \end{equation}
 
-\entry 分段三次 Hermite 插值的缺陷：二阶导数仍不连续；导数条件太苛刻，不一定能得到。
+\entry 分段三次 Hermite 插值的缺陷：二阶导数仍不连续；导数条件太苛刻，插值时一般缺少相应导数。
 
 \entry \key{三次样条插值}：给定$n+1$个数据点，要求分段插值曲线的二阶导数连续。
 由此可知，插值函数及其导数也应连续。此时：
-\begin{itemize}
-    \item 需求：在$n$个插值子区间上构造三次插值函数，共计$4n$个未知数；
-    \item 约束条件：$n+1$个数据点，$3(n-1)$个各阶导数连续条件，共计$4n-2$个方程；
-    \item 补充两个边界条件：一阶导数边界条件$f'(a)$、$f'(b)$，或二阶导数边界条件
+\begin{itemize}\tl
+    \item \emph{需求}：在$n$个插值子区间上构造\emph{分段三次插值函数}，共计$4n$个未知数；
+    \item \emph{约束条件}：$n+1$个数据点，$3(n-1)$个各阶导数连续条件，共计$4n-2$个方程；
+    \item 补充 2 个\emph{边界条件}：一阶导数边界条件$f'(a)$、$f'(b)$，或二阶导数边界条件
     $f'(a)$、$f'(b)$，或周期性边界条件$f'(a)=f'(b)$、$f''(a)=f''(b)$。
 \end{itemize}
 由此即可求解出所有的分段三次插值函数，称这些函数为\key{三次样条函数}。
 
-\entry \key{三弯矩方程}
+\entry \key{三弯矩方程}：设 $S(x)$ 在 $x_i$ 处二阶导数值为 $M_i$，根据插值函数为三次可知 $S''(x)$ 为连续的分段线性函数，对 $S''(x)$ 积两次分并用 $n$ 个数据点条件消去未知参数得：
+\begin{equation}\label{4-e7}\begin{aligned}
+S(x)=&\frac{(x_i-x)^3}{6h_i}M_{i-1}+\frac{(x-x_{i-1})^3}{6h_i}M_i+\left(y_{i-1}-\frac{h_i^2}6M_{i-1}\right)\frac{x_i-x}{h_i}\\
+&+\left(y_i-\frac{h_i^2}6M_i\right)\frac{x-x_{i-1}}{h_i},\ x_{i-1}\leq x\leq x_i
+\end{aligned}\end{equation}
+为求出 $M_i$，可对 $S(x)$ 在不同区间上的表达式求导，并应用 $(n-1)$ 个一阶导数连续条件获得 $(n-1)$ 个方程：
+\begin{equation}\label{4-e6}
+\mu_iM_{i-1}+2M_i+\lambda M_{i+1}=d_i,\quad i=1,2,\cdots,n-1
+\end{equation}
+其中
+\[
+\mu_i=\frac{h_i}{h_i+h_{i+1}}.,\quad\lambda_i=\frac{h_{i+1}}{h_i+h_{i+1}}=1-\mu_i,\quad d_i=6f[x_{i-1},x_i,x_{i+1}]
+\]
+若将 $S(x)$ 视为一根梁的挠度，则以上的 $M_i$ 可视为作用在 $x_i$ 处的弯矩，故称方程 \eqref{4-e6} 为\emph{三弯矩方程}。
 
-\entry \key{三次样条插值的误差估计}
+\entry 三种边界条件下的三弯矩方程：三弯矩方程不足以解出 $n+1$ 个未知量，补充两个边界条件后方程即可封闭。
+\begin{itemize}
+    \item \emph{一阶导数边条}：对式 \eqref{4-e7} 求一次导，并代入边界导数 $f'(a)$ 与 $f'(b)$，可最终获得两个补充方程：
+    \begin{equation}
+    2M_0+M_1=d_0,\quad M_{n-1}+2M_n=d_n
+    \end{equation}
+    其中 $d_0$ 与 $d_n$ 与其他 $d_i$ 的定义一致。方程组变为 $n+1$ 个式子的
+    \begin{equation}
+    \begin{cases}
+    2M_0+M_1=d_0\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=1,2,\ldots,n-1\\
+    M_{n-1}+2M_n=d_n
+    \end{cases}
+    \end{equation}
+    此时的系数矩阵是\emph{严格三对角占优矩阵}（$\mu_i+\lambda_i=1<2$），可用\emph{追赶法}快速求解。
+    \item \emph{二阶导数边条}：$M_0=f''(a)$ 和 $M_n=f''(b)$ 给定，方程组变为 $n-1$ 个式子的
+    \begin{equation}
+    \begin{cases}
+    2M_1+\lambda_1M_2=d_1-\mu_1M_0\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=2,3,\ldots,n-2\\
+    \mu_{n-1}M_{n-2}+2M_{n-1}=d_{n-1}-\lambda_{n-1}M_n
+    \end{cases}
+    \end{equation}
+    此时系数矩阵也是\emph{严格三对角占优矩阵}。
+    \item \emph{周期性边条}：根据周期性
+    \footnote{此时 $M_0=M_n$，同时少去一个未知数和一个方程，仍需补充两个方程。}
+    ，从边界点处「回环」得满足三弯矩方程的序列 $(M_{n-1},M_n,M_1)$ 与 $(M_n,M_1,M_2)$，由此补充两个方程，方程组变为 $n$ 个式子的：
+    \begin{equation}
+    \begin{cases}
+    2M_1+\lambda_1M_2+\mu_1M_n=d_1\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=2,3,\ldots,n-1\\
+    \lambda_nM_1+\mu_nM_{n-1}+2M_n=d_n
+    \end{cases}
+    \end{equation}
+    此时的系数矩阵为\emph{严格对角占优矩阵}（不是三对角），可用一般的 LU 分解求解
+    \footnote{在 LU 分解的过程中，会发现此形式的系数矩阵有与追赶法类似的简化算法，参见李乃成、梅立泉《数值分析》习题 2.4。}
+    。
+\end{itemize}
+
+\entry 三次样条插值的\emph{特点}：
+\begin{itemize}
+    \item [$\sqrt{}$] 求解的三弯矩方程为严格对角占优矩阵，方程形式简洁且容易求解，解存在唯一、稳定性好；
+    \item [$\sqrt{}$] 为提高精度，只需增加插值节点，不需要提高次数；
+    \item [$\sqrt{}$] 随节点增多，$S(x)$ 及其一二阶导数一致收敛于 $f(x)$ 及其对应导数；若节点间等距，则 $S'''(x)$ 随节点加密而一致收敛于 $f'''(x)$。
+    \item [$\times$] 三弯矩方程计算量仍很大；
+    \item [$\times$] 需要额外的边界条件，有时难以获得；
+    \item [$\times$] 对图形的控制不够灵活，绘图上使用并不方便
+    \footnote{绘图上常用 B\'ezier 曲线、B 样条曲线等专用于拟合几何边界的插值/曲线构造方式。}
+    。
+\end{itemize}
 
 \chapter{函数最优逼近}
-\entry 逼近与插值的区别：插值要求通过数据点，逼近则不要求；逼近追求整个区间或所有取值点
-上的总体误差最小。
+\entry \emph{逼近}与\emph{插值}的区别：插值要求通过数据点，逼近则不要求；逼近追求\emph{在给定的函数形式下}整个区间或所有值点
+上的\emph{总体误差}最小。
 
-\entry 用多项式逼近：便于计算，便于做微积分。
+\entry 用\emph{多项式}逼近：便于计算；便于用其做微积分。
 
 \section{内积、范数与正交多项式}
 \define \setkey{函数在点集上的内积}{函数内积（点集）}：设$f(x)$，$g(x)$在$X=\{x_1,x_2,
-\ldots,x_m\}$上有定义，并有相应的$m$个权系数$\omega_i$，则定义
+\ldots,x_m\}$上有定义，并有相应的$m$个\emph{权系数}$\omega_i$，则定义
 \[(f,g)=\sum_{i=1}^m\omega_if(x_i)g(x_i)\]
-为$f$与$g$在$X$上关于权系数$\omega_i$的内积。
+为$f$与$g$在$X$上关于权系数$\omega_i$的\emph{内积}。
 
 \define \setkey{函数在区间上的内积}{函数内积（区间）}：设$f,g\in C[a,b]$，$\omega(x)
 \in C[a,b]$为权系数，定义
@@ -890,32 +1139,34 @@ R_{3,i}(x)=\frac{f^{(4)}(\xi)}{4!}(x-x_{i-1})^2(x-x_i)^2\leq\frac{M_4}{24}
 \entry 对权系数的要求：$\omega_i>0$或$\omega(x)\geq0$。常取$\omega_i=1$及
 $\omega(x)\equiv1$。
 
-\trm 内积的性质：
-\begin{enumerate}
-    \item （对称性）$(f,g)=(g,f)$。
-    \item （齐性）对任意的常数$\alpha$，$(\alpha f,g)=(f,\alpha g)=\alpha\cdot(f,g)$。
-    \item （可加性）$(f+h,g)=(f,g)+(h,g)$。
-    \item （正定性）$(f,f)\geq0$，且仅当$f\equiv0$时$(f,f)=0$。
+\trm 内积的性质
+\footnote{该四条性质对一切「内积空间」都是成立的。}
+：
+\begin{enumerate}\tl
+    \item 对称性：$(f,g)=(g,f)$。
+    \item 齐性：对任意的常数$\alpha$，$(\alpha f,g)=(f,\alpha g)=\alpha\cdot(f,g)$。
+    \item 可加性：$(f+h,g)=(f,g)+(h,g)$。
+    \item 正定性：$(f,f)\geq0$，且仅当$f\equiv0$时$(f,f)=0$。
 \end{enumerate}
 
-\define \setkey{函数在点集或区间上的范数}{函数范数}：对点集$X$上所有函数，或对区间上
-所有连续函数$C[a,b]$定义的运算$\|f\|$，满足：
-\begin{enumerate}
+\define \setkey{函数在点集或区间上的范数}{函数范数}：对点集$X$上所有函数$f$，或对区间上
+所有连续函数$f\in C[a,b]$定义运算$\|f\|$，满足：
+\begin{enumerate}\tl
     \item （正定性）$\|f\|\geq0$，且仅当$f\equiv0$时$\|f\|=0$。
     \item （线性）对任意的常数$\alpha$，$\|\alpha f\|=|\alpha|\cdot\|f\|$。
     \item （三角不等式）$\|f+g\|\leq\|f\|+\|g\|$。
 \end{enumerate}
 
 \entry 常用范数：
-\begin{itemize}
+\begin{itemize}\tl
     \item 由函数内积导出的$2$-范数：$\|f(x)\|_2=\sqrt{(f,f)}$。
-    \item $1$-范数：$\|f\|_1=\sum_{i=1}^m|f(x_i)|$或$\|f\|_1=\int_a^b|f(x)|\di x$。
+    \item $1$-范数：$\|f\|_1=\sum\limits_{i=1}^m|f(x_i)|$或$\|f\|_1=\int_a^b|f(x)|\di x$。
     \item $\infty$-范数：$\|f\|_\infty=\max\limits_{1\leq i\leq m}|f(x_i)|$或
     $\|f\|_\infty=\max\limits_{a\leq x\leq b}|f(x)|$。
 \end{itemize}
 
 \entry 函数的\key{正交}：
-\begin{itemize}
+\begin{itemize}\tl
     \item 在权函数$\omega_i$（或$\omega(x)$）下，若$(f,g)=0$，则称两函数关于权函数
     $\omega_i$（或$\omega(x)$）正交，称$f$与$g$为\key{正交函数}。
     \item 设有函数族$\{g_k\}$，若其中各函数$g_0(x),g_1(x),\cdots,g_k(x),\cdots$满足
@@ -926,26 +1177,31 @@ $\omega(x)\equiv1$。
     \cdots$为\key{正交多项式}。
 \end{itemize}
 
-\trm 正交多项式基本性质：各正交多项式之间线性无关。（证明：利用正交性与正定性。）
+\trm \emph{正交多项式基本性质}：各正交多项式之间线性无关
+\footnote{证明：利用正交性与正定性。}
+。（由此，可用一族正交多项式线性表示各阶多项式。）
 
-\trm 推论 1：设$k<n$，则$k$次多项式$P_k(x)$必与$n$次正交多项式$g_n(x)$正交。
-（证明：$P_k(x)$可用$g_0(x),\cdots,g_k(x)$线性表出，进而由正交性得其与$g_n(x)$正交。）
+\trm 推论 1：对$k<n$，$k$次多项式$P_k(x)$与$n$次\emph{正交多项式} $g_n(x)$正交
+\footnote{证明：$P_k(x)$可用$g_0(x),\cdots,g_k(x)$线性表出，进而由$g_k(x)$的正交性推得其与$g_n(x)$正交。}
+。
 
 \trm 推论 2：在区间$[a,b]$（连续）或$[\min x_i,\max x_i]$（离散）上，$n$次正交多项式
-$g_n(x)$恰有$n$个不同实零点。（证明思路：有实根\sothat 无偶重根\sothat 均为实根\sothat
-无多于$1$重的奇实根。）
+$g_n(x)$恰有$n$个不同实零点
+\footnote{证明思路：有实根\sothat 无偶重根\sothat 均为实根\sothat
+无多于$1$重的奇实根。}
+。
 
-\trm 推论 3：设$g_0(x),g_1(x),\cdots,g_k(x),\cdots$均为首一正交多项式，则
+\trm\label{5-t1} 推论 3：设$g_0(x),g_1(x),\cdots,g_k(x),\cdots$均为\emph{首一\footnotemark 正交多项式}，则
+\footnotetext{即最高次项系数为 $1$。}
 \begin{gather}
 g_0(x)=1,\,g_1(x)=x-b_0,\,g_{k+1}(x)=(x-b_x)g_k(x)-c_kg_{k-1}(x)\label{5-e1}\\
 b_k=\frac{\beta_k}{\gamma_k},c_k=\frac{\gamma_k}{\gamma_{k-1}},\beta_k=(xg_k,g_k),
 \gamma_k=(g_k,g_k).\notag
 \end{gather}
-称此式为正交多项式的\key{三项递推关系}。
+称以上公式为正交多项式的\key{三项递推关系}
+\footnote{证明略去，参见李乃成、梅立泉《数值分析》第146页性质5.1.3的证明。会用即可。}。
 
-\entry 推论 3 的证明：
-
-\entry \key{Legendre 多项式}：在区间$[-1,1]$上，定义
+\entry \key{Legendre 多项式}：在区间$[-1,1]$上，定义为
 \begin{equation}
 P_k(x)=\frac1{2^k\cdot k!}\frac{\di^k}{\di x^k}\left[(x^2-1)^k\right].\quad(k=0,
 1,2,\ldots)
@@ -954,31 +1210,33 @@ P_k(x)=\frac1{2^k\cdot k!}\frac{\di^k}{\di x^k}\left[(x^2-1)^k\right].\quad(k=0,
 (k!)}$。
 
 \entry 其他常见正交多项式：
-\begin{itemize}
-    \item Laguerre 多项式：$L_k(x)=\e^x\frac{\di(x^k\e^{-x})}{\di x^k}$，正交区间
+\begin{itemize}\tl
+    \item \key{Laguerre 多项式}：$L_k(x)=\e^x\frac{\di(x^k\e^{-x})}{\di x^k}$，正交区间
     为$[0,+\infty)$，权函数为$\omega(x)=\e^{-x}$。
-    \item Hermite 多项式：$H_k(x)=(-1)^k\e^{x^2}\frac{\di^k\e^{-x^2}}{\di x^k}$，
+    \item \key{Hermite 多项式}：$H_k(x)=(-1)^k\e^{x^2}\frac{\di^k\e^{-x^2}}{\di x^k}$，
     正交区间为$(-\infty,+\infty)$，权函数为$\omega(x)=\e^{-x^2}$。
-    \item Cheybyshev 多项式：$T_k(x)=\cos(k\arccos x)$，正交区间为$[-1,1]$，权函数
+    \item \key{Cheybyshev 多项式}：$T_k(x)=\cos(k\arccos x)$，正交区间为$[-1,1]$，权函数
     为$\omega(x)=\frac1{\sqrt{1-x^2}}$。
 \end{itemize}
 
 \section{最优平方逼近}
-\entry 最优平方逼近：对函数$f(x)$，构造多项式$p(x)$使按$2$-范数度量得到的误差$S=
-(\|p-f\|_2)^2$最小。
+\entry 最优平方逼近：对函数$f(x)$，构造逼近多项式$p(x)$，使按$2$-范数度量得到的误差之平方$S=
+\|p-f\|_2^2$最小
+\footnote{取平方是因为 2-范数中的根号不易处理。更常见的说法是「均方误差（MSE）最小」，此概念在统计学、机器学习等领域更为常见。}
+。
 
-\entry 为系统地实现这一构造过程，常用一多项式函数族$\{\vphi_k(x)\}$表出：
+\entry 为系统地实现这一构造过程，常用一多项式函数族$\{\vphi_k(x)\}$表出$p(x)$：
 \begin{equation}\label{5-e2}
     p(x)=c_0\vphi_0(x)+\cdots+c_n\vphi_n(x),
 \end{equation}
-从而问题落实为：
-\begin{enumerate}
+从而问题需落实为：
+\begin{enumerate}\tl
     \item 多项式族$\{\vphi_k(x)\}$的选取或导出；
     \item 系数$c_k$的求解。
 \end{enumerate}
 
-\define 若$f$为列表函数，则称逼近其的$p(x)$为\key{最小二乘拟合多项式}，误差表达式为
-\[\|p-f\|_2=\sqrt{\sum_{i=1}^m\omega_i[p(x_i)-y_i]^2}.\]
+\define 若$f$为\emph{列表函数}，则称逼近其的$p(x)$为\key{最小二乘拟合多项式}，误差表达式为
+\[\|p-f\|_2=\sqrt{\sum_{i=1}^m\omega_i\biggl[p(x_i)-y_i\biggr]^2}.\]
 
 \define 若$f$为连续函数，则称逼近其的$p(x)$为\key{最优平方逼近多项式}，误差为
 \[\|p-f\|_2=\sqrt{\int_a^b(p-f)^2\di x}.\]
@@ -989,9 +1247,9 @@ S=(p-f,p-f)=(p,p)-2(p,f)+(f,f)\notag\\
 S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
 (f,f).\label{5-e3}
 \end{gather}
-视$S$为系数$c_0,\cdots,c_n$的函数，欲令$S$达到极小值，则令
+视$S$为系数$c_0,\cdots,c_n$的函数，欲使$S$达到极小值，令
 \[\frac{\del S}{\del c_k}=2\sum_{i=0}^nc_j(\vphi_k,\vphi_j)-2(\vphi_k,f)=0\]
-从而可得求解系数$c_i$的\key{正规方程组}
+从而得用于求解系数$c_i$的\key{正规方程组}
 \begin{equation}
 \sum_{i=0}^nc_j(\vphi_k,\vphi_j)=(\vphi_k,f)
 \end{equation}
@@ -1005,7 +1263,7 @@ S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
 \begin{pmatrix}(\vphi_0,f)\\(\vphi_1,f)\\\vdots\\(\vphi_n,f)\end{pmatrix}.
 \end{equation}
 
-\entry 正规方程组中，系数矩阵为对称正定阵，有唯一解。故最优平方逼近的结果存在且唯一。
+\entry 正规方程组中，系数矩阵为\emph{对称正定阵}，有唯一解。故最优平方逼近的结果存在且唯一。
 
 \entry 正规方程组可改写为
 \begin{equation}
@@ -1013,7 +1271,9 @@ S=\sum_{i=0}^nc_i\sum_{j=0}^nc_j(\vphi_i,\vphi_j)-2\sum_{i=0}^nc_i(\vphi_i,f)+
 \end{equation}
 意义：误差向量$(p-f)$在由有限个向量$\vphi_k$张成的空间下无投影，控制「低维误差」。
 
-\entry 正规方程组解法 1：选取$\{\vphi_k\}$为一组正交多项式，则正规方程组简化为
+\entry 正规方程组解法 1：选取一组线性无关、内积易求的简单函数作 $\{\vphi_k\}$（常用 $1,x,x^2,\cdots$），计算内积，代入正规方程组直接求解（在问题简单时最为便捷）。
+
+\entry 正规方程组解法 2：选取 $\{\vphi_k\}$ 为一组正交多项式，则正规方程组简化为
 \[(\vphi_k,\vphi_k)c_k=(\vphi_k,f),\]
 从而易得$c_k=\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}$，进而得逼近多项式为
 \begin{equation}\label{5-e4.5}
@@ -1021,14 +1281,13 @@ P(x)=\sum_{k=0}^n\frac{(\vphi_k,f)}{(\vphi_k,\vphi_k)}\vphi_k(x).
 \end{equation}
 
 \entry 函数族$\vphi_k(x)$的选取原则：
-\begin{enumerate}
+\begin{enumerate}\tl
     \item 直观性原则：观察$(x_i,y_i)$的分布，选取函数族。
-    \item 比较性原则：对不同的函数族，可分别拟合，再比较它们的误差向量之大小
-    \[\|p-f\|_2=\sqrt{\sum_{i=1}^m\omega_i[p(x_i)-y_i]^2}\]
+    \item 比较性原则：对不同的函数族，可分别拟合，再比较它们的误差向量孰大孰小。
     \item 根据实际问题背景选择函数族（如对周期性变化的函数，可用三角函数族）。
 \end{enumerate}
 
-\entry 离散的正规方程组（最小二乘法）：记
+\entry \emph{离散的正规方程组}（\key{最小二乘法}）：记
 \begin{gather*}
 G=\begin{pmatrix}\vphi_0(x_1)&\vphi_1(x_1)&\cdots&\vphi_n(x_1)\\
 \vphi_0(x_2)&\vphi_1(x_2)&\cdots&\vphi_n(x_2)\\
@@ -1037,7 +1296,7 @@ G=\begin{pmatrix}\vphi_0(x_1)&\vphi_1(x_1)&\cdots&\vphi_n(x_1)\\
 W=\diag(\omega_1,\omega_2,\cdots,\omega_m),\\
 y=(y_1\,y_2\,\cdots\,y_m)^T,\,c=(c_0\,c_2\,\cdots\,c_n)^T,
 \end{gather*}
-则原正规方程组化为
+则原正规方程组可化为
 \begin{equation}\label{5-e5}
 (G^TWG)c=(G^TW)y.
 \end{equation}
@@ -1065,14 +1324,14 @@ G^TGc=G^Ty,
 \[S(a,b)=\sum_{i=1}^m(\ln b+ax_i-\ln y_i)^2\]
 令其对$a$、$b$的偏导数为$0$，即可解出参数值。
 
-\entry 最小二乘拟合/最优平方逼近的一般方法：
+\entry 最小二乘拟合/最优平方逼近的\emph{一般方法}：
 \begin{enumerate}
-    \item 可自选一组线性无关的基函数，求解正规方程组(\ref{5-e4})或(\ref{5-e5})。
+    \item 可\emph{自选}一组线性无关的基函数，求解正规方程组(\ref{5-e4})或(\ref{5-e5})。
     一般选取$\vphi_k(x)=x^k$。（难点在列、解方程）
-    \item 可利用三项递推关系(\ref{5-e1})求解一族首一正交多项式$g_0(x),\cdots,g_n(x)$，
+    \item 可利用三项递推关系(\ref{5-e1})\emph{求解一族首一正交多项式}$g_0(x),\cdots,g_n(x)$，
     利用式(\ref{5-e4.5})计算逼近的多项式。（难点在递推、计算内积。）
     \item 可先通过变量代换$x=\frac{a+b}2+\frac{b-a}2t$将区间$[a,b]$替换为$[-1,1]$，
-    对变换后的函数$\overline{f}(t)$用正交的 Legendre 多项式求出$\overline{P}(t)$，
+    对变换后的函数$\overline{f}(t)$\emph{用正交的 Legendre 多项式}求出$\overline{P}(t)$，
     最后用$t=\frac{2x-a-b}{b-a}$还原到$P(x)$。（难点在记 Legendre 多项式、展开和计算
     内积。）
 \end{enumerate}
@@ -1085,7 +1344,7 @@ G^TGc=G^Ty,
     \begin{pmatrix}1&1/2\\1/2&1/3\end{pmatrix}\begin{pmatrix}c_0\\c_1\end{pmatrix}
     =\begin{pmatrix}2/3\\2/5\end{pmatrix}
     \]
-    容易求得$c_0=\frac45$，$c_1=\frac4{15}$，从而$p(x)=\frac45+\frac4{15}$。
+    容易求得$c_0=\frac4{15}$，$c_1=\frac45$，从而$p(x)=\frac45x+\frac4{15}$。
     \item 用三项递推式，有$g_0(x)=1$，
     \begin{equation}
     g_1(x)=x-\frac{(x,1)}{(1,1)}=x-\frac12,
@@ -1098,7 +1357,7 @@ G^TGc=G^Ty,
     \frac1{15},
     \end{align*}
     从而有
-    \[p(x)=\frac23+\frac{1/15}{1/12}\cdot\left(x-\frac12\right)=\frac45x-\frac4{
+    \[p(x)=\frac23+\frac{1/15}{1/12}\cdot\left(x-\frac12\right)=\frac45x+\frac4{
     15}.\]
     \item 用 Legendre 多项式求解，为此先作变量代换$x=\frac12+\frac12t$，被插函数变为
     $\overline{f}(t)=\sqrt{\frac{1+t}2}$，进而可用前两个 Legendre 多项式
@@ -1115,58 +1374,64 @@ G^TGc=G^Ty,
     \end{align*}
     从而
     \[\overline{p}(t)=\frac{4/3}2+\frac{4/15}{2/3}t=\frac23+\frac25t\]
-    回代$t=2x-1$即得$p(x)=\frac45+\frac4{15}x$。
+    回代$t=2x-1$即得$p(x)=\frac45x+\frac4{15}$。
 \end{enumerate}
+
+\begin{figure}[htbp]
+\small\centering
+\begin{tikzpicture}[scale=2]
+\draw [->] (-0.2,0) -- (1.2,0) node [right] {$x$};
+\draw [->] (0,-0.2) -- (0,1.2) node [above] {$y$};
+\draw [rotate=90] (0,0) parabola (1.2,-1.44) node [right] {$f(x)=\sqrt x$};
+\draw (-1/3,0) -- (1.2,1.227) node [above] {$p(x)=\frac45x+\frac4{15}$};
+\node at (0,0) [below left] {$O$};
+\draw [dashed] (1,0) node [below] {$1$} -- (1,16/15);
+\end{tikzpicture}
+\caption{$y=\sqrt x$ 的最优逼近一次多项式示意图}
+\end{figure}
 
 \chapter{数值积分与数值微分}
 
-\entry 常规积分的局限性：往往难以求得原函数，无法应用 Newton-Leibniz 公式；有时
-仅知函数在个别离散点的取值。
+\entry 常规（解析）积分的\emph{局限性}：往往难以求得原函数，无法应用 Newton-Leibniz 公式；有时
+仅知函数在个别离散点的取值（列表函数）。
 
-\entry 数值积分/数值微分的共同思路：用个别点处函数值$f(x_i)$的线性组合，来估计整个区
+\entry \emph{数值积分}/\emph{数值微分}的共同思路：用个别点处\emph{函数值 $f(x_i)$ 的线性组合}，来估计整个区
 间上的积分值或个别点附近的微分值。
 \begin{gather}
 \int_a^bf(x)\di x=\sum_{i=0}^nA_if(x_i)\\
 f'(x)=\sum_{i=0}^nB_if(x_i)
 \end{gather}
 
-\entry 主要问题：
-\begin{enumerate}
-    \item 节点$x_i$的选取；
-    \item 求积系数$A_k$的计算；
-    \item 误差估计与评价。
-\end{enumerate}
+\entry 主要问题：节点$x_i$的选取；求积系数$A_k$的计算；误差估计与评价。
 
-\entry 记号：对于$f(x)$，记其准确积分值为
-\[I[f]=\int_a^bf(x)\di x\]
-而记其数值估计公式为
+\entry 记号：对于$f(x)$，记其准确积分值为 $I[f]=\int_a^bf(x)\di x$，而记其数值估计公式为
 \[Q[f]=\sum_{i=0}^nA_if(x_i)\approx I[f].\]
-将数值积分公式的误差记为$R[f]=I[f]-Q[f]$
+并将数值积分公式的误差记为$R[f]=I[f]-Q[f]$.
 
 \section{插值型积分及其延伸}
-\entry 两种近似积分思路：
+\entry\label{6-et1} 两种近似积分思路：
 \begin{enumerate}
     \item 按 Riemann 积分定义，作区间的划分，按若干小矩形估算：
     \[\int_a^bf(x)\di x\approx\sum_{i=o}^nf(x_i)(x_{i+1}-x_i)\]
     \item 取若干数据点插值，用插值多项式$p(x)$的积分估计函数的积分：
-    \[\int_a^bf(x)\di x\approx\int_a^bp(x)\di x=\int_a^b\left[\sum_{i=0}^n
-    l_i(x)f(x_i)\right]\di x=\sum_{i=0}^n\left(\int_a^bl_i(x)\di x\right)\cdot
-    f(x_i).\]
+    \[\begin{aligned}
+    \int_a^bf(x)\di x&\approx\int_a^bp(x)\di x
+    =\int_a^b\left[\sum_{i=0}^nl_i(x)f(x_i)\right]\di x\\
+    &=\sum_{i=0}^n\left(\int_a^bl_i(x)\di x\right)\cdot f(x_i).
+    \end{aligned}\]
 \end{enumerate}
-共同特点是：用若干点上函数值$f(x_i)$之线性组合估计整个区间上的积分值。问题：无法估计
-误差。因此，应当从此种思路出发，直接构造估计公式，进而就可估计误差。
+共同特点是：用若干点上函数值$f(x_i)$之\emph{线性组合}估计整个区间上的积分值。问题：无法估计
+误差。应当从此种思路出发，直接构造估计公式，进而就可估计误差。
 
-\entry \key{Newton-Cotes 型求积公式}：在区间上等距取定若干插值点，构造插值多项式并以
-其积分代替$f(x)$的积分。
+\entry \key{Newton-Cotes 型求积公式}：在区间上等距取定若干\emph{插值点}，构造\emph{插值多项式}并以其积分代替$f(x)$的积分。
 
-\entry 设节点数为$n+1$个（$x_0,x_1,\cdots,x_n$），一般常取$n=1,2,4$，记
-此时各点的距离为$h=\frac{b-a}n$。
+\entry 记号：设节点数为$n+1$个：$x_0,x_1,\cdots,x_n$（一般常取$n=1,2,4$），记此时各点的距离为$h=\frac{b-a}n$。
 
 \entry \key{梯形公式}：当$n=1$时，取定区间的左右两端点为$x_0$与$x_1$，可得到
 \begin{equation}
 Q_1[f]=\frac{b-a}2\left[f(a)+f(b)\right].
 \end{equation}
-此即梯形求积公式，常将$Q_1[f]$记为$T_1$。。由广义积分中值定理
+此即\emph{梯形求积公式}，常将$Q_1[f]$记为$T_1$。由第一积分中值定理
 \footnote{设$f,g\in C[a,b]$且$g$在$[a,b]$不变号，则存在$\eta\in[a,b]$使
 $\int_a^bf(x)g(x)\di x=f(\eta)\int_a^bg(x)\di x$。}
 可估计误差为
@@ -1180,45 +1445,47 @@ R_1[f]=\frac{(b-a)^3}{12}f''(\eta),\,\eta\in(a,b)
 \begin{equation}
 Q_2[f]=\frac h3\left[f(a)+4f\left(\frac{a+b}2\right)+f(b).\right]
 \end{equation}
-此即 Simpson 公式，常将$Q_2[f]$简记为$S_1$。利用之后的结果可估计误差为
+此即 \emph{Simpson 公式}，常将$Q_2[f]$简记为$S_1$。利用之后的方法
+\footnote{即广义 Peano 定理与「24K金法」。}
+可估计误差为
 \begin{equation}
-R_2[f]=-\frac{(b-a)^5}{2880}f^(4)(\eta).
+R_2[f]=-\frac{(b-a)^5}{2880}f^{(4)}(\eta).
 \end{equation}
 
 \entry \key{Cotes 求积公式}：当$n=4$时，$h=\frac{b-a}4$，插值并积分可得
 \begin{equation}
 Q_4[f]=\frac{b-a}{90}[7f(a)+32f(a+h)+12f(a+2h)+32f(a+3h)+7f(b).]
 \end{equation}
-此即 Cotes 求积公式，常将$Q_4[f]$简记为$C_1$。利用之后的结果可估计误差为
+此即 \emph{Cotes 求积公式}，常将$Q_4[f]$简记为$C_1$。利用之后的方法可估计误差为
 \begin{equation}
 R_4[f]=-\frac{(b-a)^7}{1935360}f^{(6)}(\eta).
 \end{equation}
 
-\entry \key{代数精度}：设有一数值积分公式，$m$为一正整数。若对于不超过$m$次的多项式均
-有$R[f]=0$成立，而对某$m+1$次多项式即有$R[f]\neq0$，则称该数值积分公式的代数精度为$m$。
+\entry \key{代数精度}：设有数值积分公式，且对于不超过$m$次的多项式$f$均
+有$R[f]=0$成立，而对某$m+1$次多项式$f$即有$R[f]\neq0$，则称该数值积分公式的代数精度为$m$。
 
-\entry 对梯形公式，其代数精度为 $1$；对 Simpson 公式，其代数精度为 $2$；对 Cotes 公式，
+\entry 对\emph{梯形公式}，其代数精度为 $1$；对 \emph{Simpson 公式}，其代数精度为 $2$；对 \emph{Cotes 公式}，
 其代数精度为 $4$。
 
-\entry 不宜采用次数过高的多项式插值：Runge 现象
+\entry 不宜采用次数过高的多项式插值：\emph{Runge 现象}
 \footnote{且根据后面的内容可知，次数过高的 Newton-Cotes 公式稳定性差，结果易发散}。
 
-\entry 复化求积公式：对每个小区间 $[x_{k-1},x_k]$ 分别运用积分公式，再将结果求和。
+\entry \key{复化求积公式}：对每个小区间 $[x_{k-1},x_k]$ 分别运用积分公式，再将结果求和。
 
 \entry 公式表述：对由 $n+1$ 个数据点所划分的 $n$ 个小区间，对以上三种插值型积分公式的
 结果如下。
 \begin{itemize}
-    \item 取 $n=1$，得复化梯形公式
+    \item 取 $n=1$，得\key{复化梯形公式}：
     \begin{equation}
     T_n=\frac h2\left[f(a)+2\dsum_{i=1}^{n-1}f(x_i)+f(b)\right],
     \end{equation}
     其误差估计为 $R_{T_n}=-\frac{b-a}{12}h^2f''(\eta)$。
-    \item 取 $n=2$，得复化 Simpson 公式
+    \item 取 $n=2$，得\key{复化 Simpson 公式}：
     \begin{equation}
     S_n=\frac h2\left[f(a)+2\dsum_{i=1}^{n-1}f(x_i)+f(b)\right],
     \end{equation}
     其误差估计为 $R_{S_n}=-\frac{b-a}{2880}h^4f^{(4)}(\eta)$。
-    \item 取 $n=4$，得复化 Cotes 公式
+    \item 取 $n=4$，得\key{复化 Cotes 公式}：
     \begin{equation}\begin{aligned}
     C_n=&\frac h{90}\left\{7f(a)+32\dsum_{i=0}^{n-1}\left[
     f\left(x_i+\frac h4\right)+f\left(x_i+\frac{3h}4\right)\right]+\right.\\
@@ -1228,12 +1495,11 @@ R_4[f]=-\frac{(b-a)^7}{1935360}f^{(6)}(\eta).
     其误差估计为 $R_{c_n}=-\frac{b-a}{1935360}h^6f^{(6)}(\eta)$。
 \end{itemize}
 
-\entry 变步长积分法：为进一步减小误差，考虑在用复化求积公式时不断缩小步长。为此考虑先凑
-出一个近似的误差估计式。设用复化梯形公式 $T_n$ 求积分，当取得 $n+1$ 个点时的误差估计式为
+\entry \key{变步长积分法}：为进一步减小误差，考虑在用复化求积公式时不断缩小步长。为此，先凑出一个近似的误差估计式（减小步长的依据）。设用复化梯形公式 $T_n$ 求积分，当取得 $n+1$ 个点时的误差估计式为
 \begin{equation}
 R_n[f]=I[f]-T_n=-\frac{b-a}{12}h^2f''(\eta_1)
 \end{equation}
-若将间隔数翻倍，则当取得 $2n+1$ 个点时的误差估计式为
+将子区间数量翻倍，则取得 $2n+1$ 个点时的误差估计式为
 \begin{equation}
 R_{2n}[f]=I[f]-T_{2n}=-\frac{b-a}{12}\left(\frac h2\right)^2f''(\eta_2)
 \end{equation}
@@ -1241,13 +1507,11 @@ R_{2n}[f]=I[f]-T_{2n}=-\frac{b-a}{12}\left(\frac h2\right)^2f''(\eta_2)
 \begin{equation}\label{6-e1}
 R_{2n}[f]=I[f]-T_{2n}\approx\frac13(T_{2n}-T_n)
 \end{equation}
-即积分误差可以用变步长结果间的差距 $T_{2n}-T_n$ 所估计。因此，若希望实现 $R[f]<
-\vepsilon$，可按如下步骤实施变步长复化积分：
-\begin{enumerate}
+即积分误差可以用变步长结果间的差距 $T_{2n}-T_n$ 所估计。因此，若希望实现 $R[f]<\vepsilon$，可按如下步骤实施变步长复化积分：
+\begin{enumerate}\tl
     \item $n=1$，$h=b-a$，计算$T_n$；
     \item 缩小步长$h$至原来的一半，计算$T_{2n}$；
-    \item 验证误差估计条件 $|T_{2n}-T_n|<\vepsilon$ 是否满足，若满足则停止，若不满足
-    则重复上一步。
+    \item 验证误差估计条件 $|T_{2n}-T_n|<\vepsilon$ 是否满足，若满足则停止，若不满足则重复上一步。
 \end{enumerate}
 
 \entry $T_{2n}$的迭代算法：
@@ -1263,11 +1527,11 @@ I-C_{2n}\approx\frac1{4^3-1}(C_{2n}-C_n).
 
 \entry 启发：由误差估计式 (\ref{6-e1}) 可以猜想，以下的估计式同样成立：
 \[ I\approx T_{2n}+\frac1{4-1}(T_{2n}-T_n) \]
-而将 $T_n$ 与 $T_{2n}$ 的表达式代入之后可得
+而将 $T_n$ 与 $T_{2n}$ 的表达式代入之后「竟然」发现
 \begin{equation}
 T_{2n}+\frac1{4-1}(T_{2n}-T_n)=S_n
 \end{equation}
-由此说明，可以用低精度的积分公式组合出高精度的积分公式
+由此说明，\emph{可用低精度公式组合出高精度公式}
 \footnote{本质上是由插值点的增加所致。}
 。对复化 Simpson 公式实行类似操作可推得
 \begin{equation}
@@ -1279,33 +1543,46 @@ S_{2n}+\frac1{4^2-1}(S_{2n}-S_n)=\frac{4^2S_{2n}-S_n}{4^2-1}=C_n
 \begin{equation}
 C_{2n}+\frac1{4^3-1}(C_{2n}-C_n)=\frac{4^3C_{2n}-C_n}{4^3-1}=R_n
 \end{equation}
-称由上式表述的 $R_n$ 为 Romberg 积分，其代数精度 $m=7$，其误差估计式为
+称由上式表述的 $R_n$ 为 \key{Romberg 积分}，其代数精度 $m=7$，误差估计式为
 \begin{equation}
 R[f]=K\cdot h^8f^{(8)}(\eta).
 \end{equation}
 
-\entry 一般不在 Romberg 积分的基础上进一步递推，因被积函数的高阶导数性态不易估计，可能
-出现 Runge 现象；且$R_{2n}-R_n$ 一项很小，舍入误差较大；计算量也过大。
+\entry 一般不在 Romberg 积分的基础上进一步递推，因被积函数的高阶导数性态不易估计，仍可能出现 Runge 现象；且$R_{2n}-R_n$ 一项很小，舍入误差较大；计算量也过大。
 
 \entry Romberg 积分可由最基本的复化梯形公式逐阶递推而来，常用 \key{Romberg 计算图}辅助
 计算。
 
 \begin{figure}[htbp]
-\small\centering
-\includegraphics[width=\defwidth]{default.png}
+\small\renewcommand{\arraystretch}{0.7}\centering
+\begin{tabular}{ccccccc}
+\toprule
+$T$ && $S$ && $C$ && $R$ \\
+\midrule
+$T_1$ && && && \\
+ & $\searrow$ & && && \\
+$T_2$ & $\rightarrow$ & $S_1$ && &&\\ 
+ & $\searrow$ & & $\searrow$ & && \\
+$T_3$ & $\rightarrow$ & $S_2$ & $\rightarrow$ & $C_1$ && \\
+& $\searrow$ & & $\searrow$ & & $\searrow$ & \\
+$T_4$ & $\rightarrow$ & $S_3$ & $\rightarrow$ & $C_2$ & $\rightarrow$ & $R_1$ \\
+& $\searrow$ & & $\searrow$ & & $\searrow$ & \\
+$T_5$ & $\rightarrow$ & $S_4$ & $\rightarrow$ & $C_3$ & $\rightarrow$ & $R_2$ \\
+$\vdots$ && $\vdots$ && $\vdots$ && $\vdots$ \\
+\bottomrule
+\end{tabular}
 \caption{Romberg 计算图}\label{6-f1}
 \end{figure}
 
 \section{待定系数法与 Gauss 型积分}
-\trm 积分公式 $Q[f]$ 之代数精度为 $m$ 的充要条件是
+\trm 积分公式 $Q[f]$ 之\emph{代数精度}为 $m$ 的充要条件是
 \[R[x^k]=0,\,(k=0,1,2,\cdots,m),\,R[x^{m+1}]\neq0.\]
 可利用此结果，在积分公式中分别代入$f(x)=x^k$，验算积分公式的代数精度。
 
 \entry \key{待定系数法}：根据数值积分公式的一般形式 $Q[f]=\dsum_{i=0}^kA_if(x_i)$，
-在给定条件下（如达到指定的代数精度、给定一些已知的节点），求解处公式中未知的节点$x_i$与
-系数$A_i$。
+在给定条件下（如达到指定的代数精度、给定已知节点），代入若干不同的 $f(x)$，求解出公式中未知的节点$x_i$与系数$A_i$。
 
-\example 待定系数法导出梯形公式：设 $Q[f]=A_1f(a)+A_2f(b)$，希望其代数精度为 $1$，则有
+\example 待定系数法导出梯形公式：设 $Q[f]=A_1f(a)+A_2f(b)$，希望其代数精度为 $m=1$，则有
 \begin{itemize}
     \item 令 $f(x)=1$，由 $I[f]=Q[f]$ 有 $A_1-A_2=b-a$；
     \item 令 $f(x)=x$，由 $I[f]=Q[f]$ 有 $A_1\cdot a + A_2\cdot b=\frac12(b^2-a^2)$。
@@ -1314,9 +1591,8 @@ R[f]=K\cdot h^8f^{(8)}(\eta).
 \[Q[f]=\frac{b-a}2[f(a)+f(b)],\]
 此即梯形公式。
 
-\entry 广义 Peano 定理：设 $Q[f]$ 的截断误差为 $R[f]$是区间上 $m+1$ 阶导数连续之函数
-的线性泛函\footnote{线性泛函满足：$R[c_1f_1+c_2f_2]=R[c_1f_1]+R[c_2f_2]$。}，且近似
-公式代数精度为 $m$，则有 $R[f(x)]=R[e(x)]$，其中
+\entry \key{广义 Peano 定理}：设 $Q[f]$ 的截断误差 $R[f]$是区间上 $m+1$ 阶导数连续的函数
+之线性泛函\footnote{线性泛函满足：$R[c_1f_1+c_2f_2]=c_1R[f_1]+c_2R[f_2]$。}，且其代数精度为 $m$，则有 $R[f(x)]=R[e(x)]$，其中
 \begin{equation}\label{6-e2}
 e(x)=\frac{f^{(m+1)}(\xi)}{(m+1)!}(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots
 (x-\tilde{x}_m)
@@ -1324,81 +1600,90 @@ e(x)=\frac{f^{(m+1)}(\xi)}{(m+1)!}(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots
 $\tilde{x}_0,\tilde{x}_1,\cdots,\tilde{x}_m$ 为 $[a,b]$ 上任意一点，$\xi\in[a,b]$
 与这 $m+1$ 个点的选取有关。
 
-\entry 通过合适的取点，可由广义 Peano 定理求得各积分公式的误差估计。一般要求：$e(x)$表
-达式中的 $(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots(x-\tilde{x}_m)$ 项在 $[a,b]$ 不变号；
-选取 $\tilde{x}_0,\tilde{x}_1,\cdots,\tilde{x}_m$ 最好使 $Q[e]$ 为 $0$，从而有
-$R[f]=I[e]$ 可直接算出。
+\entry 通过合适的\emph{取点}，可由广义 Peano 定理求得各积分公式的误差估计。一般要求：
+\begin{itemize}\tl
+    \item $e(x)$表达式中的 $(x-\tilde{x}_0)(x-\tilde{x}_1)\cdots(x-\tilde{x}_m)$ 项在 $[a,b]$ 不变号；
+    \item 选取 $\tilde{x}_0,\tilde{x}_1,\cdots,\tilde{x}_m$ 最好使 $Q[e]$ 为 $0$，从而 $R[f]=I[e]$ 可直接算出
+    \footnote{若 $Q[f]$ 的形式对称，则可以通过取若干对称的点实现这一点，参见下面的例子（\arabic{chapter}.\ref{6-ex1}）。}
+    。
+\end{itemize}
 
-\example 用广义 Peano 定理估计 Simpson 公式
+\example\label{6-ex1} 用广义 Peano 定理估计 Simpson 公式
 \[ \int_{-1}^1f(x)\di x\approx Q[f]=\frac13[f(-1)+4f(0)+f(1)] \]
-的误差，可考虑取 $-1,0,0,1$（其中 $0$ 为重节点），代入 (\ref{6-e2}) 式即得
+的误差，可考虑取 $-1,0,0,1$ 四点（其中 $0$ 为\emph{重节点}），代入 (\ref{6-e2}) 式即得
 \[ e(x)=\frac{f^{(4)}(\xi)}{4!}(x+1)x^2(x-1) \]
-而可以算得 $Q[e]=0$，故直接有
-\[ R[f]=I[e]=\int_{-1}^1\frac{f^{(4)}(\xi)}{4!}(x+1)(x-1)x^2\di x=
-\frac1{90}f^{(4)}(\eta)\,(\eta\in[a,b]) \]
-其中在 $(x+1)(x-1)x^2$ 不变号的前提下应用了广义积分中值定理。
+可以算得 $Q[e]=0$，故直接有
+\[\begin{aligned}
+    R[f]&=I[e]=\int_{-1}^1\frac{f^{(4)}(\xi)}{4!}(x+1)(x-1)x^2\di x\\
+    &=\frac1{90}f^{(4)}(\eta)\,(\eta\in[a,b]) 
+\end{aligned}\]
+其中，在 $(x+1)(x-1)x^2$ 不变号的前提下应用了第一积分中值定理。
 
-\entry 简化解法：设数值积分公式 $Q[f]$ 的代数精度为 $m$，根据广义 Peano 定理其误差项
+\entry \setkey{简化解法}{24K金法}：设数值积分公式 $Q[f]$ 的代数精度为 $m$，据广义 Peano 定理知其误差项
 一定为 $Kf^{(m+1)}(\eta)$ 的形式；代入 $f(x)=x^{m+1}$ 即有
 \[ K\cdot m! = R[f] = I[f] - Q[f] \]
 将 $I[f]$ 与 $Q[f]$ 算出，即可求得系数 $K$。
-（当 $m=4$ 时，方程左侧为 $24K$，故戏称此法为「24K金法」。
+（当 $m=4$ 时，方程左侧为 $24K$，故戏称此法为「24K金法」。）
 
-\example 用「24K金法」估计 Simpson 公式的误差。
+\example 用「24K金法」估计 Simpson 公式的误差。（答案与例 \arabic{chapter}.\ref{6-ex1} 相同。）
 
-\example 估计积分公式
+\example 用「24K金法」估计积分公式
 \[ \int_{-1}^1f(x)\di x\approx Q[f]=\frac43f\left(-\frac12\right)-\frac23f(0)+
 \frac43f\left(\frac12\right) \]
 的误差。（答案：$R[f]=\frac7{720}f^{(4)}(\eta)$。）
 
 \entry 在一般的积分公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 中，全部的待定参数共 $2n+2$ 个，
 可将它们全部通过待定系数法解出（而不必预先给定）；因此，对由 $n+1$ 个节点确定的积分公式，
-可以期望其最高具有 $m=2n+1$ 的代数精度，进而列出 $m+1=2n+2$ 个方程将待定参数解出。
+可以期望其\emph{最高具有 $m=2n+1$ 的代数精度}，进而列出 $m+1=2n+2$ 个方程将待定参数解出。
 
-\entry 最高精度为 $2n+1$：对代数精度为 $2n+1$ 的积分公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$，
+\entry 对代数精度为 $2n+1$ 的积分公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$，
 可代入以下的 $2n+2$ 次多项式
 \[ p(x)=(x-x_0)^2(x-x_1)^2\cdots(x-x_n)^2 \]
-则有 $Q[p(x)]=\dsum_{i=0}^nA_ip(x_i)=0$，而 $I[p(x)]$ 必然为正数，故可见 $Q[f]$ 的
-代数精度不可能达到 $2n+2$。
+则有 $Q[p(x)]=\dsum_{i=0}^nA_ip(x_i)=0$，而 $I[p(x)]$ 必然为正数，故可见 $Q[f]$ 的代数精度\emph{不可能}达到 $2n+2$，任何情况下的最高代数精度只能是 $2n+1$。
 
 \example 求解使积分公式
 \[ \int_{-1}^1f(x)\di x=Q[f]=A_0f(x_0)+A_1f(x_1) \]
 代数精度尽可能高的 $A_0,A_1,x_0,x_1$，并估计误差。
-（答案：$Q[f]=f(-1/\sqrt3)+f(1/\sqrt3)$，$m=3$，$R[f]=\frac1{135}f^{(4)}(\eta)$）
+（答案：$Q[f]=f(-1/\sqrt3)+f(1/\sqrt3)$，$m=3$，$R[f]=\frac1{135}f^{(4)}(\eta)$.）
 
-\entry Gauss 求积公式：具有 $n+1$ 个节点，代数精度达到 $2n+1$ 的数值积分公式。相应的
-节点称为 Gauss 点。
+\entry \key{Gauss 求积公式}：具有 $n+1$ 个节点，代数精度达到 $2n+1$ 的数值积分公式。相应的节点称为 \key{Gauss 点}。
 
-\trm 求积公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 是 Gauss 求积公式的充要条件为：
-\begin{itemize}
+\trm 求积公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 是 Gauss 求积公式的\setkey{充要条件}{Gauss 求积公式充要条件}为：
+\begin{itemize}\tl
     \item $x_i$ 为 $[a,b]$ 上关于权系数 $\omega(x)$ 正交的多项式 $g_{n+1}(x)$ 之零点；
     \item 求积系数 $A_i$ 按下式确定：
-    \begin{equation}
+    \begin{equation}\label{6-e5}
     A_i=\int_a^b\omega(x)l_i(x)\di x
     \end{equation}
 \end{itemize}
 
-\trm 引理：设$\{g_k(x)\}$ 为 $[a,b]$ 上关于 $\omega(x)$ 正交的首一正交多项式，则有
+\trm 引理：设$\{g_k(x)\}$ 为 $[a,b]$ 上关于 $\omega(x)$ 正交的\emph{首一正交多项式}，则有
 \begin{equation}
 \frac{g_{k+1}(x)}{x-x_i}=\frac{\gamma_n}{g_n(x_i)}\sum_{k=0}^n\frac{g_k(x)
 g_n(x_i)}{\gamma_k}
 \end{equation}
+其中 $x_i\ (i=0,1,\ldots,n)$ 为 $g_{n+1}$ 的零点，$\gamma_k=(g_k,g_k)$ 与正交多项式\emph{三项递推关系}（条目 5.\ref{5-t1}）中的含义一致
+\footnote{推导也须采用 5.\ref{5-t1} 中的三项递推关系：对其中 $g_{k+1}(x)$ 的表达式进行若干变换，再对 $k$ 求和就可得到此式。}
+。
 
-\trm 推论 1：求积公式中的系数 $A_i$ 可按
+\trm \key{Gauss 求积公式系数公式}：给定一组首一正交多项式$\{g_k(x)\}$，则 Gauss 求积公式 $Q[f]=\dsum_{i=0}^nA_if(x_i)$ 中的系数 $A_i$ 可按
 \begin{equation}\label{6-e3}
 A_i=\frac{\gamma_n}{g'_{n+1}(x_i)g_n(x_i)}\quad(i=0,1,\ldots,n)
 \end{equation}
-计算。
+计算
+\footnote{证明思路：根据 $x_i$ 为 $g_{n+1}(x)$ 的条件，将式 \eqref{6-e5} 中的 Langrange 插值基函数变换为 $l_i(x)=\frac{g_{n+1}(x)}{(x-x_i)g'_{n+1}(x_i)}$ 即可。}
+。
 
-\trm 推论 2：若 $f\in C^{2n+2}[a,b]$，且 $g_{n+1}(x)$ 为一个首一多项式，则有
+\trm \key{Gauss 求积公式截断误差}：若 $f\in C^{2n+2}[a,b]$，且 $g_{n+1}(x)$ 为一个首一多项式，则有
 \begin{equation}\label{6-e4}
 R[f]=\frac{\gamma_{n+1}}{(2n+2)!}f^{(2n+2)}(\eta).
 \end{equation}
 
-\trm 推论 3：Gauss 型求积公式的系数全大于 $0$。
+\trm Gauss 型求积公式的系数全大于 $0$。
+\footnote{证明：对 $f(x)=l_k^2(x)$ 应用 Gauss 求积公式。与之相反，Newton-Cotes 公式的系数无法满足此种条件。}
 
-\entry Gauss 型求积公式的求解过程：
-\begin{enumerate}
+\entry Gauss 型求积公式的\emph{求解过程}：
+\begin{enumerate}\tl
     \item 按三项递推关系 (\ref{5-e1}) 求出在 $[a,b]$ 上关于 $\omega(x)$ 正交的
     多项式 $g_{n+1}(x)$；
     \item 求出 $g_{n+1}(x)$ 的 $n+1$ 个根 $x_0,x_1,\cdots,x_n$。
@@ -1406,49 +1691,47 @@ R[f]=\frac{\gamma_{n+1}}{(2n+2)!}f^{(2n+2)}(\eta).
     \item 按 (\ref{6-e4}) 式的结果求解误差。
 \end{enumerate}
 
-\entry Gauss 求积公式的稳定性：设计算函数值时的舍入误差
+\entry Gauss 求积公式的\emph{稳定性}：设计算函数值 $f(x_i)$ 时的舍入误差可表示为
 \[ |f(x_i)-\tilde{f}(x_i)|\leq\vepsilon \]
-其中 $\vepsilon$ 为各子区间上最大的舍入误差限，则总的舍入误差估计为
+其中 $\vepsilon$ 为各子区间上\emph{最大}的舍入误差限，则总的舍入误差估计为
 \begin{equation}
 E=\left|\sum_{i=0}^nA_if(x_i)-\sum_{i=0}^nA_i\tilde{f}(x_i)\right|\leq\sum_{i=0}%
-^n|A_i|\vepsilon.
+^n\bigl|A_i\bigr|\vepsilon.
 \end{equation}
 对 Gauss 求积公式，所有的 $A_i$ 均为正，故有
-\[ \sum_{i=0}^n|A_i|=\sum_{i=0}^nA_i=\int_a^b\omega(x)\di x=\gamma_0 \]
-从而说明 $E\leq\gamma_0\vepsilon$，即舍入误差是可控的。这说明 Gauss 求积公式是稳定的。
+\[ \sum_{i=0}^n\bigl|A_i\bigr|=\sum_{i=0}^nA_i=\int_a^b\omega(x)\di x=\gamma_0 \]
+从而说明 $E\leq\gamma_0\vepsilon$，舍入误差可控。这说明 \emph{Gauss 求积公式是稳定的}。
 
 \section{数值微分公式}
-\entry 最基本的算法：割线代切线
+\entry 最基本的算法：\emph{割线代切线}
 \[ f'(x_i)\approx\frac{f(x_{i+1})-f(x_i)}{x_{i+1}-x_i}=A_if(x_i)+A_{i+1}f(x_{i+1}) \]
-可见数值微分公式与数值积分公式本质相同，均为个别点函数值的组合。
+可见数值微分公式与数值积分公式本质相同，均为个别点\emph{函数值的组合}。其缺陷与近似积分法（条目 \arabic{chapter}.\ref{6-et1}）相同：\emph{误差无法估计}。为此，应直接从一般的公式入手，在给定条件下直接求解节点与系数，并估计误差。
 
-\entry 以上方法的缺陷，与之前所提的朴素近似积分法相同：误差无法估计。为此，应直接从一般
-的公式入手，自行求解节点与系数，并估计误差。
-
-\entry 插值型数值微分公式：用插值多项式 $L_n(x)$ 代替原有函数 $f(x)$ ，求其导数：
+\entry \key{插值型数值微分公式}：用插值多项式 $L_n(x)$ 代替原有函数 $f(x)$ ，求其导数：
 \[ f(x)=L_n(x)+R_n(x)\,\Rightarrow\,f^{(k)}(x)=L_n^{(k)}(x)+R_n^{(k)}(x).\]
 
-\entry 插值型公式的误差估计：
+\entry 插值型公式的\emph{误差估计}：
 \[ R_n^{(k)}(x)=\frac{\di^k}{\di x^k}\left[\frac{f^{(n+1)}(\xi)}{(n+1)!}
-\pi_{n+1}(x)\right]=\frac{\di^k}{\di x^k}\left(f[x_0,x_1,\cdots,x_n,x]\pi_{n+1}(x)
-\right) \]
+\pi_{n+1}(x)\right]=\frac{\di^k}{\di x^k}\bigl(f[x_0,x_1,\cdots,x_n,x]\pi_{n+1}(x)
+\bigr) \]
 
 \trm 差商的导数有如下性质：
 \begin{equation}
-\frac{\di^k}{\di x^k}f[x_0,x_1,\cdots,x_m,x]=(k!)f[x_0,x_1,\cdots,x_m,x,x,\cdots,x].
+\frac{\di^k}{\di x^k}\bigl(f[x_0,x_1,\cdots,x_m,x]\bigr)=(k!)\cdot f[x_0,x_1,\cdots,x_m,x,x,\cdots,x].
 \end{equation}
 
-\entry 两点数值微分公式（$n=1,k=1$）：采用 Newton 插值多项式可求得
+\entry 两点数值微分公式（$n=1,k=1$）：对 $x_0,x_1,x$ 三点作 Newton 插值
+\footnote{也可用 Lagrange 插值法，并直接使用 Lagrange 插值法的误差估计式。}
+，利用差商导数的性质对插值多项式 $f(x)$ 求导，可以求得
 \[ f'(x)=f[x_0,x_1] + f[x_0,x_1,x,x](x-x_0)(x-x_1)+ f[x_0,x_1,x](2x-x_0-x_1) \]
 分别代入 $x_0$ 与 $x_1$ 可得两个数值微分公式：
 \begin{gather}
-f'(x_0)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_0)(x_0-x_1)\\
-f'(x_1)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_1)(x_0-x_1)
+f'(x_0)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_0)(x_0-x_1)\label{7-e3}\\
+f'(x_1)=\frac{f(x_1)-f(x_0)}{x_1-x_0}+\frac12f''(\xi_1)(x_0-x_1)\label{7-e4}
 \end{gather}
-可通过记 $h=x_1-x_0$ 来简化以上公式的写法。
+可用记号 $h=x_1-x_0$ 简化写法。
 
-\entry 三点数值微分公式（$n=2,k=1$）：设三个等距节点分别为 $x_0,x_1,x_2$，可得到相同
-结论为
+\entry 三点数值微分公式（$n=2,k=1$）：设三个等距（间距为 $h$）节点分别为 $x_0,x_1,x_2$，用 Newton 插值多项式可得到
 \begin{gather}
 f'(x_0)=\frac1{2h}[-3f(x_0)+4f(x_1)-f(x_1)]+\frac{h^2}3f'''(\xi_0)\\
 f'(x_1)=\frac1{2h}[-f(x_0)+f(x_2)]-\frac{h^2}6f'''(\xi_1)\\
@@ -1470,29 +1753,34 @@ f'(x)=\frac{f(x+h)-f(x-h)}{2h}-\frac{h^2}6f'''(\xi),\\
 f''(x)=\frac{f(x+h)-2f(x)+f(x+h)}{h^2}-\frac{h^2}{12}f^{(4)}(\xi).
 \end{gather}
 
-\entry 数值微分的待定系数法：类似于数值积分，可用待定系数法追求更高的代数精度。（此处，
-代数精度的定义与数值积分中的相同。）
+\entry 数值微分的\setkey{待定系数法}{数值微分待定系数法}：类似于数值积分，用待定系数法追求更高的\emph{代数精度}
+\footnote{此处，代数精度的定义与插值函数、数值积分中的相同。}
+。
 
 \example 给定 $x_0,x_1$，为求得下列形式的数值微分公式
 \[ f''(x_0)\approx c_0f(x_0)+c_1f'(x_0)+c_2f(x_1) \]
-中系数 $c_0,c_1,c_2$ 的值，首先期望该公式具有 $m=1+1=2$ 的代数精度，进而可依次代入
+中系数 $c_0,c_1,c_2$ 的值，首先期望该公式具有 $m=2$ 的代数精度
+\footnote{此时刚好可列出三个方程解出三个系数。}
+，进而可依次代入
 $f(x)=1$、$f(x)=x$、$f(x)=x^2$：
 \[\begin{cases}-c_0-c_2=0\\-c_1-c_2h=0\\2-c_2h^2=0\end{cases}\sothat
 \begin{cases}c_0=-\frac{2}{h^2}\\c_1=-\frac2h\\c_2=\frac2{h^2}\end{cases}\]
 可将 $f(x)=x^3$ 代入最终的公式中，解得 $R[f]=-2h\neq0$，故该公式的代数精度止于 $2$。
 此处可用广义 Peano 定理，取$x_0,x_0,x_1$ 三个节点构筑 $e(x)$，从而
-\[R[f]=R[e(x)]=e''(x_0)-\left[-\frac2{h^2}e(x_0)+\frac2he'(x_0)-\frac2{h^2}e(x_1)
-\right]=e''(x_0)=-\frac h3f'''(\xi).\]
+\[\begin{aligned}
+R[f]&=R[e(x)]=e''(x_0)-\left[-\frac2{h^2}e(x_0)+\frac2he'(x_0)-\frac2{h^2}e(x_1)\right]\\
+&=e''(x_0)=-\frac h3f'''(\xi).
+\end{aligned}\]
 （当然，也可以用「24K金法」，将 $f(x)=x^3$ 直接代入 $I[f]=R[f]$ 之中，
 求得系数 $K=-\frac h3$。）
 
-\entry 外推法：类似于 Romberg 积分法，用低精度公式递推出高精度公式。
+\entry \key{Richardson 外推法}：类似于 Romberg 积分法，用低精度公式递推出高精度公式。
 
-\entry 变步长微分法：类于数值积分中的类似方法。
+\entry \key{变步长微分法}：类于数值积分中的类似方法。
 
 \example 欲求得数值微分公式
 \[ f''(x)\approx Af(x-h)+Bf(x)+Cf(x+h) \]
-中的系数 $A,B,C$，可利用 Taylor 公式展开等式右侧的 $f(x-h)$ 与 $f(x-h)$：
+中的系数 $A,B,C$，可利用 \emph{Taylor 公式}展开等式右侧的 $f(x-h)$ 与 $f(x-h)$：
 \[ f''(x)=(A+B+C)f(x)+(-A+C)hf'(x)+(A+C)\frac{h^2}2f''(x)+R(x) \]
 其中 $R(x)$ 为余项。左右对应项相等，故有
 \[
@@ -1501,65 +1789,72 @@ $f(x)=1$、$f(x)=x$、$f(x)=x^2$：
 \]
 故可推出数值微分公式为
 \[ D_h[f]=\frac1{h^2}[f(x-h)-2f(x)+f(x+h)] \]
-为提高该公式的精度，可再 $h/2$ 为步长，能递推出近似关系
+为提高该公式的精度，可再取 $h/2$ 为步长
+\footnote{从这里出发，就可以如 Romberg 积分法的推导过程一样，导出形式类似的 Richardson 外推法。详见李乃成、梅立泉《数值分析》第 205 -- 206 页6.4.3节「外推求导法」。}
+，能递推出近似关系
 \[ f''(x)-D_{\frac12h}[f]\approx\frac14(f''(x)-D_h[f])\sothat
 f''(x)\approx\frac13\left[4D_{\frac h2}[f]-D_h[f]\right]. \]
 记 $\overline{D}[f]=\frac43D_{\frac h2}[f]-\frac13D_h[f]$，该公式相较于上式更为精确。
 
 \chapter{非线性方程迭代解法}
-\entry 非线性方程：在化简方程为
-\[ f(x)=0 \]
-的形式后，$f(x)$ 中含有 $x$ 的非线性项，如 $x^2$、$\sin x$、$\e^x$ 等。
+\entry \key{非线性方程}：在化简方程为 $f(x)=0$ 的形式后，$f(x)$ 中含有 $x$ 的非线性项，如 $x^2$、$\sin x$、$\e^x$ 等。
 线性方程以外的代数、函数方程均是非线性方程。
 
-\entry 迭代解法：泛指在已知结果的基础上，利用统一的迭代格式，从给定初值 $\{x^{(0)}\}$
-出发，使递推数列 $\{x^{(k)}\}$ 逼近方程解的解法。
+\entry 非线性方程的\emph{迭代解法}：泛指在已知结果的基础上，从给定初值 $x^{(0)}$
+出发，利用统一的迭代格式 $x^{(k+1)}=f(x^{(k)})$ ，使递推数列 $\{x^{(k)}\}$ 逼近方程解 $x^\ast$ 的解法。
 
 \entry 迭代解的要素：
-\begin{enumerate}
-    \item 迭代格式的构造；
+\begin{enumerate}\tl
+    \item 迭代格式 $x^{(k+1)}=f(x^{(k)})$ 的构造；
     \item 初值 $x^{(0)}$ 的选取；
-    \item 迭代数列 $\{x^{(k)}\}$ 的选取；
+    \item 迭代数列 $\{x^{(k)}\}$ 的收敛性与正确性；
     \item 迭代终止条件与误差估计。
 \end{enumerate}
 
 \section{迭代法简述}
-\entry 二分法：根据零点存在定理，不断二分方程之解所在的区间，用「区间套」逼近方程之解。
+\entry \key{二分法}：根据零点存在定理，不断二分方程之解所在的区间，用「区间套」逼近方程之解。二分法过程稳定，但运算量大（需反复计算函数值），且收敛较慢
+\footnote{每迭代 $10$ 次，解所在的区间范围缩小到原来的 $1/1024\approx1/1000$，相当于提高了 $3$ 位有效数字。也即：需要迭代超过 $3$ 次才能增加解的一位有效数字。}
+，故常用于初步确定初值 $x^{(0)}$ 的范围（而不用于确定最终解）。
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
-\caption{二分法示意}\label{7-f1}
+\begin{tikzpicture}[scale=2,fill opacity=0.25,text opacity=1]
+\draw[->] (-0.2,0) -- (5,0) node [below] {$x$};
+\draw[->] (0,-0.4) -- (0,0.4) node [right] {$y$};
+\draw (0,-0.3) parabola (4,0.4);
+\draw[dashed] (4,0.4) -- (4,0);
+\fill[black] (2,-0.05) rectangle (4,0.05) node [right] {$x^{(0)}$};
+\fill[black] (2,-0.1) rectangle (3,0.1) node [right] {$x^{(1)}$};
+\fill[black] (2.5,-0.2) rectangle (3,0.2) node [above right] {$x^{(2)}$};
+\fill[black] (2.5,-0.4) rectangle (2.75,0.4) node [right] {$x^{(3)}$};
+\end{tikzpicture}
+\caption{二分法示意（重叠的灰色格子即不断缩窄的区间套）}\label{7-f1}
 \end{figure}
-二分法过程稳定，但运算量大（需反复计算函数值），且收敛较慢
-\footnote{每迭代 $10$ 次，解所在的区间范围缩小到原来的 $1/1024\approx1/1000$，相当于
-提高了 $3$ 位有效数字。也即：需要迭代超过 $3$ 次才能增加解的一位有效数字。}
-，故常用于初步确定初值 $x^{(0)}$ 的范围（而不用于最终确定解）。
 
-\entry 简单迭代法：构造非线性方程 $f(x)=0$ 的同解变形 $x=\vphi(x)$，例如
-\[ x = x - f(x),\quad x=x-kf(x) \]
-等，再构造迭代格式为
+
+\entry \key{简单迭代法}：构造非线性方程 $f(x)=0$ 的同解变形 $x=\vphi(x)$，例如
+\[ x = x - f(x),\quad x=\sqrt{x^2-kf(x)} \]
+等，再构造对应迭代格式为
 \begin{equation}
 x_{k+1}=\vphi(x_k).
 \end{equation}
-若 $\{x_k\}$ 收敛到 $x^\ast$，$\vphi(x)$ 也在 $x^\ast$ 处连续，则对以上方程左右取极
-限即得 $x^\ast=\vphi(x^\ast)$，说明该迭代法可以逼近方程之解。
+若 $\{x_k\}$ 收敛到 $x^\ast$，且 $\vphi(x)$ 也在 $x^\ast$ 处连续，则对以上方程左右取极限即得 $x^\ast=\vphi(x^\ast)$，说明该迭代法可以逼近方程之解。
 
-\entry Newton 法：设非线性方程 $f(x)=0$ 之解为 $x^\ast$，即 $x^\ast = 0$，将其
+\entry \key{Newton 法}：设非线性方程 $f(x)=0$ 之解为 $x^\ast$，即 $x^\ast = 0$，将其
 在 $x_k$ 处展开可得
-\[ f(x_k)+f'(x_k)(x^\ast-x_k)+\cdots = 0 \]
+\begin{equation}\label{7-e2}
+f(x_k)+f'(x_k)(x^\ast-x_k)+\cdots = 0
+\end{equation}
 舍去二阶项，有 $f(x_k)+f'(x_k)(x^\ast-x_k)\approx0$，进而可变换得到
 \[x^\ast\approx x_k-\frac{f(x_k)}{f'(x_k)}\]
 改写其为一个迭代格式即得
 \begin{equation}\label{7-e1}
 x_{k+1} = x_k-\frac{f(x_k)}{f'(x_k)}
 \end{equation}
-可验证该方程确为 $f(x)=0$ 的同解变形，故该迭代格式收敛时必能得到方程之解。
+可验证该方程确为 $f(x)=0$ 的同解变形，故该迭代格式收敛时必能得到方程之解。（根据 Newton 法的几何意义，其又被称为\key{切线法}。）
 
-\entry 根据 Newton 法的几何意义，其又被称为\key{切线法}。
-
-\entry 改进 Newton 法：在上面的展开式中，若进一步保留到二次项，可解得：
+\entry \key{改进 Newton 法}：在上面的展开式 \eqref{7-e2} 中保留到二次项，可解得：
 \[ x^\ast\approx x_k+\frac{-f'(x_k)\pm\sqrt{f'(x_k)^2-2f(x_k)f''(x_k)}}{f''(x_k)} \]
-分母中的正负号不定，故可改写出两种迭代格式：
+分母中的正负号不定，故可写出两种迭代格式：
 \begin{gather}
 \tilde{x}_{k+1}=x_k-\frac{f'(x_k)+\sgn(f'(x_k))\sqrt{f'(x_k)^2-2f(x_k)f''(x_k)}
 }{f''(x_k)},\\
@@ -1569,13 +1864,15 @@ f''(x_k)}}.
 选取 $\tilde{x}_{k+1}$ 与 $\overline{x}_{k+1}$ 中距离 $x_k$ 更近者，作为下一步迭代
 时的 $x_{k+1}$ 即可。
 
-\entry 简化 Newton 法：若 $f'(x)$ 难以计算，可将迭代格式 (\ref{7-e1}) 改写为
+\entry \key{简化 Newton 法}：若 $f'(x)$ 难以计算，可将迭代格式 (\ref{7-e1}) 改写为
 \begin{equation}
 x_{k+1}=x_k-\frac{f(x_k)}{f'(x_0)}
 \end{equation}
-即始终采用初值点处导数近似表示 $f'(x_k)$。
+即始终采用\emph{初值点处导数}近似表示 $f'(x_k)$。
 
-\entry 弦割法：将迭代格式 (\ref{7-e1}) 中的导数 $f'(x_k)$ 用两点数值微分公式代替，可
+\entry \key{弦割法}
+\footnote{弦割法的提出已有相当历史，西安交大 120 周年校庆时提出的「风云两甲子，\emph{弦割}三世纪」即是为纪念其悠久的历史而作。}
+：将迭代格式 (\ref{7-e1}) 中的导数 $f'(x_k)$ 用两点数值微分公式代替，可
 得到：
 \begin{itemize}
     \item 若用 $x_k$ 与 $x_{k-1}$ 作为迭代格式中的两点，则得
@@ -1592,27 +1889,71 @@ x_{k+1}=x_k-\frac{f(x_k)}{f'(x_0)}
     此即\key{单点弦割法}。
 \end{itemize}
 
-\entry 弦割法需要给定两步初值 $x_0$ 与 $x_1$ 才能进行，该初值通常由其他方法获得。
+\entry 弦割法需要给定\emph{两步}初值 $x_0$ 与 $x_1$ 才能进行，它们通常由其他方法获得。
 
-\entry 切线法与弦割法的几何意义：
+\entry 切线法与弦割法的几何意义：如图 \ref{7-f2} 所示。
 \begin{figure}[htbp]
 \small\centering
-\includegraphics[width=\defwidth]{default.png}
+\begin{tikzpicture}[xscale=2,yscale=4]
+\draw[->] (0,0) -- (1.2,0) node [above] {$x$};
+\draw[->] (0,-0.2) -- (0,1) node [right] {$y$};
+\draw (0,-0.15) parabola (1.2,1) node [left] {$f(x)$};
+\draw[dashed] (1,0.65) -- (1,0) node [below] {$x^{(0)}$};
+\draw[red] (1.2,0.95) -- (1,0.65) -- (0.567, 0) node [below,black] {$x^{(1)}$};
+\draw[dashed] (0.567,0) -- (0.567,0.108);
+\draw[blue] (0.801,0.324) -- (0.567,0.108) -- (0.45,0);
+\draw[dashed] (0.45,0) -- (0.45,0.3) node [above] {$x^{(2)}$};
+\node at (0.6,-0.2) {Newton 法};
+\end{tikzpicture}\hfil
+\begin{tikzpicture}[xscale=2,yscale=4]
+\draw[->] (0,0) -- (1.2,0) node [above] {$x$};
+\draw[->] (0,-0.2) -- (0,1) node [right] {$y$};
+\draw (0,-0.15) parabola (1.2,1) node [left] {$f(x)$};
+\draw[dashed] (1,0.65) -- (1,0) node [below] {$x^{(0)}$};
+\draw[red] (1.2,0.95) -- (1,0.65) -- (0.567, 0) node [below,black] {$x^{(1)}$};
+\draw[dashed] (0.567,0) -- (0.567,0.108);
+\draw[blue] (0.644,0.216) -- (0.49,0);
+\draw[dashed] (0.49,0) -- (0.49,0.3) node [above] {$x^{(2)}$};
+\node at (0.6,-0.2) {简化 Newton 法};
+\end{tikzpicture}\hfil
+\begin{tikzpicture}[xscale=2,yscale=4]
+\draw[->] (0,0) -- (1.2,0) node [above] {$x$};
+\draw[->] (0,-0.2) -- (0,1) node [right] {$y$};
+\draw (0,-0.15) parabola (1.2,1) node [left] {$f(x)$};
+\draw[dashed] (1.1,0) -- (1.1,0.807) node [left] {$x^{(0)}$};
+\draw[dashed] (0.679,0) -- (0.679,0.22) node [right] {$x^{(1)}$};
+\draw[red] (1.2,0.95) -- (1,0.67) -- (0.679,0.22) -- (0.521,0) node [below,black] {$x^{(2)}$};
+\draw[dashed] (0.521,0) -- (0.521,0.068);
+\draw[blue] (0.986,0.524) -- (0.679,0.22) -- (0.521,0.068) -- (0.456,0);
+\draw[dashed] (0.456,0) -- (0.456,0.2) node [above] {$x^{(3)}$};
+\node at (0.6,-0.2) {两点弦割法};
+\end{tikzpicture}\hfil
+\begin{tikzpicture}[xscale=2,yscale=4]
+\draw[->] (0,0) -- (1.2,0) node [above] {$x$};
+\draw[->] (0,-0.2) -- (0,1) node [right] {$y$};
+\draw (0,-0.15) parabola (1.2,1) node [left] {$f(x)$};
+\draw[dashed] (1.1,0) -- (1.1,0.807) node [left] {$x^{(0)}$};
+\draw[dashed] (0.679,0) -- (0.679,0.22) node [right] {$x^{(1)}$};
+\draw[red] (1.2,0.95) -- (1,0.67) -- (0.679,0.22) -- (0.521,0) node [below,black] {$x^{(2)}$};
+\draw[dashed] (0.521,0) -- (0.521,0.068);
+\draw[blue] (1.2,0.934) -- (0.521,0.068) -- (0.468,0);
+\draw[dashed] (0.468,0) -- (0.468,0.2) node [above] {$x^{(3)}$};
+\node at (0.6,-0.2) {单点弦割法};
+\end{tikzpicture}
 \caption{迭代解法的几何意义}\label{7-f2}
 \end{figure}
 
 \section{迭代法的收敛理论}
-\entry 迭代法的两种收敛性：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，取定迭
-代格式 $x_{k+1}=\vphi(x_k)$ 与初值 $x_0$。若
-\begin{itemize}
+\entry 迭代法的两种\setkey{收敛性}{迭代法收敛性}：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，取定迭代格式 $x_{k+1}=\vphi(x_k)$ 与初值 $x_0$。若
+\begin{itemize}\tl
     \item 存在 $x^\ast$ 的一个小邻域，使得只要 $x_0$ 在此邻域中就能保证 $\{x_k\}$ 收
     敛\footnote{根据迭代格式的意义，当 $\{x_k\}$ 收敛时其必收敛于 $x^\ast$。}
-    ，则称迭代格式局部收敛；
-    \item 对任意的 $x_0\in[a,b]$，都有 $\{x_k\}$ 收敛，则称迭代格式全局收敛。
+    ，则称迭代格式\key{局部收敛}；
+    \item 对任意的 $x_0\in[a,b]$，都有 $\{x_k\}$ 收敛，则称迭代格式\key{全局收敛}。
 \end{itemize}
 
-\trm 全局收敛定理（压缩映射原理）：设 $\vphi(x)\in C[a,b]$，且满足：
-\begin{enumerate}
+\trm \key{全局收敛定理}（压缩映射原理）：设 $\vphi(x)\in C[a,b]$，且满足：
+\begin{enumerate}\tl
     \item $x\in[a,b]$ 时，$\vphi(x)\in[a,b]$；
     \item 存在 $L\in[0,1)$，使得对任意的 $x\in[a,b]$都有
     \begin{equation}
@@ -1620,65 +1961,64 @@ x_{k+1}=x_k-\frac{f(x_k)}{f'(x_0)}
     \end{equation}
 \end{enumerate}
 则由 $\vphi(x)$ 所构造的 $x_{k+1}=\vphi(x_k)$ 将是一个在 $[a,b]$ 上全局收敛的迭代
-数列，且其满足以下误差估计式：
+数列，且其满足以下\emph{误差估计式}：
 \begin{gather}
 |x^\ast-x_k|\leq\frac{L^k}{1-L}|x_1-x_0|,\quad\text{（先验估计）}\\
 |x^\ast-x_k|\leq\frac1{1-L}|x_{k+1}-x_k|.\quad\text{（事后估计）}
 \end{gather}
 
-\entry 以上定理的结果，仅是全局收敛的充分条件，而非必要条件。
+\entry 以上定理的结果，仅是全局收敛的\emph{充分条件}，而非\emph{必要条件}。
 
-\trm 局部收敛定理：设方程 $f(x)=0$ 有解 $x^\ast$，构造了一个迭代格式
+\trm \key{局部收敛定理}：设方程 $f(x)=0$ 有解 $x^\ast$，利用其同解变形构造了一个迭代格式
 $x_{k+1}=\vphi(x_k)$。若存在 $x^\ast$ 的某邻域 $[x^\ast-\delta,x^\ast+\delta]$ 使
 \[ |\vphi'(x)|\leq L<1 \]
-则迭代格式 $x_{k+1}=\vphi(x_k)$ 在该邻域上局部收敛。
+则迭代格式 $x_{k+1}=\vphi(x_k)$ 在该邻域上\emph{局部收敛}。
 
-\trm Newton 迭代法的局部收敛定理：设非线性方程 $f(x)=0$ 有解 $x^\ast$，在 $x^\ast$
+\trm Newton 迭代法的\emph{局部收敛定理}：设非线性方程 $f(x)=0$ 有解 $x^\ast$，在 $x^\ast$
 附近 $f(x)$ 二阶连续可微，$f'(x^\ast)\neq0$，则 Newton 迭代格式 (\ref{7-e1}) 在 
-$x^\ast$ 的充分小邻域内局部收敛。（或：当初值 $x_0$ 充分靠近 $x^\ast$ 时，Newton
+$x^\ast$ 的充分小邻域内局部收敛。（或：当初值 $x_0$ \emph{充分靠近} $x^\ast$ 时，Newton
 迭代法收敛。）
 
-\trm Newton 迭代法的全局收敛定理：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，
+\trm Newton 迭代法的\emph{全局收敛定理}：设非线性方程 $f(x)=0$ 在 $[a,b]$ 上有解 $x^\ast$，
 且 $f(x)$ 在 $[a,b]$ 上二阶连续可微。则 Newton 迭代格式 (\ref{7-e1}) 在 $[a,b]$ 上
 全局收敛的充分条件是：
-\begin{enumerate}
-    \item $f(a)f(b)<0$；
+\begin{enumerate}\tl
+    \item $f(a)\cdot f(b)<0$；
     \item 对任意的$x\in[a,b]$，$f'(x)\neq0$；
     \item $f''(x)$ 在 $[a,b]$ 上不变号；
     \item 初值 $x_0$ 满足 $f(x_0)f''(x_0)>0$。
 \end{enumerate}
 
-\trm 弦割法局部收敛的条件与 Newton 法类似，只要 $x_0,x_1$ 两步初值充分靠近 $x^\ast$。
+\trm 弦割法\emph{局部收敛}的条件与 Newton 法类似，只要 $x_0,x_1$ 两步初值充分靠近 $x^\ast$。
 
-\trm 弦割法全局收敛定理：在 Newton 法的所有条件之基础上，还应附加满足 $f(x_1)f''(x_1)
+\trm 弦割法\emph{全局收敛定理}：在 Newton 法的所有条件之基础上，还应附加满足 $f(x_1)f''(x_1)
 >0$。
 
-\define 收敛阶：设 $\{x_k\}$ 按某种迭代格式收敛于方程的解 $x^\ast$，若存在常数 $p\geq1$
+\define \key{收敛阶}：设 $\{x_k\}$ 按某种迭代格式收敛于方程的解 $x^\ast$，若存在常数 $p\geq1$
 与 $c>0$ 使条件
 \begin{equation}
 \lim_{k\to\infty}\frac{|x^\ast-x_{k+1}|}{|x^\ast-x_k|^p}=c\neq0
 \end{equation}
-成立，则称 $\{x_k\}$ 以 $p$ 阶收敛到方程之解。称 $c$ 为渐进误差常数。
+成立，则称 $\{x_k\}$ 以 $p$ 阶收敛到方程之解。称 $c$ 为\emph{渐进误差常数}。
 
-\entry $p=1$时，称为线性收敛，否则称为超线性收敛。
+\entry $p=1$时，称为\key{线性收敛}，否则称为\key{超线性收敛}。
 
-\trm （整数）收敛阶定理：设 $\vphi(x)$ 在不动点上 $x^\ast$ 的邻域内有连续的 $p$ 阶
+\trm （整数）\key{收敛阶定理}：设 $\vphi(x)$ 在不动点上 $x^\ast$ 的邻域内有连续的 $p$ 阶
 导数，则由 $x_{n+1}=\vphi(x_k)$ 生成的 $\{x_k\}$ 以 $p$ 阶收敛的充要条件是：
 \[\vphi'(x^\ast)=\vphi''(x^\ast)=\cdots=\vphi^{(p-1)}(x^\ast)=0,\,\vphi^{(p)}
 (x^\ast)\neq0.\]
 
-\entry 常见迭代格式的收敛阶：
-\begin{itemize}
-    \item 简单迭代法：当 $0<|\vphi'(x^\ast)|<1$时线性收敛。
-    \item Newton 法：当 $f'(x)\neq0$时二阶收敛。
-    \item 两点弦割法：满足收敛条件时具有 $p=\frac{1+\sqrt5}2\approx1.618$ 的收敛阶，
-    超线性收敛。
-    \item 单点弦割法：满足收敛条件时线性收敛。 
+\entry 常见迭代格式的\emph{收敛阶}：
+\begin{itemize}\tl
+    \item \emph{简单迭代法}：当 $0<|\vphi'(x^\ast)|<1$时\emph{线性收敛}。
+    \item \emph{Newton 法}：当 $f'(x)\neq0$时\emph{二阶收敛}。
+    \item \emph{两点弦割法}：满足收敛条件时具有 $p=\frac{1+\sqrt5}2\approx1.618$ 的收敛阶，\emph{超线性收敛}。
+    \item \emph{单点弦割法}：满足收敛条件时\emph{线性收敛}。 
 \end{itemize}
 
-\entry 加速收敛方法：促使原来收敛较慢的算法更快收敛，或使原来发散的迭代格式变为收敛。
+\entry \key{加速收敛方法}：促使原来收敛较慢的算法更快收敛，或使原来发散的迭代格式变为收敛。
 
-\entry 松弛因子加速法：对迭代格式 $x=\vphi(x)$，在方程左右减去一带松弛因子 $\omega$
+\entry \key{松弛因子加速法}：对迭代格式 $x=\vphi(x)$，在方程左右减去一带\emph{松弛因子} $\omega$
 的项 $\omega x$，得
 \[ x-\omega x=\vphi(x)-\omega x \]
 进而可得新的收敛格式
@@ -1690,10 +2030,13 @@ x=\frac{\vphi(x)-\omega x}{1-\omega}=\psi(x)
 若代入 $\omega=\vphi'(x^\ast)$，则在 $x^\ast$ 附近时 $|\psi(x^\ast)|$ 相当小，由此即
 可保证 $|\psi'(x)|\leq L<1$ 的条件成立（将发散的迭代格式改进为收敛的），并提高收敛速率。
 
-\entry Aitken 加速法。
+\entry \key{Aitken 加速法}：略
+\footnote{参见李乃成、梅立泉《数值分析》第228页「艾特肯加速法」，该加速方法是在假设迭代格式线性收敛的情况下作出的。}。
 
 \chapter{常微分方程数值解}
-\entry 本章只涉及一阶常微分方程初值问题：
+\entry 本章只涉及\emph{一阶常微分方程初值问题}
+\footnote{其他可能的问题包括：更高阶的常微分方程初值问题，以及常微分方程\emph{边值问题}等。}
+：
 \begin{equation}\label{8-e1}
 \begin{cases}
 y'(x)=f(x,y(x)),\quad x\in[a,b]\\
@@ -1701,154 +2044,142 @@ y(a)=y_0.
 \end{cases}
 \end{equation}
 
-\trm 解的存在唯一性：在由式 (\ref{8-e1}) 所述的初值问题中，若 $f(x,y)$ 在区域
+\trm \setkey{解的存在唯一性}{常微分方程解存在唯一性}：在由式 (\ref{8-e1}) 所述的初值问题中，若 $f(x,y)$ 在区域
 \[D=\{(x,y)|a\leq x\leq b,-\infty<y<+\infty\}\]
 中连续，且存在一个常数 $L$ 使得对任意选取的 $y$ 与 $\bar{y}$ 都有
-\footnote{不等式中的第一个不等号，来自于多元函数的拟微分中值定理。}
-\[ |f(x,y)-f(x,\bar{y})|\leq|\frac{\del f}{\del y}(y-\bar{y})|\leq L|y-\bar{y}|,
+\footnote{不等式中的第一个不等号，来自于多元函数的\emph{拟微分中值定理}。}
+\[ |f(x,y)-f(x,\bar{y})|\leq\left|\frac{\del f}{\del y}(y-\bar{y})\right|\leq L|y-\bar{y}|,
 \quad x\in[a,b] \]
 则该初值问题在 $[a,b]$ 上存在唯一连续可微解 $y=y(x)$。
 
-\entry 用数值计算方法，求出初值问题 (\ref{8-e1}) 在给定的若干节点 $x_i\in[a,b]$ 上之
-数值解 $y_i\approx y(x_i)$。
+\entry \emph{数值解}：用数值计算方法，求出初值问题 (\ref{8-e1}) 在给定的\emph{若干节点} $x_i\in[a,b]$ 上的解 $y_i\approx y(x_i)$。
 
-\entry 一般记 $x_i$ 处的精确解为 $y(x_i)$，数值近似解则记为
+\entry 一般记 $x_i$ 处的\emph{精确解}为 $y(x_i)$，\emph{数值近似解}则记为
 $y_i$。
 
 \section{常用解法的导出}
-\entry 数值微分法：在初值问题 (\ref{8-e1}) 中，用某一数值微分公式
+\entry \key{数值微分法}：在初值问题 (\ref{8-e1}) 中，用某一数值微分公式
 \[ y'(x_i)=y'_i+R[y] \]
-（其中 $y'_i$ 为近似解，$R[y]$ 为误差项）替换原方程中的 $y'(x_i)$，进而求出一个求解
-$y_i$ 的数值公式。
+（其中 $y'_i$ 为近似解，$R[y]$ 为误差项）替换原方程中的 $y'(x_i)$，进而求出一个求解 $y_i$ 的数值公式，误差估计由 $R[y]$ 给出。
 
-\entry Euler 法：在 (\ref{8-e1}) 中代入 $x=x_i$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点
-数值微分公式替换 $y'(x_i)$，可得到关系式
+\entry \key{Euler 法}：在 (\ref{8-e1}) 中代入 $x=x_i$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点数值微分公式 \eqref{7-e3} 替换 $y'(x_i)$，可得到关系式
 \[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_i)h=f(x_i,y(x_i)) \]
 作局部化假设 $y(x_i)=y_i$ （即认为 $x_i$ 处的解已准确算出），并略去关于 $h$ 的高阶项，
 则可最终获得关于 $y_{i+1}$ 的递推关系
 \begin{equation}
 y_{i+1}=y_i+hf(x_i,y_i)
 \end{equation}
-此法称为 Euler 法。
+此法称为 \emph{Euler 法}。
 
-\entry 局部截断误差：根据两点数值微分公式的误差，可知 Euler 法的截断误差为
+\entry \key{局部截断误差}：根据两点数值微分公式的误差，可知 Euler 法的截断误差为
 \begin{equation}
 R[x_i]=\frac{h^2}2y''(\xi_i).
 \end{equation}
 
-\entry 全局截断误差：在局部化假设处处成立（即每一步所用的前提条件都准确无误）之前提下，
-全局误差可估计为
+\entry \key{全局截断误差}：在\emph{局部化假设}处处成立
+\footnote{即每一步所用的前提条件都准确无误。}
+之前提下，全局误差可估计为
 \begin{equation}
 R(x_N)=\sum_{i=0}^{N-1}R[x_i]=\frac{b-a}2\cdot hf''(\xi).
 \end{equation}
 
-\entry 后退 Euler 法：在初值问题中代入 $x=x_{i+1}$，并利用 $x_i$ 与 $x_{i+1}$ 间的两
-点数值微分公式替换 $y'(x_i)$，可得到关系式
+\entry \key{后退 Euler 法}：在初值问题中代入 $x=x_{i+1}$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点数值微分公式 \eqref{7-e4} 替换 $y'(x_i)$，可得到关系式
 \[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_{i})h=f(x_{i+1},y(x_{i+1})) \]
-作局部化假设 $y_{i+1}=y(x_{i+1})$并略去关于 $h$ 的高阶项，可获得关系式
+作局部化假设 $y_{i+1}=y(x_{i+1})$ 并略去关于 $h$ 的高阶项，可获得关系式
 \begin{equation}
 y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
 \end{equation}
-此法称为后退 Euler 法。
+此法称为\emph{后退 Euler 法}。
 
-\entry 后退 Euler 法中，$y_{i+1}$ 不能显式解出，在 $f$ 为非线性函数时必须采用迭代解法，
-称该法为\key{隐式解法}；Euler 法中可直接由 $x_i$ 解出 $y_{i+1}$，故称为\key{显式解法}。
+\entry 后退 Euler 法中，$y_{i+1}$ 不能\emph{显式}解出，在 $f$ 为非线性函数时必须采用\emph{迭代解法}，称该法为\key{隐式解法}；Euler 法中可直接由 $x_i$ 解出 $y_{i+1}$，故称为\key{显式解法}。
 
-\entry 后退 Euler 法的局部截断误差为
+\entry 后退 Euler 法的\emph{局部截断误差}为
 \begin{equation}
 R[x_i]=-\frac{h^2}2y''(\xi_i),
 \end{equation}
 与 Euler 法的符号相反。
 
-\entry 中点法：在初值问题中代入 $x=x_{i+1}$，并代入中点处的三点微分中值公式
-(\ref{7-e-mid})，可得到关系式
+\entry \key{中点法}：在初值问题中代入 $x=x_{i+1}$，并代入中点处的三点微分中值公式 \eqref{7-e-mid}，可得到关系式
 \[ \frac{y(x_{i+1})-y(x_{i-1})}{2h}-\frac{h^2}6y'''(\xi_i)=f(x_i,y(x_i)) \]
 作局部化假设 $y_{i+1}=y(x_{i+1})$并略去关于 $h$ 的高阶项，可获得关系式
 \begin{equation}
 y_{i+1}=y_{i-1}+2hf(x_i,y_i)
 \end{equation}
-此法称为中点法。
+此法称为\emph{中点法}。
 
-\entry 中点法中，应用了 $x_{i-1}$ 与 $x_i$ 两个前提条件，为此需在初值条件 $y_0$ 的
-基础上额外补充\key{表头元素} $y_1$，为此称中点法为一个\key{多步法}。与此相对，两种
-Euler 法都是\key{单步法}。
+\entry 中点法中，应用了 $x_{i-1}$ 与 $x_i$ 两个前提条件，为此需在初值条件 $y_0$ 的基础上额外补充\emph{表头元素} $y_1$，为此称中点法为一个\key{多步法}。与此相对，两种 Euler 法都是\key{单步法}。
 
 \entry 多步法的表头元素，常用单步法提供。
 
-\entry 一般不采用点数更多的数值微分公式：精度提高优先，且需要补充更多表头元素。
+\entry 一般不采用点数更多的数值微分公式：精度提高不明显，且需要补充更多表头元素；精度受表头元素的制约。
 
-\define 公式的精度：若某一微分方程的数值解法的局部截断误差记为 $R[x_i]$，其满足
+\define 公式的\setkey{精度}{常微分方程数值解法精度}：若某一微分方程的数值解法的局部截断误差记为 $R[x_i]$，其满足
 \[ R[x_i]=y(x_{i+1})-y_{i+1}=O(h^{p+1}) \]
 则称该解法（公式、方法）的精度为 $p$ 阶。
 
-\entry 在数值微分法的各方法中：两种 Euler 法的精度均为一阶，中点法为二阶。
+\entry 两种 Euler 法的精度均为一阶，中点法为二阶。
 
-\entry 数值积分法：对微分方程初值问题 (\ref{8-e1}) 作积分，得到同解的积分方程问题
+\entry 数值积分法：对微分方程初值问题 (\ref{8-e1}) 作积分，得到同解的\emph{积分方程问题}
 \begin{equation}
 y(x)=y(a)+\int_a^xf(x,y(x))\di x\quad(x\in[a,b])\\
 \end{equation}
-在问题中替换区间 $[a,b]$ 为$[x_i,x_{i+1}]$，再利用数值积分公式替代方程中的积分表达式，
-求得关于 $y_{i+1}$ 的关系式。
+在问题中替换区间 $[a,b]$ 为$[x_i,x_{i+1}]$，再利用\emph{数值积分公式}替代方程中的积分表达式，求得关于 $y_{i+1}$ 的关系式。
 
 \entry 对子区间上积分 $\int_{x_i}^{x_{i+1}}f(x,y(x))\di x$，采用
 \begin{itemize}
-    \item 矩形数值积分公式近似：可分别获得数值解法
+    \item \emph{矩形数值积分公式}：可分别获得数值解法
     \begin{gather}
     y_{i+1}=y_i+hf(x_i,y_i)\\
     y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
     \end{gather}
     此即 Euler 法与倒退 Euler 法，均为一阶公式。
-    \item 梯形公式近似：可获得数值解法
+    \item \emph{梯形公式}：可获得数值解法
     \begin{equation}
     y_{i+1}=y_i+\frac h2[f(x_i,y_i)+f(x_{i+1},y_{i+1})]
     \end{equation}
-    此公式也称梯形公式，是一个二阶隐式公式，误差估计为
+    此公式也称\key{梯形公式}，是一个\emph{二阶隐式公式}，误差估计为
     \begin{equation}
     R[x_i]=-\frac{h^3}{12}f'''(\xi_i).
     \end{equation}
-    \item Simpson 公式：可获得数值解法
+    \item \emph{Simpson 公式}：可获得数值解法
     \begin{equation}
     y_{i+1}=y_{i-1}+\frac h3[f(x_{i-1},y_{i-1})+4f(x_i,y_i)+f(x_{i+1},y_{i+1})]
     \end{equation}
-    此公式也称为 Simpson 公式，是一个四阶两步隐式公式，误差估计为
+    此公式也称为 \key{Simpson 公式}，是一个\emph{四阶两步隐式公式}，误差估计为
     \begin{equation}
     R[x_i]=-\frac{h^5}{90}y^{(5)}(\xi_i).
     \end{equation}
 \end{itemize}
 
-\entry Adams 显式公式：为求 $y_{i+1}$ 的值，给定之前的 $(x_{i-k},f_{i-k}),(x_{i-k+1},
-f_{i-k+1}),\cdots,(x_i,f_i)$ 共 $(k+1)$ 个点（其中 $f_n=f(x_n,y_n)$），作插值多项式
+\entry \key{Adams 显式公式}：为求 $y_{i+1}$ 的值，给定之前的 $(x_{i-k},f_{i-k}),(x_{i-k+1},f_{i-k+1}),$ $\cdots,(x_i,f_i)$ 共 $(k+1)$ 个点（其中 $f_n=f(x_n,y_n)$），作\emph{插值多项式}
 \[ f(x,y)=L_k(x)+R_k(x) \]
 以获得 $y'(x)$ 的近似表示，进而在同解积分问题中近似代入
-\[ \int_{x_i}^{x_{i+1}}y'(x)\di x=\int_{x_i}^{x_{i+1}}L_k(x)\di x \]
+\[ \int_{x_i}^{x_{i+1}}y'(x)\di x\approx\int_{x_i}^{x_{i+1}}L_k(x)\di x \]
 从而可以获得一显式的数值解公式
 \begin{gather}
 y_{i+1}=y_i+\frac hA\cdot(b_0f_i+b_1f_{i-1}+\cdots+b_kf_{i-k})\quad(i\geq k)\\
 R[x_i]=B_kh^{k+2}y^{(k+2)}(\xi_i)
 \end{gather}
-称为 Adams 显式公式。式中的系数 $A$、$f_i$、$B_k$ 可据实推导，亦可直接查现成的系数表。
+称为 \emph{Adams 显式公式}。式中的系数 $A$、$f_i$、$B_k$ 可据实推导，亦可直接查现成的系数表
+\footnote{系数表参见李乃成、梅立泉《数值分析》第269页表9.1。}
+。
 
-% 系数表呢？
-
-\entry Adams 隐式公式：与 Adams 显式公式推导类似，但在给定的 $k+1$ 数据点中，将最前的
-$(x_{i-k},y_{i-k})$ 替换为待求的 $(x_{i+1},y_{i+1})$，仍作插值多项式，进而可求解得到
-一隐式的数值解公式
+\entry Adams 隐式公式：与 Adams 显式公式推导类似，但在给定的 $k+1$ 数据点中，将最前的 $(x_{i-k},y_{i-k})$ 替换为待求的 $(x_{i+1},y_{i+1})$，仍作插值多项式，进而可求解得到一隐式的数值解公式
 \begin{gather}
 y_{i+1}=y_i+\frac h{A^\ast}\cdot(b^\ast_0f_{i+1}+b^\ast_1f_i+\cdots+b^\ast_kf_{i
 -k+1})\quad(i\geq k)\\
 R[x_i]=B^\ast_kh^{k+2}y^{(k+2)}(\xi_i)
 \end{gather}
-称为 Adams 隐式公式。式中系数可据实推导，也可直接查表。
+称为 \emph{Adams 隐式公式}。式中系数可据实推导，也可直接查表
+\footnote{系数表参见李乃成、梅立泉《数值分析》第270页表9.2。}
+。
 
 \section{预测-校正方法与一般性理论}
-\entry 一般而言，显式法易于计算，但隐式法的稳定性较显式法高。
+\entry 一般而言，显式法\emph{易于计算}，但隐式法的\emph{稳定性}较显式法高。
 
-% 此处应当举例绘图表明稳定性的差异。
+\entry 可以考虑在求解过程中，先用（低阶）显式公式初步求得 $y_{i+1}$ 的近似值，再直接代入（高阶）隐式公式中以直接求得更稳定的解。此类方法统称\key{预估-校正法}。
 
-\entry 可以考虑在求解过程中，先用（低阶）显式公式初步求得 $y_{i+1}$ 的近似值，再直接代
-入（高阶）隐式公式中以直接求得更稳定的解。此类方法统称预估-校正法。
-
-\entry 改进 Euler 法：用 Euler 法预估，再用倒退 Euler 法校正：
+\entry \key{改进 Euler 法}：用 Euler 法预估，再用倒退 Euler 法校正：
 \begin{equation}
 \begin{cases}
 p_{i+1}=y_i+h(x_i,y_i)\\
@@ -1857,7 +2188,7 @@ y_{i+1}=y_i+h(x_{i+1},p_{i+1})
 \end{equation}
 此法仍是一阶解法，但稳定性比 Euler 法更高，也不用像倒退 Euler 法一样隐式求解。
 
-\entry Heun 方法：用 Euler 法预估，用梯形公式校正：
+\entry \key{Heun 方法}：用 Euler 法预估，用梯形公式校正：
 \begin{equation}
 \begin{cases}
 p_{i+1}=y_i+h(x_i,y_i)\\
@@ -1874,10 +2205,10 @@ K_1=hf(x_i,y_i)\\
 K_2=hf(x_i+h,y_i+K_1)
 \end{cases}
 \end{equation}
-式中，$K_1$ 与 $K_2$ 是利用已有的 $(x_i,y_i)$ 信息依次用 $f$ 推演所得的「补充信息」。
+式中，$K_1$ 与 $K_2$ 是利用已有的 $(x_i,y_i)$ 信息依次用 $f$ 推演所得的\emph{补充信息}。
 
-\entry Runge-Kutta 法（RK 法）：将以上所言的「补充信息」一般化，可得如下的解法：
-\begin{equation}
+\entry \key{Runge-Kutta 法}（RK 法）：将以上所言的「补充信息」一般化，可得如下的解法：
+\begin{equation}\label{8-e3}
 \begin{cases}
 y_{i+1}&=y_i+\lambda_1K_1+\lambda_2K_2+\cdots+\lambda_mK_m\\
 K_1&=hf(x_i,y_i)\\
@@ -1891,19 +2222,29 @@ K_m&=hf(x_i+\alpha_mh,y_i+\beta_{m1}K_1+\cdots+\beta_{m,m-1}K_{m-1})
 \begin{equation}
 R[x_i]=o(h^{m+1})
 \end{equation}
-的截断误差，可将 $R[x_i]$ 的表达式在 $x_i$ 处展开，使其低于 $m+1$ 次各项系数为 $0$，
-进而列解方程确定方法。
+的截断误差，可将 $R[x_i]$ 的表达式在 $x_i$ 处\emph{展开}，使其低于 $m+1$ 次各项系数为 $0$，进而列方程确定式 \eqref{8-e3} 中各项系数。此类方法统称为 \emph{Runge-Kutta} 法。
 
 \entry 实际问题中，方程数往往小于系数个数，此时可自由选取个别系数，以确定其他系数。
 （由此得到的是不同的解法。）
 
-\example 二阶 Runge-Kutta 法。
+\example 二阶 Runge-Kutta 法：改进 Euler 法，变形 Euler 法
+\footnote{参见李乃成、梅立泉《数值分析》第275页「变形欧拉法」。}
+。
 
-\example 四阶 Runge-Kutta 法。
+\example 四阶 Runge-Kutta 法：最常用者为标准四级四阶 R-K 法：
+\begin{equation}
+\begin{cases}
+y_{i+1}&=y_i+\frac16(K_1+2K_2+2K_3+K_4)\\
+K_1&=hf(x_i,y_i)\\
+K_2&=hf\left(x_i+\frac12h,y_i+\frac12K_1\right)\\
+K_3&=hf\left(x_i+\frac12h,y_i+\frac12K_2\right)\\
+K_4&=hf(x_i+h,y_i+K_3)
+\end{cases}
+\end{equation}
 
 \entry Runge-Kutta 是单步显式方法，可直接求解，精度很高。缺点是计算量大。
 
-\entry 可将之前所提的所有解法统一成以下的形式：
+\entry 可将之前所提的所有解法\emph{统一}成以下的形式：
 \begin{equation}\label{8-e2}
 y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+h\sum_{j=-1}^K\beta_jf_{i-j}.
 \end{equation}
@@ -1911,23 +2252,65 @@ y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+h\sum_{j=-1}^K\beta_jf_{i-j}.
 一个显式公式，否则表示的是隐式公式。含 $y_{i-j}$ 的项决定了方程的步数，而含 $f_{i-j}$
 的项决定了方程的阶数。
 
-\entry 待定系数法：对由 (\ref{8-e2}) 概括的数值解法，可计算其截断误差
+\entry \setkey{待定系数法}{常微分方程数值解待定系数法}：对由 (\ref{8-e2}) 概括的数值解法，可计算其截断误差
 \begin{equation}
-R[x_i]=y(x_{i+1})-y_{i+1}=y(x_{i+1})-\sum_{j=0}^K\alpha_jy(x_{i-j})-h\sum{j=-1}%
-^K\beta_jy'(x_{i-j}).
+R[x_i]=y(x_{i+1})-y_{i+1}=y(x_{i+1})-\sum_{j=0}^K\alpha_jy(x_{i-j})-h\sum_{j=-1}^K\beta_jy'(x_{i-j}).
 \end{equation}
 利用 Taylor 公式将 $R[x_i]$ 中各项在 $x_i$ 处展开，为尽可能地使方法有高的精度，设其各
 低次项的系数为 $0$，由此即可列解系数方程。进而可用广义 Peano 定理或「24K金法」求解截断
 误差的系数。
 
-\example 为确定所有可能的三阶两步方法，根据一般形式 (\ref{8-e2}) 可设出如下形式的解法：
+\example 为确定所有可能的\emph{三阶两步方法}，根据一般形式 (\ref{8-e2}) 可设出如下形式的解法：
 \[ y_{i+1}=\alpha_0y_i+\alpha_1y_{i-1}+h(\beta_{-1}f_{i+1}+\beta_0f_i+\beta_1
 f_{i-1}) \]
+计算其截断误差为
+\[
+R[x_i] = y(x_{i+1}) - \alpha_0y(x_i) - \alpha_1y(x_{i-1}) -h[\beta_{-1}y'(x_i+h)+\beta_0y'(x_i)+\beta_1y'(x_i-h)]
+\]
+取 $x_i=0$，并令 $ R[x^k] = 0\ (k=0,1,2,3)$（3 阶精度），可得
+\[
+\begin{cases}
+1-\alpha_0-\alpha_1=0\\
+h[1+\alpha_1-(\beta_{-1}+\beta_0+\beta_1)]=0\\
+h^2[1-\alpha_1-2(\beta_{-1}-\beta_1)]=0\\
+h^3[1+\alpha_1-3(\beta_{-1}+\beta_1)]=0
+\end{cases}
+\]
+此时有 $4$ 个方程 $5$ 个未知数，其中一个未知数可任意决定。设 $\alpha_1$ 任意，则可将其他 $4$ 个未知数表示为：
+\[\begin{cases}
+\alpha_0=1-\alpha_1\\
+\beta_{-1}=\frac{5-\alpha_1}{12}\\
+\beta_0=\frac{2+2\alpha_1}3\\
+\beta_1=\frac{5\alpha_1-1}{12}
+\end{cases}\]
+考虑 $\alpha_1$ 的不同取值：
+\begin{enumerate}
+\item 若取 $\alpha_1=0$，则有 $\alpha_0=1$，$\beta_{-1}=\frac5{12}$，$\beta_0=\frac23$，$\beta_1=-\frac1{12}$；此即 $k=2$ 的 \emph{Adams 隐式公式}。
+\item 若取 $\alpha_1=1$，则有 $\alpha_1=0$，$\beta_{-1}=\beta_1=\frac13$，$\beta_0=\frac43$；此即 \emph{Simpson 公式}，其精度事实上为 4 阶。
+\item 也可以取 $\alpha_1$ 为其他值，得到不同的公式。
+\end{enumerate}
 
-\section{解与解法的分析方法}
+\entry 恭喜你把笔记看完了，请喝口水休息一下。
 
 \backmatter
-\chapter*{后记}
+\chapter{附录：考试内容评析}
+\begin{itemize}
+\item 在本校，与「数值计算方法」相关的课程大致可以分为工科生的\emph{计算方法}与数学系学生的\emph{数值分析}两大类。后者较前者难度更高，对计算与证明过程有更详细的考察；而目前流传的「往年试卷」中，往往以\emph{数值分析}的考卷居多，这会给修\emph{计算方法}课程的同学造成误导。因此，请不要过于相信这些「往年考卷」。
+\item 关于\emph{复习}：复习过程中并不需要做太多的「练习」，只需牢记相关知识点和例题即可。仅就这份笔记而言，考试中所有可能出现的知识点均已涉及到了。
+\item 关于\emph{考试题型}：从近几年的情况来看，一般分为\emph{填空题}和\emph{计算题}两大类，各占一半左右的分数。其中：
+\begin{itemize}
+    \item 填空题主要考察知识点，基本上不需要计算（口算就能解决）。大多数题目都有「窍门」，很多看似复杂的题目之结果其实非常简单。课程中所有的基础知识点都有可能涉及到。分值很高，注意不要丢分。
+    \item 计算题更像是「证明题」或「简答题」，主要目的在于考察学生对各类计算方法原理的理解应用能力（主要）或推导证明能力（次要）。具体的数值计算量并不大。
+\end{itemize}
+\item 计算题常见考点：以下考点基本上是固定的，在作业题中也时常操练，不需要特别担心。
+\begin{itemize}\tl
+    \item 对矩阵做 LU 分解；
+    \item 判断三种线性方程迭代法的收敛性（近年来较少考，但有可能出此类题目）；
+    \item 对给定数据点做 Newton 插值；
+    \item 利用待定系数法推导简单的数值积分公式，使之达到指定代数精度；
+    \item 判断非线性方程迭代格式的收敛性。
+\end{itemize}
+\end{itemize}
 
 \printindex
 
