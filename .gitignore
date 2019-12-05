@@ -141,6 +141,7 @@ acs-*.bib
 *.ilg
 *.ind
 *.ist
+!zhindex.ist
 
 # minitoc
 *.maf

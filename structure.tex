@@ -1,0 +1,38 @@
+% 宏包补充：索引及子图
+\usepackage{makeidx}
+\usepackage{subcaption}
+
+% 条目计数器
+\newcounter{entry}
+\counterwithin*{entry}{chapter}
+
+% 条目命令
+\newcommand{\example}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{48}}{}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\entry}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{226}}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\trm}{\vskip1ex\refstepcounter{entry}\noindent$\text{\ding{43}}_{\makebox%
+[10pt]{\footnotesize\bf\arabic{chapter}.\arabic{entry}}\hspace{5pt}}$}
+\newcommand{\define}{\trm}
+
+% 紧列表命令
+\newcommand{\tl}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% 符号简写及算子声明
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\di}{\mathrm{d}}
+\newcommand{\del}{\partial}
+\newcommand{\sothat}{\ \Rightarrow\ }
+\newcommand{\vphi}{\varphi}
+\newcommand{\vepsilon}{\varepsilon}
+\newcommand{\dsum}{\sum\limits}
+\newenvironment{spmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\cond}{Cond}
+\DeclareMathOperator{\sgn}{sgn}
+
+% 字体及索引格式
+\newcommand{\add}[1]{\textsf{[#1]}}
+\newcommand{\key}[1]{\textbf{#1}\index{#1}}
+\newcommand{\setkey}[2]{\textbf{#1}\index{#2}}
+\renewcommand{\emph}[1]{\uline{#1}}

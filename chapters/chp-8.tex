@@ -1,0 +1,258 @@
+\chapter{常微分方程数值解}
+\entry 本章只涉及\emph{一阶常微分方程初值问题}
+\footnote{其他可能的问题包括：更高阶的常微分方程初值问题，以及常微分方程\emph{边值问题}等。}
+：
+\begin{equation}\label{8-e1}
+\begin{cases}
+y'(x)=f(x,y(x)),\quad x\in[a,b]\\
+y(a)=y_0.
+\end{cases}
+\end{equation}
+
+\trm \setkey{解的存在唯一性}{常微分方程解存在唯一性}：在由式 (\ref{8-e1}) 所述的初值问题中，若 $f(x,y)$ 在区域
+\[D=\{(x,y)|a\leq x\leq b,-\infty<y<+\infty\}\]
+中连续，且存在一个常数 $L$ 使得对任意选取的 $y$ 与 $\bar{y}$ 都有
+\footnote{不等式中的第一个不等号，来自于多元函数的\emph{拟微分中值定理}。}
+\[ |f(x,y)-f(x,\bar{y})|\leq\left|\frac{\del f}{\del y}(y-\bar{y})\right|\leq L|y-\bar{y}|,
+\quad x\in[a,b] \]
+则该初值问题在 $[a,b]$ 上存在唯一连续可微解 $y=y(x)$。
+
+\entry \emph{数值解}：用数值计算方法，求出初值问题 (\ref{8-e1}) 在给定的\emph{若干节点} $x_i\in[a,b]$ 上的解 $y_i\approx y(x_i)$。
+
+\entry 一般记 $x_i$ 处的\emph{精确解}为 $y(x_i)$，\emph{数值近似解}则记为
+$y_i$。
+
+\section{常用解法的导出}
+\entry \key{数值微分法}：在初值问题 (\ref{8-e1}) 中，用某一数值微分公式
+\[ y'(x_i)=y'_i+R[y] \]
+（其中 $y'_i$ 为近似解，$R[y]$ 为误差项）替换原方程中的 $y'(x_i)$，进而求出一个求解 $y_i$ 的数值公式，误差估计由 $R[y]$ 给出。
+
+\entry \key{Euler 法}：在 (\ref{8-e1}) 中代入 $x=x_i$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点数值微分公式 \eqref{7-e3} 替换 $y'(x_i)$，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_i)h=f(x_i,y(x_i)) \]
+作局部化假设 $y(x_i)=y_i$ （即认为 $x_i$ 处的解已准确算出），并略去关于 $h$ 的高阶项，
+则可最终获得关于 $y_{i+1}$ 的递推关系
+\begin{equation}
+y_{i+1}=y_i+hf(x_i,y_i)
+\end{equation}
+此法称为 \emph{Euler 法}。
+
+\entry \key{局部截断误差}：根据两点数值微分公式的误差，可知 Euler 法的截断误差为
+\begin{equation}
+R[x_i]=\frac{h^2}2y''(\xi_i).
+\end{equation}
+
+\entry \key{全局截断误差}：在\emph{局部化假设}处处成立
+\footnote{即每一步所用的前提条件都准确无误。}
+之前提下，全局误差可估计为
+\begin{equation}
+R(x_N)=\sum_{i=0}^{N-1}R[x_i]=\frac{b-a}2\cdot hf''(\xi).
+\end{equation}
+
+\entry \key{后退 Euler 法}：在初值问题中代入 $x=x_{i+1}$，并利用 $x_i$ 与 $x_{i+1}$ 间的两点数值微分公式 \eqref{7-e4} 替换 $y'(x_i)$，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_i)}{h}-\frac12y''(\xi_{i})h=f(x_{i+1},y(x_{i+1})) \]
+作局部化假设 $y_{i+1}=y(x_{i+1})$ 并略去关于 $h$ 的高阶项，可获得关系式
+\begin{equation}
+y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
+\end{equation}
+此法称为\emph{后退 Euler 法}。
+
+\entry 后退 Euler 法中，$y_{i+1}$ 不能\emph{显式}解出，在 $f$ 为非线性函数时必须采用\emph{迭代解法}，称该法为\key{隐式解法}；Euler 法中可直接由 $x_i$ 解出 $y_{i+1}$，故称为\key{显式解法}。
+
+\entry 后退 Euler 法的\emph{局部截断误差}为
+\begin{equation}
+R[x_i]=-\frac{h^2}2y''(\xi_i),
+\end{equation}
+与 Euler 法的符号相反。
+
+\entry \key{中点法}：在初值问题中代入 $x=x_{i+1}$，并代入中点处的三点微分中值公式 \eqref{7-e-mid}，可得到关系式
+\[ \frac{y(x_{i+1})-y(x_{i-1})}{2h}-\frac{h^2}6y'''(\xi_i)=f(x_i,y(x_i)) \]
+作局部化假设 $y_{i+1}=y(x_{i+1})$并略去关于 $h$ 的高阶项，可获得关系式
+\begin{equation}
+y_{i+1}=y_{i-1}+2hf(x_i,y_i)
+\end{equation}
+此法称为\emph{中点法}。
+
+\entry 中点法中，应用了 $x_{i-1}$ 与 $x_i$ 两个前提条件，为此需在初值条件 $y_0$ 的基础上额外补充\emph{表头元素} $y_1$，为此称中点法为一个\key{多步法}。与此相对，两种 Euler 法都是\key{单步法}。
+
+\entry 多步法的表头元素，常用单步法提供。
+
+\entry 一般不采用点数更多的数值微分公式：精度提高不明显，且需要补充更多表头元素；精度受表头元素的制约。
+
+\define 公式的\setkey{精度}{常微分方程数值解法精度}：若某一微分方程的数值解法的局部截断误差记为 $R[x_i]$，其满足
+\[ R[x_i]=y(x_{i+1})-y_{i+1}=O(h^{p+1}) \]
+则称该解法（公式、方法）的精度为 $p$ 阶。
+
+\entry 两种 Euler 法的精度均为一阶，中点法为二阶。
+
+\entry 数值积分法：对微分方程初值问题 (\ref{8-e1}) 作积分，得到同解的\emph{积分方程问题}
+\begin{equation}
+y(x)=y(a)+\int_a^xf(x,y(x))\di x\quad(x\in[a,b])\\
+\end{equation}
+在问题中替换区间 $[a,b]$ 为$[x_i,x_{i+1}]$，再利用\emph{数值积分公式}替代方程中的积分表达式，求得关于 $y_{i+1}$ 的关系式。
+
+\entry 对子区间上积分 $\int_{x_i}^{x_{i+1}}f(x,y(x))\di x$，采用
+\begin{itemize}
+    \item \emph{矩形数值积分公式}：可分别获得数值解法
+    \begin{gather}
+    y_{i+1}=y_i+hf(x_i,y_i)\\
+    y_{i+1}=y_i+hf(x_{i+1},y_{i+1})
+    \end{gather}
+    此即 Euler 法与倒退 Euler 法，均为一阶公式。
+    \item \emph{梯形公式}：可获得数值解法
+    \begin{equation}
+    y_{i+1}=y_i+\frac h2[f(x_i,y_i)+f(x_{i+1},y_{i+1})]
+    \end{equation}
+    此公式也称\key{梯形公式}，是一个\emph{二阶隐式公式}，误差估计为
+    \begin{equation}
+    R[x_i]=-\frac{h^3}{12}f'''(\xi_i).
+    \end{equation}
+    \item \emph{Simpson 公式}：可获得数值解法
+    \begin{equation}
+    y_{i+1}=y_{i-1}+\frac h3[f(x_{i-1},y_{i-1})+4f(x_i,y_i)+f(x_{i+1},y_{i+1})]
+    \end{equation}
+    此公式也称为 \key{Simpson 公式}，是一个\emph{四阶两步隐式公式}，误差估计为
+    \begin{equation}
+    R[x_i]=-\frac{h^5}{90}y^{(5)}(\xi_i).
+    \end{equation}
+\end{itemize}
+
+\entry \key{Adams 显式公式}：为求 $y_{i+1}$ 的值，给定之前的 $(x_{i-k},f_{i-k}),(x_{i-k+1},f_{i-k+1}),$ $\cdots,(x_i,f_i)$ 共 $(k+1)$ 个点（其中 $f_n=f(x_n,y_n)$），作\emph{插值多项式}
+\[ f(x,y)=L_k(x)+R_k(x) \]
+以获得 $y'(x)$ 的近似表示，进而在同解积分问题中近似代入
+\[ \int_{x_i}^{x_{i+1}}y'(x)\di x\approx\int_{x_i}^{x_{i+1}}L_k(x)\di x \]
+从而可以获得一显式的数值解公式
+\begin{gather}
+y_{i+1}=y_i+\frac hA\cdot(b_0f_i+b_1f_{i-1}+\cdots+b_kf_{i-k})\quad(i\geq k)\\
+R[x_i]=B_kh^{k+2}y^{(k+2)}(\xi_i)
+\end{gather}
+称为 \emph{Adams 显式公式}。式中的系数 $A$、$f_i$、$B_k$ 可据实推导，亦可直接查现成的系数表
+\footnote{系数表参见李乃成、梅立泉《数值分析》第269页表9.1。}
+。
+
+\entry Adams 隐式公式：与 Adams 显式公式推导类似，但在给定的 $k+1$ 数据点中，将最前的 $(x_{i-k},y_{i-k})$ 替换为待求的 $(x_{i+1},y_{i+1})$，仍作插值多项式，进而可求解得到一隐式的数值解公式
+\begin{gather}
+y_{i+1}=y_i+\frac h{A^\ast}\cdot(b^\ast_0f_{i+1}+b^\ast_1f_i+\cdots+b^\ast_kf_{i
+-k+1})\quad(i\geq k)\\
+R[x_i]=B^\ast_kh^{k+2}y^{(k+2)}(\xi_i)
+\end{gather}
+称为 \emph{Adams 隐式公式}。式中系数可据实推导，也可直接查表
+\footnote{系数表参见李乃成、梅立泉《数值分析》第270页表9.2。}
+。
+
+\section{预测-校正方法与一般性理论}
+\entry 一般而言，显式法\emph{易于计算}，但隐式法的\emph{稳定性}较显式法高。
+
+\entry 可以考虑在求解过程中，先用（低阶）显式公式初步求得 $y_{i+1}$ 的近似值，再直接代入（高阶）隐式公式中以直接求得更稳定的解。此类方法统称\key{预估-校正法}。
+
+\entry \key{改进 Euler 法}：用 Euler 法预估，再用倒退 Euler 法校正：
+\begin{equation}
+\begin{cases}
+p_{i+1}=y_i+h(x_i,y_i)\\
+y_{i+1}=y_i+h(x_{i+1},p_{i+1})
+\end{cases}.
+\end{equation}
+此法仍是一阶解法，但稳定性比 Euler 法更高，也不用像倒退 Euler 法一样隐式求解。
+
+\entry \key{Heun 方法}：用 Euler 法预估，用梯形公式校正：
+\begin{equation}
+\begin{cases}
+p_{i+1}=y_i+h(x_i,y_i)\\
+y_{i+1}=y_i+\frac h2[f(x_i,y_i)+f(x_{i+1},p_{i+1})]
+\end{cases}
+\end{equation}
+此法是二阶方法。
+
+\entry 为考虑更一般的情形，可将 Heun 方法改写为
+\begin{equation}
+\begin{cases}
+y_{i+1}=y_i+\frac12K_1+\frac12K_2\\
+K_1=hf(x_i,y_i)\\
+K_2=hf(x_i+h,y_i+K_1)
+\end{cases}
+\end{equation}
+式中，$K_1$ 与 $K_2$ 是利用已有的 $(x_i,y_i)$ 信息依次用 $f$ 推演所得的\emph{补充信息}。
+
+\entry \key{Runge-Kutta 法}（RK 法）：将以上所言的「补充信息」一般化，可得如下的解法：
+\begin{equation}\label{8-e3}
+\begin{cases}
+y_{i+1}&=y_i+\lambda_1K_1+\lambda_2K_2+\cdots+\lambda_mK_m\\
+K_1&=hf(x_i,y_i)\\
+K_2&=hf(x_i+\alpha_2h,y_i+\beta_{21}K_1)\\
+K_3&=hf(x_i+\alpha_3h,y_i+\beta_{31}K_1+\beta_{32}K_2)\\
+\vdots&\\
+K_m&=hf(x_i+\alpha_mh,y_i+\beta_{m1}K_1+\cdots+\beta_{m,m-1}K_{m-1})
+\end{cases}
+\end{equation}
+式中的 $\lambda_k,\alpha_k,\beta_{ij}$等系数待定。为追求 $m$ 阶的精度，即达到
+\begin{equation}
+R[x_i]=o(h^{m+1})
+\end{equation}
+的截断误差，可将 $R[x_i]$ 的表达式在 $x_i$ 处\emph{展开}，使其低于 $m+1$ 次各项系数为 $0$，进而列方程确定式 \eqref{8-e3} 中各项系数。此类方法统称为 \emph{Runge-Kutta} 法。
+
+\entry 实际问题中，方程数往往小于系数个数，此时可自由选取个别系数，以确定其他系数。
+（由此得到的是不同的解法。）
+
+\example 二阶 Runge-Kutta 法：改进 Euler 法，变形 Euler 法
+\footnote{参见李乃成、梅立泉《数值分析》第275页「变形欧拉法」。}
+。
+
+\example 四阶 Runge-Kutta 法：最常用者为标准四级四阶 R-K 法：
+\begin{equation}
+\begin{cases}
+y_{i+1}&=y_i+\frac16(K_1+2K_2+2K_3+K_4)\\
+K_1&=hf(x_i,y_i)\\
+K_2&=hf\left(x_i+\frac12h,y_i+\frac12K_1\right)\\
+K_3&=hf\left(x_i+\frac12h,y_i+\frac12K_2\right)\\
+K_4&=hf(x_i+h,y_i+K_3)
+\end{cases}
+\end{equation}
+
+\entry Runge-Kutta 是单步显式方法，可直接求解，精度很高。缺点是计算量大。
+
+\entry 可将之前所提的所有解法\emph{统一}成以下的形式：
+\begin{equation}\label{8-e2}
+y_{i+1}=\sum_{j=0}^K\alpha_jy_{i-j}+h\sum_{j=-1}^K\beta_jf_{i-j}.
+\end{equation}
+当 $K=0$ 时，其表示了一个单步法，否则表示了一个多步法。当 $\beta_{-1}=0$ 时，其表示了
+一个显式公式，否则表示的是隐式公式。含 $y_{i-j}$ 的项决定了方程的步数，而含 $f_{i-j}$
+的项决定了方程的阶数。
+
+\entry \setkey{待定系数法}{常微分方程数值解待定系数法}：对由 (\ref{8-e2}) 概括的数值解法，可计算其截断误差
+\begin{equation}
+R[x_i]=y(x_{i+1})-y_{i+1}=y(x_{i+1})-\sum_{j=0}^K\alpha_jy(x_{i-j})-h\sum_{j=-1}^K\beta_jy'(x_{i-j}).
+\end{equation}
+利用 Taylor 公式将 $R[x_i]$ 中各项在 $x_i$ 处展开，为尽可能地使方法有高的精度，设其各
+低次项的系数为 $0$，由此即可列解系数方程。进而可用广义 Peano 定理或「24K金法」求解截断
+误差的系数。
+
+\example 为确定所有可能的\emph{三阶两步方法}，根据一般形式 (\ref{8-e2}) 可设出如下形式的解法：
+\[ y_{i+1}=\alpha_0y_i+\alpha_1y_{i-1}+h(\beta_{-1}f_{i+1}+\beta_0f_i+\beta_1
+f_{i-1}) \]
+计算其截断误差为
+\[
+R[x_i] = y(x_{i+1}) - \alpha_0y(x_i) - \alpha_1y(x_{i-1}) -h[\beta_{-1}y'(x_i+h)+\beta_0y'(x_i)+\beta_1y'(x_i-h)]
+\]
+取 $x_i=0$，并令 $ R[x^k] = 0\ (k=0,1,2,3)$（3 阶精度），可得
+\[
+\begin{cases}
+1-\alpha_0-\alpha_1=0\\
+h[1+\alpha_1-(\beta_{-1}+\beta_0+\beta_1)]=0\\
+h^2[1-\alpha_1-2(\beta_{-1}-\beta_1)]=0\\
+h^3[1+\alpha_1-3(\beta_{-1}+\beta_1)]=0
+\end{cases}
+\]
+此时有 $4$ 个方程 $5$ 个未知数，其中一个未知数可任意决定。设 $\alpha_1$ 任意，则可将其他 $4$ 个未知数表示为：
+\[\begin{cases}
+\alpha_0=1-\alpha_1\\
+\beta_{-1}=\frac{5-\alpha_1}{12}\\
+\beta_0=\frac{2+2\alpha_1}3\\
+\beta_1=\frac{5\alpha_1-1}{12}
+\end{cases}\]
+考虑 $\alpha_1$ 的不同取值：
+\begin{enumerate}
+\item 若取 $\alpha_1=0$，则有 $\alpha_0=1$，$\beta_{-1}=\frac5{12}$，$\beta_0=\frac23$，$\beta_1=-\frac1{12}$；此即 $k=2$ 的 \emph{Adams 隐式公式}。
+\item 若取 $\alpha_1=1$，则有 $\alpha_1=0$，$\beta_{-1}=\beta_1=\frac13$，$\beta_0=\frac43$；此即 \emph{Simpson 公式}，其精度事实上为 4 阶。
+\item 也可以取 $\alpha_1$ 为其他值，得到不同的公式。
+\end{enumerate}
+
+\entry 恭喜你把笔记看完了，请喝口水休息一下。

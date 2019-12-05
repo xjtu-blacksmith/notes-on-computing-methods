@@ -1,0 +1,174 @@
+\chapter{线性方程组迭代解法}
+\section{迭代方法概要}
+
+
+\entry 思想：$f(x^{\ast})=0\sothat\cdots\sothat x^{\ast}=\phi(x^{\ast})$，给出初值$x_0$和递推公式$x_{k+1}=\phi(x_k)$，假设$\{x_k\}$收敛，求极限——设$\lim\limits_{k\to\infty}x_k=x$，则有$x=\phi(x)$，从而必有$f(x)=0$。
+
+\define \key{向量序列收敛}：$\mathbf{x}^{(k)}=(x_1^{(k)},x_2^{(k)},\cdots,x_n^{(k)})^{\mathrm{T}}$，若$\lim\limits_{k\to\infty}x_i^{(k)}=x_i^{\ast}$，则$\mathbf{x}^{(k)}\to\mathbf{x}^{\ast}\ (k\to\infty)$，记作$\lim\limits_{k\to\infty}\mathbf{x}^{(k)}=\mathbf{x}^{\ast}$。
+
+\define \key{矩阵序列收敛}：$\mathbf{A}^{(k)}=(a_{ij}^{(k)})_{m\times n}$，若$\lim\limits_{k\to\infty}a_{ij}^{(k)}=a_{ij}$，则称$\mathbf{A}^{(k)}\to\mathbf{A}=(a_{ij})_{m\times n}$记作$\lim\limits_{k\to\infty}\mathbf{A}^{(k)}=\mathbf{A}$。
+\footnote{此处不用$\mathbf{A}^\ast$，以免与伴随矩阵的符号$\mathbf{A}^\ast$弄混。}
+
+\trm \key{序列收敛定理}：
+\begin{itemize}\tl
+    \item 对向量，$\mathbf{x}^{(k)}\to\mathbf{x}^\ast\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{x}^\ast-\mathbf{x}^{(k)}\|=0$
+    \item 对矩阵，$\mathbf{A}^{(k)}\to\mathbf{A}\ \Leftrightarrow\ \lim\limits_{k\to\infty}\|\mathbf{A}-\mathbf{A}^{(k)}\|=0$
+\end{itemize}
+
+\trm 定理：设$\mathbf{B}\in\mathbb{R}^{m\times n}$，则$\lim\limits_{k\to\infty}\mathbf{B}^k=0\ \Leftrightarrow\ \rho(\mathbf{B})<1$。
+
+\entry \key{迭代格式}的构造：设$\mathbf{Ax=b}$，\emph{同解变形}得$\mathbf{x=Bx+g}$，可构造对应的\emph{迭代格式}：
+\begin{equation}\label{3-e1}
+    \mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}
+\end{equation}
+由于是同解变形，故$\mathbf{x}^\ast=\lim\limits_{k\to\infty}\mathbf{x}^{(k)}$满足$\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}\sothat\mathbf{Ax}^\ast=\mathbf{b}$\ ，从而可通过(\ref{3-e1})式不断迭代以逼近方程的解。
+
+
+\section{三种基本迭代法}
+
+\entry \key{Jacobi迭代法}：以第$i$行为例，有：
+\[a_{i1}x_1+a_{i2}x_2+\cdots+a_{ii}x_i+\cdots+a_{in}x_n=b_i\]
+可解出
+\begin{align}
+x_i&=\frac1{a_{ii}}[b_i-(a_{i1}x_1+a_{i2}x_2+\cdots+a_{i,i-1}x_{i-1}+a_{i,i+1}x_{i+1}+\cdots+a_{in}x_n)]\notag\\
+&=\frac1{a_{ii}}\left[b_i-\sum_{j=1,j\neq i}^na_{ij}x_j\right]
+\end{align}
+依上式即可构造Jacobi迭代格式：
+\begin{equation}
+x_i^{(k+1)}=\frac1{a_{ii}}\left[b_i-\sum_{j=1,j\neq i}^na_{ij}x_j^{(k)}\right]\quad(i=1,2,\cdots,n)
+\end{equation}
+按照$\mathbf{x=Bx+g}$的标准格式，整理成矩阵格式：
+\begin{equation}
+\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}=\begin{pmatrix}0&-\frac{a_{12}}{a_{11}}&-\frac{a_{13}}{a_{11}}&\cdots&-\frac{a_{1n}}{a_{11}}\\-\frac{a_{21}}{a_{22}}&0&-\frac{a_{23}}{a_{22}}&\cdots&-\frac{a_{2n}}{a_{22}}\\\vdots&\vdots&\vdots&\ddots&\vdots\\-\frac{a_{n1}}{a_{nn}}&-\frac{a_{n2}}{a_{nn}}&-\frac{a_{n3}}{a_{nn}}&\cdots&0\end{pmatrix}\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix}+\begin{pmatrix}\frac{b_1}{a_{11}}\\\frac{b_2}{a_{22}}\\\vdots\\\frac{b_n}{a_{nn}}\end{pmatrix}
+\end{equation}
+
+\entry \key{Gauss-Seidel迭代法}：
+\begin{equation}
+\left\{
+\begin{aligned}
+x_1^{(k+1)}&=\frac1{a_{11}}(b_1-a_{12}x_2^{(k)}-a_{13}x_3^{(k)}-\cdots-a_{1n}x_n^{(k)})\\
+x_2^{(k+1)}&=\frac1{a_{22}}(b_2-a_{21}\fbox{$x_1^{(k+1)}$}-a_{23}x_3^{(k)}-\cdots-a_{2n}x_n^{(k)})\\
+x_3^{(k+1)}&=\frac1{a_{33}}(b_2-a_{31}\fbox{$x_1^{(k+1)}$}-a_{32}\fbox{$x_2^{(k+1)}$}-\cdots-a_{3n}x_n^{(k)})\\
+\cdots&\cdots\\
+x_n^{(k+1)}&=\frac1{a_{nn}}(b_2-a_{n1}\fbox{$x_1^{(k+1)}$}-a_{n2}\fbox{$x_2^{(k+1)}$}-\cdots-a_{n,n-1}\fbox{$x_{n-1}^{(k+1)}$})
+\end{aligned}
+\right.
+\end{equation}
+形式与Jacobi法相同，但区别在于进行下一步变量的迭代时采用了「新解」（即上式中框出的部分）。
+
+\entry \key{超松弛迭代法}（SOR
+\footnote{Successive over-relaxation.}
+法）：对Gauss-Seidel法的通用格式进行改写；若记每次迭代时的误差为$\mathbf{r}^{(k+1)}$，即
+\[x_i^{(k+1)}=x_i^{(k)}+\frac1{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)}\right]=x_i^{(k)}+\frac{r_i^{(k+1)}}{a_{ii}}\]
+当$k\to\infty$时总有$r_i^{(k+1)}/a_{ii}\to0$，故可以乘一个系数$\omega$以\emph{加快收敛}：
+\[x_i^{(k+1)}=x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i}^na_{ij}x_j^{(k)} \right] \]
+整理得
+\begin{equation}
+x_i^{(k+1)}=(1-\omega)x_i^{(k)}+\frac\omega{a_{ii}}\left[b_i-\sum_{j=1}^{i-1}a_{ij}x_j^{(k+1)}-\sum_{j=i+1}^na_{ij}x_j^{(k)} \right]
+\end{equation}
+整体迭代格式：
+\begin{equation}
+\left\{
+\begin{aligned}
+x_1^{(k+1)}&=(1-\omega)x_1^{(k)}+\frac\omega{a_{11}}\left(b_1-a_{12}x_2^{(k)}-a_{13}x_3^{(k)}-\cdots-a_{1n}x_{11}^{(k)} \right)\\
+x_2^{(k+1)}&=(1-\omega)x_2^{(k)}+\frac\omega{a_{11}}\left(b_2-a_{21}x_1^{(k+1)}-a_{23}x_3^{(k)}-\cdots-a_{2n}x_{11}^{(k)} \right)\\
+\cdots&\cdots\\
+x_n^{(k+1)}&=(1-\omega)x_n^{(k)}+\frac\omega{a_{n1}}\left(b_n-a_{n1}x_1^{(k+1)}-\cdots-a_{n,n-1}x_{11}^{(k+1)} \right)
+\end{aligned}
+\right.
+\end{equation}
+
+\entry 迭代的\emph{矩阵表示法}：将$\mathbf{A}$分解为$\mathbf{D,E,F}$三部分：$\mathbf{A=D-E-F}$，其中
+\begin{equation}
+\mathbf{D}=\begin{spmatrix}a_{11}&&\\&\ddots&\\&&a_{nn}\end{spmatrix},
+\mathbf{E}=\begin{spmatrix}0&&&&&\\-a_{21}&0&&&\\-a_{31}&-a_{32}&0&&\\\vdots&\vdots&\vdots&\ddots&\\-a_{n1}&-a_{n2}&-a_{n3}&\cdots&0 \end{spmatrix},
+\mathbf{F}=\begin{spmatrix}0&-a_{12}&-a_{13}&\cdots&-a_{1n}\\&0&-a_{23}&\cdots&-a_{2n}\\&&0&\cdots&-a_{3n}\\&&&\ddots&\vdots\\&&&&0 \end{spmatrix}
+\end{equation}
+\begin{itemize}\tl
+    \item \emph{Jacobi迭代法}：迭代格式中除对角阵 $\mathbf{D}$ 以外的系数均挪到了方程右侧，相当于
+    \[\mathbf{(D-E-F)x=b}\sothat\mathbf{Dx=(E+F)x+b}\sothat\mathbf{x=D}^{-1}\mathbf{(E+F)x+D}^{-1}\mathbf{b}\]
+    可见有
+    \begin{equation}
+    \begin{cases}\mathbf{B=D}^{-1}\mathbf{(E+F)=D}^{-1}(\mathbf{D-A})=\mathbf{I-D}^{-1}\mathbf{A}\\\mathbf{g=D}^{-1}\mathbf{b}\end{cases}
+    \end{equation}
+    \item \emph{Gauss-Seidel迭代法}：与 Jacobi 法不同的是，迭代中表示预先求得之「新解」的系数阵 $\mathbf{E}$ 留在方程左侧，相当于
+    \begin{align*}
+    \mathbf{(D-E-F)x=b}&\sothat\mathbf{(D-E)x=Fx+b}\\&\sothat\mathbf{x=(D-E)}^{-1}\mathbf{Fx+(D-E)}^{-1}\mathbf{b}
+    \end{align*}
+    可见有
+    \begin{equation}
+    \begin{cases}
+    \mathbf{B=(D-E)}^{-1}\mathbf{F}\\
+    \mathbf{g=(D-E)}^{-1}\mathbf{b}
+    \end{cases}
+    \end{equation}
+    \item \emph{超松弛迭代法}：在 Gauss-Seidel 法的基础上，将 $(1-\omega)$ 大小的对角系数 $\mathbf{D}$ 移至方程右侧（作为误差），相当于
+    \begin{gather*}
+    \omega\mathbf{(D-E-F)x}=\omega\mathbf{b}\sothat(\mathbf{D}-\omega\mathbf{E})\mathbf{x}=[(1-\omega)\mathbf{D}+\omega\mathbf{F}]\mathbf{x}+\omega\mathbf{b}\\
+    \sothat\mathbf{x}=(\mathbf{D}-\omega\mathbf{E})^{-1}[(1-\omega)\mathbf{D}+\omega \mathbf{F}]\mathbf{x}+(\mathbf{D}-\omega\mathbf{E})^{-1}\omega\mathbf{b}
+    \end{gather*}
+    可见有
+    \begin{equation}
+    \begin{cases}
+    \mathbf{B}=(\mathbf{D}-\omega\mathbf{R})^{-1}[(1-\omega)\mathbf{D}+\omega\mathbf{F}]\\
+    \mathbf{g}=\omega(\mathbf{D}-\omega\mathbf{E})^{-1}\mathbf{b}
+    \end{cases}
+    \end{equation}
+\end{itemize}
+
+
+
+\section{迭代收敛理论}
+\entry 下面给出迭代格式收敛的条件（非常重要！个人猜测必考
+\footnote{王天浩的评论。}
+）。
+
+\trm 定理1：若$\|\mathbf{B}\|\leq1$，则$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$，且有误差估计式：
+\begin{gather}
+\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(k)}-\mathbf{x}^{(k-1)}\|\quad\text{（\emph{事后估计}或\emph{后验估计}）}\\
+\|\mathbf{x^\ast-x}^{(k)}\|\leq\frac{\|\mathbf{B}\|^k}{1-\|\mathbf{B}\|}\|\mathbf{x}^{(1)}-\mathbf{x}^{(0)}\|\quad\text{（\emph{事前估计}或\emph{先验估计}）}
+\end{gather}
+
+\entry 估计式的推导：利用迭代格式及 $\mathbf{x}^\ast=\mathbf{Bx}^\ast+\mathbf{g}$ 条件将 $\mathbf{x}^\ast-\mathbf{x}^{(k)}$ 展开并变形，最终在等式两侧取范数，应用范数若干性质和条目 2.\ref{I-B} 的结果获得不等号。
+
+\trm 定理2：$\forall\mathbf{x}^{(0)}$，迭代格式$\mathbf{x}^{(k+1)}=\mathbf{Bx}^{(k)}+\mathbf{g}$收敛于解$\mathbf{x}^\ast$的充要条件是下列两条件之一成立：
+\begin{enumerate}\tl
+    \item $\mathbf{B}^k\to\mathbf{O}$；
+    \item $\mathbf{B}$的谱半径$\rho(\mathbf{B})<1$。
+\end{enumerate}
+
+\trm 推论：SOR法收敛的必要条件是$0<\omega<2$。
+\begin{gather*}
+\|\mathbf{B}\|=\|(\mathbf{D}-\omega\mathbf{E})^{-1}\|\cdot\|(1-\omega)\mathbf{D}+\omega\mathbf{F}\|=\frac{\|(1-\omega)\mathbf{D}\|}{\|\mathbf{D}\|}=(1-\omega)^n\\
+\rho(\mathbf{B})<1\sothat|\lambda_1\cdots\lambda_n|<1\sothat|1-\omega|<1\sothat0<\omega<2.
+\end{gather*}
+
+\trm 对于三种常用迭代法，有更为实用的结论：
+\begin{itemize}\tl
+    \item 引理：若$\mathbf{A}$是严格对角占优矩阵，$0\le\omega\leq1$且$\lambda\geq1$时，矩阵$(\lambda+\omega-1)\mathbf{D}-\lambda\omega\mathbf{E}-\omega\mathbf{F}$也是严格对角占优矩阵。
+    \item 推论2：若$\mathbf{A}$是\emph{严格对角占优矩阵}，则$\forall\mathbf{x}^{(0)}$，Jacobi法、G-S法、SOR法（$0<\omega\leq1$）均收敛
+    \footnote{推导：反设$\mathbf{B}$ 有一特征值 $|\lambda|\geq1$，代入上面的推论中，推出$|\lambda\mathbf{I-B}|\neq0$，故所有的 $|\lambda|<1$，进而 $\rho(\mathbf{B})<1$。参见李乃成、梅立泉《数值分析》第 88 页推论 3.3.2 的证明。}
+    。
+    \item 推论3：若$\mathbf{A}$为对称正定阵，则$\forall\mathbf{x}^{(0)}$，Jacobi法收敛的充要条件是：$2\mathbf{D-A}$也是对称正定阵。
+    \item 推论4：若$\mathbf{A}$是对称正定阵，则$\forall\mathbf{x}^{(0)}$，SOR法收敛充要条件为$0<\omega<2$。
+\end{itemize}
+
+\entry 对不同情况下的审敛法做总结：
+\begin{enumerate}\tl
+    \item 对角占优矩阵$\mathbf{A}$：Jacobi法收敛，G-S法收敛，$0<\omega\leq1$时SOR法收敛。
+    \item 对称正定阵$\mathbf{A}$：
+    \begin{itemize}\tl
+        \item Jacobi法收敛$\ \Leftrightarrow\ 2\mathbf{D-A}$收敛；
+        \item SOR法收敛$\ \Leftrightarrow\ 0<\omega<2$。
+    \end{itemize}
+    \item 一般矩阵$\mathbf{A}$：
+    \begin{itemize}\tl
+        \item $\|\mathbf{B}\|<1$时，$\mathbf{B}$ 的对应方法收敛；
+        \item $\mathbf{B}^k\to\mathbf{O}$和$\rho(B)<1$中之一成立，则$\mathbf{B}$ 的对应方法收敛。
+        \item SOR法收敛的必要条件是$0<\omega<2$。
+    \end{itemize}
+\end{enumerate}
+
+\entry 针对考试而言，一般的系数矩阵仍需通过求 $\rho(\mathbf{B})$ 或 $\|\mathbf{B}\|$ 来判断收敛性。
+
+\example 判断系数矩阵为$\mathbf{A}=\begin{spmatrix}2&3&4\\3&6&10\\4&10&20\end{spmatrix}$时各迭代法的收敛性。（答案：Jacobi 法发散，Gauss-Seidel 迭代法及 $0<\omega<2$ 的 SOR 法收敛。）

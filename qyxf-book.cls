@@ -25,10 +25,18 @@
 %% The Current Maintainer of this work is xjtu-blacksmith.
 %% 
 %% -----------------------------------
+%%
+%% Note: 此模板相对于原有模板已做修改，修改为：
+%% 优化了 sourcefont 重定义字体的方式，减少编译时间与警告
+%% 此改动将在未来加入到 qyxf-sets 之中.
+%% 为原始模板请访问：https://github.com/qyxf/qyxf-sets
+%% 修改者：xjtu-blacksmith（maintainer）
+%%
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
 \ProvidesClass{qyxf-book}
   [2019/05/26 v2.1 Template for qyxf's book]
 \typeout{The book template provided by Qian Yuan Xue Fu}
+\typeout{WARNING: The class file is modified by xjtu-blacksmith}
 \LoadClass[10pt,twoside,openany]{book}
 \newif\if@decoration
 \newif\if@opensource
@@ -47,10 +55,12 @@
 \DeclareOption{sourcefont}{\@sourcefonttrue}
 \ProcessOptions
 \if@sourcefont
-  \RequirePackage[SlantFont]{xeCJK}
-  \RequirePackage[heading]{ctex}
+  \PassOptionsToPackage{SlantFont}{xeCJK}
+  \RequirePackage[heading,fontset=none]{ctex}
   \setCJKmainfont{思源宋体}
   \setCJKsansfont{思源黑体}
+  \newCJKfontfamily[zhfs]\fangsong{FangSong}
+  \renewcommand\CJKttdefault{zhfs}
 \else
   \RequirePackage[heading]{ctex}
 \fi

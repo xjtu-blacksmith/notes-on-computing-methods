@@ -1,0 +1,143 @@
+\chapter{误差}
+\section{真值与误差}
+\entry 有测量就会有误差。通常，将某数学量、物理量的\key{真值}记为$x$（不加任何修饰符），而将测量或计算所得的$x$的\key{近似值}记作$\tilde{x}$。
+
+\entry 两种误差：$\begin{cases}\Delta x=x-\tilde{x} \text{\ (绝对误差)}\\ \delta x=\frac{x-\tilde{x}}{x}\text{\ (相对误差)}\end{cases}$
+
+\entry 两种误差限：$\begin{cases}|\Delta x|\leq\varepsilon\text{\ (绝对误差限)}\\|\delta x|\leq\varepsilon_r\text{\ (相对误差限)}\end{cases}$
+
+\entry 相对误差较小时，有近似计算式\footnote{在估计误差时，真值$x$往往难以确定，但绝对误差$|\Delta x|$或绝对误差限$\varepsilon$往往能够确定下来。}
+：$|\delta x|\approx\frac{|x-\tilde{x}|}{\tilde{x}}=\frac{\Delta x}{\tilde{x}}\leq\frac{|\varepsilon|}{\tilde{x}}$
+
+\entry 若$|\Delta x|=|x-\tilde{x}|\leq0.5\times10^{-n}$，则称$x$的近似值$\tilde{x}$ \emph{准确到第 $n$ 位小数}。
+
+\example 设$x=0.31682$，则$\tilde{x}_1=0.3$精确到$1$位有效数字，$\tilde{x}_2=0.32$精确到$2$位，$\tilde{x}_3=0.317$精确到$3$位，$\tilde{x}_4=0.3168$精确到$4$位。若取$\tilde{x}_5=0.3169$为$x$的近似值，则其仅精确到$3$位小数。
+
+\section{浮点运算与浮点数集}
+\entry 在计算机中，实数将被储存为\key{浮点数}，故计算机中的实数运算常被称作\key{浮点运算}。为此，有下面的一些概念与理论。
+
+\entry \key{浮点运算量}：记\emph{一次加法和一次乘法}（如$a+b\times c$）所需的时间为一个\key{时间单位}，记为flop。
+
+\example 设$\mathbf{A}_1$为一$10\times20$的矩阵，$\mathbf{A}_2$为一$20\times50$的矩阵，欲计算$\mathbf{A}_1\cdot\mathbf{A}_2$，则运算量为$10\times20\times50=10000$ flop
+\footnote{$\mathbf{A}_1$的行乘以$\mathbf{A}_2$的列，每次的浮点运算量为 $20$ flop，总计 $10\times50$ 种组合。}。
+
+\entry \key{浮点数集}：在10进制中，浮点数$\tilde{x}$（或一实数$x$的近似$t$位有效数字的浮点数$\tilde{x}$）可表示如下：
+\[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{10}+\frac{x_2}{10^2}+\frac{x_3}{10^3}+\cdots+\frac{x_t}{10^t}\right\}\times10^l\ (\tilde{x}=0.x_1x_2x_3\cdots x_t\times10^l)\]
+其中$1\leq x_1<10$，$0\leq x_j<10$，$j=2,3,\cdots,t$。类似的，在$\beta$进制中，一个数的表示方式：
+\[fl(x)=\tilde{x}=\pm\left\{\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right\}\times\beta^l\]
+其中$1\leq x_1<\beta$，$0\leq x_j<\beta$，$j=2,3,\cdots,t$。$\beta^l$称为指数部分，指数$l$满足$L\leq l\leq U$，$L$与$U$分别为下界与上界；$0.x_1x_2\cdots x_t$称为尾数。$fl(x)$称为一个\key{规格化浮点数}。
+
+\entry 称计算机中所能表示的全体数的集合称为\key{浮点数集}，记为$F(\beta,t,L,U)$。
+\begin{equation}
+F(\beta,t,L,U)=\{0\}\cup\left\{\pm\left(\frac{x_1}{\beta}+\frac{x_2}{\beta^2}+\cdots+\frac{x_t}{\beta^t}\right)\times\beta^l:L\leq l\leq U\right\}
+\end{equation}
+
+\example \textsf{C++}里的 \verb|float|：4 字节、32 位，如图 \ref{1-2} 所示。可以将这一浮点数集记为$F(2,23,-128,127)$。
+\begin{figure}[htbp]
+\small\centering
+\begin{tikzpicture}[scale=.8]
+  \draw (0, 0) rectangle (1, 1);
+  \draw (1, 0) rectangle (2, 1);
+  \draw (2, 0) rectangle (3, 1);
+  \draw[dashed] (3, 0) rectangle (4, 1);
+  \draw (4, 0) rectangle (5, 1);
+  \draw (5, 0) rectangle (6, 1);
+  \draw[dashed] (6, 0) rectangle (7, 1);
+  \draw (7, 0) rectangle (8, 1);
+  \draw (8, 0) rectangle (9, 1);
+  \node at (0.5, 0.5) {$0$}; \node at (0.5, 1.3) {$31$};
+  \node at (1.5, 0.5) {$0$}; \node at (1.5, 1.3) {$30$};
+  \node at (2.5, 0.5) {$1$}; \node at (2.5, 1.3) {$29$};
+  \node at (3.5, 0.5) {\ldots};
+  \node at (4.5, 0.5) {$0$}; \node at (4.5, 1.3) {$23$};
+  \node at (5.5, 0.5) {$0$}; \node at (5.5, 1.3) {$22$};
+  \node at (6.5, 0.5) {\ldots};
+  \node at (7.5, 0.5) {$1$}; \node at (7.5, 1.3) {$1$};
+  \node at (8.5, 0.5) {$1$}; \node at (8.5, 1.3) {$0$};
+  \node at (0.5, -0.3) {$\downarrow$};
+  \node at (0.5, -0.8) {底数符号};
+  \draw (3, -0.3) node [xscale=3.5, rotate=90] {$\Biggl\{$};
+  \node at (3, -0.8) {指数位（含符号）};
+  \draw (7, -0.3) node [xscale=3.5, rotate=90] {$\Biggl\{$};
+  \node at (7, -0.8) {底数位}; 
+\end{tikzpicture}
+\caption{\textsf{C++}中\texttt{float}类型变量的储存原理}\label{1-2}
+\end{figure}
+
+\entry 浮点数集中的数的个数：$N=2\cdot(\beta-1)\cdot\beta^{t-1}\cdot(U-L+1)+1$
+
+\entry 浮点数$fl(x)$与对应真值$x$的误差：
+\begin{itemize}\tl
+    \item 绝对误差：$|x-fl(x)|\leq\dfrac12\beta^{-t}\times\beta^l=\dfrac12\beta^{l-t}$
+    \item 相对误差：由$|x|\geq0.1\times\beta^l$，有$\dfrac{|x-fl(x)|}{|x|}\leq\dfrac{\beta^{l-t}/2}{\beta^{l-1}}=\dfrac12\beta^{1-t}$
+\end{itemize}
+此类误差称为\key{舍入误差}。
+
+\entry 计算结果的错误/误差：
+\begin{enumerate}\tl
+    \item $l\notin[L,U]$：\key{上溢}（$l\geq L$）会出错，\key{下溢}（$l\leq U$）变为$0$。
+    \item 尾数多于$t$位：自动进行舍入处理，造成误差
+    \item 有效数字丢失：「\emph{大数吃小数}」
+\end{enumerate}
+
+
+\example 设计算时保留4位有效数字，则$1234+0.3678=1234.3678\approx1234$，在此发生了「大数吃小数」的现象。
+
+\entry 设计数值计算的算法时，应结合浮点数具有的特性，避免上面所提到的各类计算错误。为此，提出以下几条\emph{浮点运算原则}：
+\begin{enumerate}\tl
+    \item 避免产生大结果的运算，避免小数作为除数。
+    \item 避免「大」、「小」数相加减，防止大数吃小数。
+    \item 避免相近数直接相减，防止有效数字损失。
+    \item 简化运算步骤，减少运算次数
+    \footnote{由此避免各类误差的逐次累计。——编者注}。
+\end{enumerate}
+若原有的计算公式不符合以上的这些原则，则可以通过对原式的等价变换或近似处理，使之符合上面的原则。
+
+\example 设$|x|\ll1$，则可改写数值计算公式$\ln\dfrac{1-\sqrt{1-x^2}}{|x|}$为以下形式，以避免小数作分母：
+\[\ln\frac{1-\sqrt{1-x^2}}{|x|}=\ln\frac{x^2}{|x|\cdot(1+\sqrt{1-x^2})}=\ln\frac{|x|}{1+\sqrt{1-x^2}}\]
+
+\section{计算方法的研究内容}
+\entry 计算方法课程，并不仅仅包含各类数值计算方法。归结而言，计算方法课程的研究内容可以归纳为：
+\begin{enumerate}\tl
+    \item 某一问题的数值计算算法（即通常意义上的「计算方法」）；
+    \item 这些算法的误差、复杂性或收敛速度之估计。
+\end{enumerate}
+后者至关重要。对于算法的误差或复杂性分析，使这门课程区别于一般的工具性课程。
+
+\entry 针对一些模型，还存在着一类特定的问题，即\textbf{病态问题}。为度量这类问题的性质，需要用到\key{条件数}。
+\begin{itemize}\tl
+    \item 根据输入数据的微小变化能引起问题之解变化的大小程度，可以将数值计算问题区别为两类：若由此能引起解的很大变化，则称问题是\textbf{病态}的；否则，称一个问题是\textbf{良态}的。病态问题不易精确求解。
+    \item \key{条件数}：输入数据$x,\tilde{x}$，输出$f(x),f(\tilde{x})$。设$x\neq0$，$f(x)\neq0$，若存在$m>0$使：
+    \[\frac{|f(x)-f(\tilde{x})|}{|f(x)|}\leq m\cdot\frac{|x-\tilde{x}|}{|x|}\ (\text{输出误差}\leq m\cdot\text{输入误差})\]
+    则将$m$称为该问题的\textbf{条件数}，记为$\cond(f)$。
+\end{itemize}
+
+\example $y=\varphi(x_1,x_2,\cdots,x_n)$。输入为$\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n$，近似解$\tilde{y}=\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)$，则有
+\begin{gather}
+\Delta y=\varphi(x_1,x_2,\cdots,x_n)-\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)
+\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\Delta x_i\\
+\delta y=\frac{\Delta y}{y}\approx\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{\Delta x_i}{y}
+=\sum_{i=1}^n\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\cdot\delta x_i
+\end{gather}
+故可见$\left|\frac{\partial\varphi(\tilde{x}_1,\tilde{x}_2,\cdots,\tilde{x}_n)}{\partial x_i}\cdot\frac{x_i}{y}\right|$即条件数。
+
+\entry \key{稳定性}（数值稳定性）：运算中\textbf{舍入误差积累}是否影响结果的可靠性。
+
+\example 欲用数值计算方法求解由$I_k=\e^{-1}\int_0^1x^k\e^x\di x,\ k=0,1,\cdots,7$所定义的一系列定积分的值。
+\begin{itemize}\tl
+    \item 算法1：构建递推公式
+    \begin{equation}\label{1-e1}
+    \left\{
+    \begin{aligned}
+    I_0&=\e^{-1}\int_0^1\di x=1-\dfrac1\e\\
+    I_k&=\e^{-1}\int_0^1x^k\e^x\di x=1-kI_{k-1}
+    \end{aligned}
+    \right.
+    \end{equation}
+    利用递推关系依次计算$I_0\rightarrow I_1\rightarrow I_1\rightarrow\cdots\rightarrow I_7$。
+    \item 算法2：近似计算$I_7$，利用递推关系
+    \footnote{即将(\ref{1-e1})式移项，反得$I_{k-1}=\dfrac{1-I_k}{k}$。——编者注}
+    依次计算$I_7\rightarrow I_6\rightarrow\cdots\rightarrow I_0$。
+\end{itemize}
+实际上就整体而言，算法2精度更高。对算法1递推公式$I_k=1-kI_{k-1}$。若$I_{k-1}$有舍入误差$\Delta I_{k-1}$（或记作$\Delta$），则$\tilde{I}_k=1-k(I_{k-1}+\Delta)=I_k-k\cdot\Delta$，误差被放大
+\footnote{对算法2的递推公式做类似分析，可见$\tilde{I}_{k-1}=I_{k-1}-\Delta/k$，即误差被减小到原来的$1/k$倍，这是大大缩小了。故算法2较算法1更为稳定。——编者注}。

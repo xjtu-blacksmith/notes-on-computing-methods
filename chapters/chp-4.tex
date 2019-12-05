@@ -1,0 +1,367 @@
+\chapter{插值法}
+\section{插值法思想概要}
+\entry 插值的\emph{动机}：
+\begin{enumerate}\tl
+    \item 离散型：给定$m+1$个数据点$(x_0,y_0)$、$(x_1,y_1)$、……$(x_m,y_m)$，找到一个函数$P(x)$通过所有的点。
+    \item 连续型：给定一未知函数$f(x)$及其$m+1$个数据点，要求另一已知函数$P(x)$在这
+    些数据点上与$f(x)$一致，并使其在定义与上与$f(x)$的偏差尽量小。（称$f(x)$为\key{被插函数}。）
+\end{enumerate}
+
+\define 设以上的$P(x)$满足
+\begin{equation}\label{4-e1}
+P(x_i)=y_i\quad(i=0,1,\cdots,m),
+\end{equation}
+则称$P(x)$为这$m+1$个数据点上的\key{插值函数}，称数据点为\key{插值点}，并称式
+(\ref{4-e1})为\key{插值条件}。
+
+\entry \emph{多项式插值}：要求插值函数$P(x)$为一个多项式
+\begin{equation}
+P(x)=\sum_{k=0}^na_kx^k=a_0+a_1x+\cdots+a_nx^n,
+\end{equation}
+则称此时的$P(x)$为一个\key{插值多项式}，对应的插值条件
+\begin{equation}
+P(x_i)=y_i\sothat a_0+a_1x_i+\cdots+a_ix_i^n=y_i\quad(i=0,1,\cdots,m)
+\end{equation}
+可视为一个线性方程组：
+\begin{equation}\label{4-e2}
+\begin{pmatrix}1&x_0&\cdots&x_0^n\\1&x_1&\cdots&x_1^n\\\vdots&\vdots&&\vdots\\
+1&x_m&\cdots&x_m^n\end{pmatrix}\begin{pmatrix}a_0\\a_1\\\vdots\\a_n\end{pmatrix}
+=\begin{pmatrix}y_0\\y_1\\\vdots\\y_n\\\end{pmatrix},
+\end{equation}
+
+\entry 关于方程组(\ref{4-e2})的解分析：
+\begin{itemize}\tl
+    \item $m>n$，方程一般无解；
+    \item $m<n$，方程有无穷多解；
+    \item $m=n$时，系数矩阵对应的行列式是 \emph{Van der monde行列式}：
+    \begin{equation}
+    |V|=\prod_{j=1}^n\left[\prod_{i=0}^{j-1}(x_j-x_i)\right]
+    \end{equation}
+    当$x_i\neq x_j\ (i\neq j)$时，$|V|\neq0$，方程组有唯一解。
+\end{itemize}
+
+\trm 对于给定的$n+1$个插值点，对应的$n$次插值多项式$P_n(x)$唯一存在。
+
+\entry \key{误差多项式}：若被插函数$f(x)$满足$f^{(n)}(x)$在$[a,b]$上连续，$f^{(n+1)}$在
+$(a,b)$内存在，则\emph{误差（多项式）}可估计为
+\begin{equation}
+R_n(x)=f(x)-P_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)(x-x_1)\cdots(x-x_n).
+\end{equation}
+记
+\begin{equation}
+\pi_{n+1}(x)=(x-x_0)(x-x_1)\cdots(x-x_n),
+\end{equation}
+则有
+\begin{equation}
+R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}\pi_{n+1}(x).
+\end{equation}
+
+\entry \emph{实用误差估计式}：设$P_n(x)$为在$(x_0,x_1,\cdots,x_n)$上的插值多项式，$P_n^\ast(x)$
+为在$(x_0,x_1,\cdots,x_n,x_{n+1})$上的插值多项式，则
+\begin{gather}
+f(x)-P_n(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_0)\\
+f(x)-P_n^\ast(x)\approx\frac{P_n^\ast(x)-P_n(x)}{x_{n+1}-x_0}(x-x_{n+1})
+\end{gather}
+
+\entry 采用式(\ref{4-e2})求解插值多项式的问题：方程条件数随$n$的增加而急剧上升，解不
+稳定、不精确；计算量太大。
+
+\section{Lagrange 插值法与 Newton 插值法}
+\entry \key{Lagrange 插值法}：对$n+1$个数据点，构造对应的$n+1$个\key{Lagrange插值基函数} $l_0(x),l_1(x),\cdots,l_n(x)$使
+\begin{equation}\label{4-e3}
+P_n(x)=y_0\cdot l_0(x)+y_1\cdot l_1(x)+\cdots+y_n\cdot l_n(x).
+\end{equation}
+
+\entry 插值基函数公式：由式(\ref{4-e3})易知，插值基函数应在数据点上满足
+\begin{equation}
+l_i(x_j)=\delta_{ij}=\begin{cases}1&,i=j\\0&,i\neq j\end{cases}
+\end{equation}
+又要求插值基函数为$n$次多项式（与最终插值多项式的次数一致），则可解出
+\begin{gather}
+l_i(x)=\frac{(x-x_0)(x-x_1)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)}{(x_i-x_0)
+(x_i-x_1)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)}.
+\end{gather}
+此即\emph{Lagrange 插值基函数公式}。其分母$\pi_{n+1}(x)/(x-x_i)$可直接写出，故只需计算插值基函数的系数
+\begin{equation}
+c_i=\left[(x_i-x_0)(x_i-x_1)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)\right]^{-1}.
+\end{equation}
+
+\example 给定数据点$(-1,7)$、$(1,7)$、$(2,4)$、$(5,35)$，用Lagrange插值法求解各插值基函数的系数。（答案：$c_0=-\frac1{36}$，$c_1=\frac18$，$c_2=-\frac19$，
+$c_3=\frac1{72}$。）
+
+\entry 常将Lagrange基函数记为
+\begin{equation}
+l_i(x)=\frac{\pi_{n+1}(x)}{(x-x_i)\pi'_{n+1}(x_i)}.
+\end{equation}
+
+\entry Lagrange插值法的特点：
+\begin{itemize}\tl
+    \item 构造方便、格式统一；
+    \item 系数的\emph{表示}方法简单，但乘除\emph{运算}量大；
+    \item 插值基函数具有\emph{全局性质}，「牵一发而动全身」，数据点变动后须全部重新计算。
+\end{itemize}
+
+% P140 4.10：Lagrange 基函数的性质
+
+\entry \key{Newton 插值法}：对$(n+1)$个数据点，采用「累进」的插值基函数
+\begin{equation}
+n_i(x)=\prod_{k=0}^{i-1}(x-x_k)=(x-x_0)(x-x_1)\cdots(x-x_{i-1}),
+\end{equation}
+构造得到的 \key{Newton 插值多项式}为
+\begin{equation}\label{4-e4}
+N_n(x)=c_0+c_1(x-x_0)+c_2(x-x_0)(x-x_1)+\cdots+c_n(x-x_0)\cdots(x-x_n)
+\end{equation}
+再求解系数$c_i$。
+
+\entry \key{差商}：导数的一种离散形式，递归定义：
+\begin{itemize}
+    \item 零阶差商：$f[x_i]=f(x_i)=y_i\quad(i=0,1,\cdots,n)$.
+    \item 一阶差商：$f[x_i,x_{i+1}]=\frac{f[x_{i+1}]-f[x_i]}{x_{i+1}-x_i}\quad
+    (i=0,1,\cdots,n-1)$.
+    \item 二阶差商：$f[x_i,x_{i+1},x_{i+2}]=\frac{f[x_i,x_{i+2}]-f[x_i,x_{i+1}]}{
+    x_{i+2}-x_{i+1}}\quad(i=0,1,\cdots,n-2)$.
+    \item ……
+    \item $n$阶差商：$f[x_0,x_1,\cdots,x_n]=\frac{f[x_0,x_1,\cdots,x_{n-2},x_n]-
+    f[x_0,x_1,\cdots,x_{n-2},x_{n-1}]}{x_n-x_{n-1}}$.
+\end{itemize}
+
+\entry 易证式(\ref{4-e4})中系数满足$c_0=f[x_0]$，$c_1=f[x_0,x_1]$，$c_2=f[x_0,x_1,
+x_2]$……从而 Newton 插值多项式为
+\begin{equation}
+N_n(x)=\sum_{k=0}^nf[x_0,\cdots,x_k]\cdot n_k(x).
+\end{equation}
+
+\entry 由插值多项式的唯一性，对同样的$n+1$个数据点构造的 Lagrange 插值多项式$P_n(x)$
+与 Newton 插值多项式$N_n(x)$，必有$P_n(x)=N_n(x)$，即\emph{两种方法得到的结果相同}。
+
+\trm 推论：比较 Newton 插值多项式与 Lagrange 插值多项式的最高次（$n$次）项系数，有
+\begin{equation}
+f[x_0,x_1,\ldots,x_n]=\sum_{i=0}^n\frac{f(x_i)}{\pi'_{n+1}(x_i)}.
+\end{equation}
+
+\trm 差商的性质：
+\begin{enumerate}
+    \item 差商仅与选取的具体点$(x_i,f(x_i))$有关，与它们的排列次序无关。
+    \item $f[x_i,x_{i+1},\ldots,x_{i+k}]=f^{(k)}(\xi)/(k!)$，其中$\xi\in(\min\{x_i
+    \},\max\{x_i\})$。
+    \item 在以上结论中取$x_i=x_{i+1}=\ldots=x_{i+k}$，得
+    \begin{equation}\label{4-e5}
+    f[x_i,x_i,\ldots,x_i]=\frac{f^{(k)}(x_i)}{k!}.
+    \end{equation}
+    \item $\frac{\di f[x_0,x_1,\ldots,x_{k-1},x]}{\di x}=\frac{f^{(k+1)}(\xi)}{
+    (k+1)!}$。
+\end{enumerate}
+
+\example 设$f(x)=x^3+2px+5qx+c$，其中$p,q,c$均为实数。若$f[1,2,m]=0$，试求$f[0,1,m]$。
+（答案：$-2$）
+
+\entry \key{差商表}：依次计算差商的工具，如图 \ref{4-f1} 所示。
+\begin{figure}[htbp]
+\small\centering
+\[P_3(x)=y_0+y'_0\cdot(x-x_0)+y''_0\cdot(x-x_0)(x-x_1)+y'''_0\cdot(x-x_0)(x-x_1)(x-x_2)\]
+\begin{tabular}{ccccc}
+\toprule
+$x_i$ & $f[x_i]$ & $f[x_i,x_{i+1}]$ & $f[x_i,x_{i+1},x_{i+2}]$ & $f[x_i,x_{i+1},x_{i+2},x_{i+3}]$ \\
+\midrule
+$x_0$ & \fbox{$y_0$} & & & \\
+$x_1$ & $y_1$ & \fbox{$y'_0=\frac{y_1-y_0}{x_1-x_0}$} & & \\
+$x_2$ & $y_2$ & $y'_1=\frac{y_2-y_1}{x_2-x_1}$ & \fbox{$y''_0=\frac{y'_1-y'_0}{x_2-x_0}$} & \\
+$x_3$ & $y_3$ & $y'_2=\frac{y_3-y_2}{x_3-x_2}$ & $y''_1=\frac{y'_2-y'_1}{x_3-x_1}$ & \fbox{$y'''_0=\frac{y''_1-y''_0}{x_3-x_0}$} \\
+\bottomrule
+\end{tabular}
+\caption{差商表及其构造步骤}\label{4-f1}
+\end{figure}
+
+\entry \key{Newton 插值法余项公式}及估计：
+\begin{align*}
+R_n(x)&=f(x)-N_n(x)\\
+&=f[x_0,x_1,\ldots,x_n,x](x-x_0)(x-x_1)\cdots(x-x_n)\\
+&\approx f[x_0,x_1,\ldots,x_n,x_{n+1}](x-x_0)(x-x_1)\cdots(x-x_n)\\
+&=N_{n+1}(x)-N_n(x)
+\end{align*}
+即：Newton 插值公式$N_n(x)$的余项，可估计为高一阶的插值多项式$N_{n+1}(x)$之最后一项。
+
+\entry \key{Hermite 插值多项式}：满足导数条件$P'(x_j)=y'_j$的插值多项式。
+
+\entry Newton 插值法构造 Hermite 插值多项式（\key{重节点法}）：在含导数条件的数据点处
+增加「重节点」，仍按差商表迭代，但利用条件(\ref{4-e5})计算含重节点的差商。
+\begin{figure}[htbp]
+\small\centering
+\begin{tabular}{ccccc}
+    \toprule
+    $x_i$ & $f[x_i]$ & $f[x_i,x_{i+1}]$ & $f[x_i,x_{i+1},x_{i+2}]$ & $f[x_i,x_{i+1},x_{i+2},x_{i+3}]$ \\
+    \midrule
+    $x_0$ & $y_0$ & & & \\
+    $x_1$ & $y_1$ & $y'_0=\frac{y_1-y_0}{x_1-x_0}$ &  & \\
+    $x_1$ & $y_1$ & \fbox{$y'_1$} & $y''_0=\frac{y'_1-y'_0}{x_1-x_0}$ & \phantom{$\dfrac12$} \\
+    $x_2$ & $y_2$ & $y'_2=\frac{y_2-y_1}{x_2-x_1}$ & $y''_1=\frac{y'_2-y'_1}{x_2-x_1}$ & $y'''_0=\frac{y''_1-y''_0}{x_2-x_0}$ \phantom{$\dfrac12$} \\
+    \bottomrule
+    \end{tabular}
+\caption{重节点法示意}\label{4-f2}
+\end{figure}
+
+\entry Hermite 插值多项式的误差估计：利用 Newton 插值的余项估计即可。
+
+\example 对以下的数据点求解其 Hermite 插值多项式，并估计误差。
+\begin{center}\small
+\begin{tabular}{cccc}
+\toprule
+$x_i$&$-1$&$0$&$1$\\
+\midrule
+$y_i$&$0$&$-4$&$5$\\
+$y'_i$&&$0$&$5$\\
+$y''_i$&$6$&&\\
+\bottomrule
+\end{tabular}\end{center}
+（答案：$H_5(x)=x^5-2x^3+3x^2-4$，
+$R_5(x)=\frac{f^{(6)}(\xi)}{6!}(x+1)(x-1)^2x^3$。）
+
+\entry Lagrange 插值法构造 Hermite 插值多项式：对$n+1$个含导数条件的数据点，在导数
+条件下构造插值基函数$h_i(x)$与$\overline{h}_i(x)$：
+\begin{gather}
+H_{2n+1}(x)=\sum_{i=0}^nh_i(x)f(x_i)+\sum_{i=0}^n\overline{h}_i(x)f'(x_i)\\
+h_i(x_j)=\delta_{ij},\quad h'_i(x_j)=0\quad\overline{h}_i(x_j)=0\quad
+\overline{h'}_i(x_j)=\delta_{ij}.
+\end{gather}
+分析零点重数可推得
+\begin{gather}
+h_i(x)=(ax+b)l_i^2(x),\quad\overline{h}_i(x)=(x-x_i)l_i^2(x)
+\end{gather}
+再求解系数$a$与$b$即可。
+
+\entry 不建议使用 Lagrange 插值法求解 Hermite 插值多项式：\emph{优势尽失}。
+
+\section{分段插值与三次样条插值}
+\entry \key{Runge 现象}：采用高次的插值多项式，全局误差可能比低次多项式更大。（示例：对函数 $f(x)=\frac1{1+25x^2}\quad(-1\leq x\leq 1)$ 以越来越多的节点等距插值。）这表明，与其在全局应用高次插值多项式，不如采用分段低次插值多项式。
+
+\entry \key{分段线性插值}的误差估计：
+\begin{equation}
+R_{1,j}(x)=\left|\frac{f''(\xi)}2(x-x_{i-1})(x-x_i)\right|\leq\frac{M_2i}2\cdot
+\frac14(x_i-x_{i-1})^2\leq\frac18M_2\Delta^2
+\end{equation}
+其中$M_2$为$f''(x)$在插值区间上的最大值，$\Delta$为各相邻插值节点的最大距离。
+
+\begin{figure}[htbp]
+\small\centering
+\begin{tikzpicture}
+\draw[->] (-0.2,0) -- (4.5,0) node[right] {$x$};
+\draw[->] (0,-0.2) -- (0,2.5) node[above] {$y$};
+\draw plot[mark=ball,ball color=black] coordinates {(0.5,1) (1,2) (2,1) (3,0.5) (4,0.3)};
+\end{tikzpicture}
+\caption{分段线性插值图示}\label{4-f3}
+\end{figure}
+
+\entry 分段线性插值的\emph{缺陷}：在各个节点处导数不连续。
+
+\entry \key{分段二次插值}：在$[x_{i-1},x_{i+1}]$上作 Newton 二次插值多项式$N_{2i}(x)$，则
+\begin{equation}
+f(x)\approx N_{2i}(x)=y_{i-1}+f[x_{i-1},x_i](x-x_{i-1})+f[x_{i-1},x_i,x_{i+1}]
+(x-x_{i-1})(x-x_i).
+\end{equation}
+
+\entry 分段二次插值的误差估计：
+\begin{equation}
+R_{2i}(x)=\frac{f'''(\xi)}{3!}(x-x_{i-1})(x-x_i)(x-x_{i+1})\leq\frac{M_3}6\cdot
+\frac14\Delta^2\cdot2\Delta=\frac1{12}M_3\Delta^3
+\end{equation}
+其中$M_3$为$f'''(x)$在插值区间上的最大值，$\Delta$为各相邻插值节点的最大距离。
+
+\entry 分段二次插值的缺陷：在一半的节点上导数仍不连续；要求有奇数个插值节点。
+
+\begin{figure}[htbp]
+\small\centering
+\begin{tikzpicture}
+\draw[->] (-0.2,0) -- (4.5,0) node[right] {$x$};
+\draw[->] (0,-0.2) -- (0,2.5) node[above] {$y$};
+\draw (0.5,1) parabola bend (1.25,2.125) (2,1);
+\draw (2,1) parabola[bend at end] (4,0.3);
+\draw[white] plot[mark=ball,ball color=black] coordinates {(0.5,1) (1,2) (2,1) (3,0.5) (4,0.3)};
+\end{tikzpicture}
+\caption{分段二次插值图示}\label{4-f4}
+\end{figure}
+
+\entry \key{分段三次 Hermite 插值}：在相邻插值节点处利用两个函数值、两个导数值构造插值多项式。
+
+\entry 分段三次 Hermite 插值的误差估计：
+\begin{equation}
+R_{3,i}(x)=\frac{f^{(4)}(\xi)}{4!}(x-x_{i-1})^2(x-x_i)^2\leq\frac{M_4}{24}
+\left[\frac14(x-x_{i-1})^2\right]^2\leq\frac{M_4}{384}\Delta^4.
+\end{equation}
+
+\entry 分段三次 Hermite 插值的缺陷：二阶导数仍不连续；导数条件太苛刻，插值时一般缺少相应导数。
+
+\entry \key{三次样条插值}：给定$n+1$个数据点，要求分段插值曲线的二阶导数连续。
+由此可知，插值函数及其导数也应连续。此时：
+\begin{itemize}\tl
+    \item \emph{需求}：在$n$个插值子区间上构造\emph{分段三次插值函数}，共计$4n$个未知数；
+    \item \emph{约束条件}：$n+1$个数据点，$3(n-1)$个各阶导数连续条件，共计$4n-2$个方程；
+    \item 补充 2 个\emph{边界条件}：一阶导数边界条件$f'(a)$、$f'(b)$，或二阶导数边界条件
+    $f'(a)$、$f'(b)$，或周期性边界条件$f'(a)=f'(b)$、$f''(a)=f''(b)$。
+\end{itemize}
+由此即可求解出所有的分段三次插值函数，称这些函数为\key{三次样条函数}。
+
+\entry \key{三弯矩方程}：设 $S(x)$ 在 $x_i$ 处二阶导数值为 $M_i$，根据插值函数为三次可知 $S''(x)$ 为连续的分段线性函数，对 $S''(x)$ 积两次分并用 $n$ 个数据点条件消去未知参数得：
+\begin{equation}\label{4-e7}\begin{aligned}
+S(x)=&\frac{(x_i-x)^3}{6h_i}M_{i-1}+\frac{(x-x_{i-1})^3}{6h_i}M_i+\left(y_{i-1}-\frac{h_i^2}6M_{i-1}\right)\frac{x_i-x}{h_i}\\
+&+\left(y_i-\frac{h_i^2}6M_i\right)\frac{x-x_{i-1}}{h_i},\ x_{i-1}\leq x\leq x_i
+\end{aligned}\end{equation}
+为求出 $M_i$，可对 $S(x)$ 在不同区间上的表达式求导，并应用 $(n-1)$ 个一阶导数连续条件获得 $(n-1)$ 个方程：
+\begin{equation}\label{4-e6}
+\mu_iM_{i-1}+2M_i+\lambda M_{i+1}=d_i,\quad i=1,2,\cdots,n-1
+\end{equation}
+其中
+\[
+\mu_i=\frac{h_i}{h_i+h_{i+1}}.,\quad\lambda_i=\frac{h_{i+1}}{h_i+h_{i+1}}=1-\mu_i,\quad d_i=6f[x_{i-1},x_i,x_{i+1}]
+\]
+若将 $S(x)$ 视为一根梁的挠度，则以上的 $M_i$ 可视为作用在 $x_i$ 处的弯矩，故称方程 \eqref{4-e6} 为\emph{三弯矩方程}。
+
+\entry 三种边界条件下的三弯矩方程：三弯矩方程不足以解出 $n+1$ 个未知量，补充两个边界条件后方程即可封闭。
+\begin{itemize}
+    \item \emph{一阶导数边条}：对式 \eqref{4-e7} 求一次导，并代入边界导数 $f'(a)$ 与 $f'(b)$，可最终获得两个补充方程：
+    \begin{equation}
+    2M_0+M_1=d_0,\quad M_{n-1}+2M_n=d_n
+    \end{equation}
+    其中 $d_0$ 与 $d_n$ 与其他 $d_i$ 的定义一致。方程组变为 $n+1$ 个式子的
+    \begin{equation}
+    \begin{cases}
+    2M_0+M_1=d_0\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=1,2,\ldots,n-1\\
+    M_{n-1}+2M_n=d_n
+    \end{cases}
+    \end{equation}
+    此时的系数矩阵是\emph{严格三对角占优矩阵}（$\mu_i+\lambda_i=1<2$），可用\emph{追赶法}快速求解。
+    \item \emph{二阶导数边条}：$M_0=f''(a)$ 和 $M_n=f''(b)$ 给定，方程组变为 $n-1$ 个式子的
+    \begin{equation}
+    \begin{cases}
+    2M_1+\lambda_1M_2=d_1-\mu_1M_0\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=2,3,\ldots,n-2\\
+    \mu_{n-1}M_{n-2}+2M_{n-1}=d_{n-1}-\lambda_{n-1}M_n
+    \end{cases}
+    \end{equation}
+    此时系数矩阵也是\emph{严格三对角占优矩阵}。
+    \item \emph{周期性边条}：根据周期性
+    \footnote{此时 $M_0=M_n$，同时少去一个未知数和一个方程，仍需补充两个方程。}
+    ，从边界点处「回环」得满足三弯矩方程的序列 $(M_{n-1},M_n,M_1)$ 与 $(M_n,M_1,M_2)$，由此补充两个方程，方程组变为 $n$ 个式子的：
+    \begin{equation}
+    \begin{cases}
+    2M_1+\lambda_1M_2+\mu_1M_n=d_1\\
+    \mu_iM_{i-1}+2M_i+\lambda_iM_{i+1}=d_i,\quad i=2,3,\ldots,n-1\\
+    \lambda_nM_1+\mu_nM_{n-1}+2M_n=d_n
+    \end{cases}
+    \end{equation}
+    此时的系数矩阵为\emph{严格对角占优矩阵}（不是三对角），可用一般的 LU 分解求解
+    \footnote{在 LU 分解的过程中，会发现此形式的系数矩阵有与追赶法类似的简化算法，参见李乃成、梅立泉《数值分析》习题 2.4。}
+    。
+\end{itemize}
+
+\entry 三次样条插值的\emph{特点}：
+\begin{itemize}
+    \item [$\sqrt{}$] 求解的三弯矩方程为严格对角占优矩阵，方程形式简洁且容易求解，解存在唯一、稳定性好；
+    \item [$\sqrt{}$] 为提高精度，只需增加插值节点，不需要提高次数；
+    \item [$\sqrt{}$] 随节点增多，$S(x)$ 及其一二阶导数一致收敛于 $f(x)$ 及其对应导数；若节点间等距，则 $S'''(x)$ 随节点加密而一致收敛于 $f'''(x)$。
+    \item [$\times$] 三弯矩方程计算量仍很大；
+    \item [$\times$] 需要额外的边界条件，有时难以获得；
+    \item [$\times$] 对图形的控制不够灵活，绘图上使用并不方便
+    \footnote{绘图上常用 B\'ezier 曲线、B 样条曲线等专用于拟合几何边界的插值/曲线构造方式。}
+    。
+\end{itemize}

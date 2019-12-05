@@ -1,0 +1,336 @@
+\chapter{线性方程组直接解法}
+\section{Gauss消元法的引入}
+
+\entry 整体思路：
+\begin{enumerate}\tl
+    \item 先推得$\mathbf{Ax}=\mathbf{b}\sothat\mathbf{x}=\mathbf{A}^{-1}\mathbf{b}$，再求$\mathbf{A}^{-1}$（初等行变换法、伴随矩阵法、Gauss-Jordan消去法）
+    \item Crammer法则：$\mathbf{Ax}=\mathbf{b}\sothat x_i=\frac{|\mathbf{A}_i|}{|\mathbf{A}|}$，浮点运算量 $N=(n^2-1)\cdot n!+n$ flop（很大）
+\end{enumerate}
+
+\entry \key{Gauss消去法}：降维（$n\to (n-1)\to\cdots\to1$）
+\begin{figure}[htbp]
+\small\centering
+\begin{align*}\scriptstyle
+\phantom{\displaystyle\ \Rightarrow\ }\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast \\
+\ast & \ast & \ast & \ast & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast & \ast \\
+     & \ast & \ast & \ast & \ast \\
+     &      & \ast & \ast & \ast \\
+     &      &      & \ast & \ast \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}\\[0.5ex]\scriptstyle
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast & \ast &      \\
+     & \ast & \ast & \ast &      \\
+     &      & \ast & \ast &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast & \ast & \ast &      &      \\
+     & \ast & \ast &      &      \\
+     &      & \ast &      &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+{\displaystyle\ \Rightarrow\ }
+\begin{pmatrix}
+\ast &      &      &      &      \\
+     & \ast &      &      &      \\
+     &      & \ast &      &      \\
+     &      &      & \ast &      \\
+     &      &      &      & \ast
+\end{pmatrix}
+\cdot \mathbf{\displaystyle x =}
+\begin{pmatrix}
+\ast \\ \ast \\ \ast \\ \ast \\ \ast
+\end{pmatrix}
+\end{align*}
+\caption{Gauss消去法步骤示意图（上排降维消元，下排回代求解）}\label{2-f1}
+\end{figure}
+\begin{itemize}\tl
+\item 消去运算量：$N_1=\sum\limits_{k=1}^{n-1}(n-k)(n-k+2)=\frac{n^3}3+n^2-\frac{5n}6$
+\item 回代运算量：$N_2=1+2+\cdots+n=\frac{n(n+1)}2$
+\item 总计运算量：$N=N_1+\frac32N_2=\frac{n^3}3+n^2-\frac n3=O(n^3)$
+\end{itemize}
+
+\entry 可能出现的问题：（主要是消去过程中）
+\begin{enumerate}\tl
+    \item $a_{kk}^{(k-1)}=0$，无法进行
+    \item $|a_{kk}^{(k-1)}|\ll|a_{ik}^{(k-1)}|\ (i=k+1,k+2,\cdots,n)$，误差极大（大/小=大，误差被放大）
+\end{enumerate}
+对问题 1，只要满足：(1)$\mathbf{A}$是方阵；(2)$|\mathbf{A}|\neq0$，即可通过换行达到解决问题。
+对问题 2，则不易解决\footnote{参见下一节中的「列主元Gauss消元法」。}。
+
+\trm $a_{kk}^{(k-1)}$不为$0$的\emph{充要条件}是：$\mathbf{A}$的$1$阶与$k$阶主子式均不为$0$，即
+\[a_{kk}^{(k-1)}\neq0\ \Leftrightarrow\ D_1=a_{11}\neq0,\ D_k=\left|\begin{array}{cccc}a_{11}&a_{12}&\cdots&a_{1k}\\a_{21}&a_{22}&\cdots&a_{2k}\\\vdots&\vdots&\ddots&\vdots\\a_{k1}&a_{k2}&\cdots&a_{kk}\end{array}\right|\]
+
+\define 设矩阵$\mathbf{A}$满足$\sum\limits_{j=1,j\neq i}^n|a_{ij}|<|a_{ii}|$~，则称$\mathbf{A}$是\key{严格对角占优矩阵}。
+
+\entry Gauss消去法\emph{顺利进行条件}（满足其一即可）：
+\begin{enumerate}\tl
+    \item $\mathbf{A}$各阶顺序主子式不等于$0$。
+    \item $\mathbf{A}$是对称正定阵。
+    \item $\mathbf{A}$是严格对角占优矩阵。
+\end{enumerate}
+
+
+\section{Gauss消元法的改进}
+\entry \key{列主元Gauss消元法}. 消去进行到第$k$步时如下所示：
+\[\begin{pmatrix}a_{11}^{(k-1)}&a_{12}^{(k-1)}&\cdots&a_{1k}^{(k-1)}&\cdots&a_{1n}^{(k-1)}\\0&a_{22}^{(k-1)}&\cdots&a_{2k}^{(k-1)}&\cdots&a_{2n}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{kk}^{(k-1)}&\cdots&a_{kn}^{(k-1)}\\\vdots&\vdots&&\vdots&&\vdots\\0&0&\cdots&a_{nk}^{(k-1)}&\cdots&a_{nn}^{(k-1)}\end{pmatrix}\]
+选取$\max(|a_{ik}^{(k-1)}|)\ i=k,k+1,\cdots,n$的一行与第$k$行互换，继续消去（算法较稳定）
+
+\entry \emph{Gauss消去法矩阵形式}：将消去前后过程用矩阵表示，可以有
+\[\mathbf{A}=\mathbf{A}^{(0)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\\\ast&\ast&\ast&\ast\end{pmatrix}\sothat\mathbf{A}^{(1)}=\begin{pmatrix}\ast&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\\&\ast&\ast&\ast\end{pmatrix}\]
+则存在唯一的单位下三角阵
+\footnote{即线性代数中用于表征初等行变换的\emph{初等矩阵}。}
+$\mathbf{L}_1$ 使 $\mathbf{A}^{(1)}=\mathbf{L}_1\mathbf{A}^{(0)}$，其中$\mathbf{L}_1=\begin{spmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{spmatrix}$。按此方式依次变换得一系列 $\mathbf{L}_i$：
+\[\mathbf{A}^{(n)}=\mathbf{L}_n\mathbf{A}^{(n-1)}=\cdots=\mathbf{L}_n\mathbf{L}_{n-1}\cdots\mathbf{L}_2\mathbf{L}_1\mathbf{A}^{(0)}\]
+反推得到
+\[\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{A}^{(n-1)}\]
+记 $\mathbf{U}=\mathbf{A}^{(n-1)}=\begin{spmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\0&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\mu_{nn}\end{spmatrix}$ 为一上三角阵，则$\mathbf{A}=\mathbf{L}_1^{-1}\mathbf{L}_2^{-1}\cdots\mathbf{L}_{n-1}^{-1}\mathbf{U}=\mathbf{LU}$。
+
+\trm 设$\mathbf{A}$为$n$阶矩阵，$D_k\neq0$，则$\mathbf{A}$可唯一分解为一单位下三角阵$\mathbf{L}$与一上三角阵$\mathbf{U}$之积
+\begin{equation}\label{2-e1}
+\mathbf{A}=\mathbf{LU}
+\end{equation}
+称为\textbf{LU分解}（Doolittle分解）。
+
+% 此处缺少 L 与 U 的元素表示。
+
+\entry LU分解的算法实现：设 $\mathbf{L}=\begin{spmatrix}1&0&\cdots&0\\-l_{21}&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\-l_{n1}&0&\cdots&1\end{spmatrix}$，$\mathbf{U}=\mathbf{A}^{(n-1)}=\begin{spmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\0&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\mu_{nn}\end{spmatrix}$，根据式(\ref{2-e1})可知：$\mathbf{A}$中的元素$a_{ij}$满足
+\begin{align*}
+a_{ij}&=(l_{i1}\ l_{i2}\ \cdots\ l_{i,i-1}\ 1\ 0\ \cdots\ 0)\cdot(\mu_{1j}\ \mu_{2j}\ \cdots\ \mu_{jj}\ 0\ \cdots\ 0)^{\mathrm{T}}\\
+&=\begin{cases}\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}+\mu_{ij}&,j\geq i,\ i=1,2,\cdots,n\\\sum\limits_{k=1}^jl_{ik}\mu_{kj}&,j<i,\ i=1,2,\cdots,n\end{cases}
+\end{align*}
+由此可以推得迭代算式为：
+\begin{align}
+&\mu_{1j}=a_{1j}&j=1,2,\cdots,n\label{2-e2}\\
+&l_{i1}=a_{i1}/\mu_{11}&i=2,3,\cdots,n\label{2-e3}\\
+&\mu_{ij}=a_{ij}-\sum\limits_{k=1}^{i-1}l_{ik}\mu_{kj}&j=i,i+1,\cdots,n;\ i=2,3,\cdots,n\label{2-e4}\\
+&l_{ki}=\frac1{\mu_{ii}}\left(a_{ki}-\sum\limits_{t=1}^{i-1}l_{kt}\mu_{ti}\right)&k=i+1,\cdots,n;\ i=2,3,\cdots,n\label{2-e5}
+\end{align}
+
+\entry \key{LU分解算法}：
+\begin{enumerate}\tl
+    \item 照抄\footnote{即利用式(\ref{2-e2})。}系数矩阵$\mathbf{A}$第$1$行；
+    \item 用式(\ref{2-e3})写出第$1$列（$\mathbf{A}$对应位置元素除以 $\mu_{ii}$ 后再照抄）；
+    \item 用式(\ref{2-e4})写出第$2$行（$\mathbf{A}$对应位置元素减去一系列LU乘积）；
+    \item 用式(\ref{2-e5})写出第$2$列（$\mathbf{A}$对应位置元素减去一系列LU乘积，最终除以 $\mu_{ii}$）；
+    \item 以此类推，重复应用式(\ref{2-e4})、式(\ref{2-e5})，生成行与列。
+    \item 沿对角线分成$\mathbf{L}$、$\mathbf{U}$两矩阵。
+\end{enumerate}
+
+\begin{figure}[htbp]
+\small\centering
+\begin{gather*}
+    \begin{pmatrix}a_{11}&a_{12}&\cdots&a_{1n}\\&&&\\&&&\\&&&\end{pmatrix}\sothat
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&&&\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\sothat
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&&&\\l_{n1}&&&\end{pmatrix}\\
+    \ \overset{\cdots\ }{\Rightarrow}
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\l_{21}&\mu_{22}&\cdots&\mu_{2n}\\\vdots&\vdots&&\vdots\\l_{n1}&l_{n2}&\cdots&\mu_{nn}\end{pmatrix}=
+    \begin{pmatrix}1&&&\\l_{21}&1&&\\\vdots&\vdots&\ddots&\\l_{n1}&l_{n2}&\cdots&1\end{pmatrix}+
+    \begin{pmatrix}\mu_{11}&\mu_{12}&\cdots&\mu_{1n}\\&\mu_{22}&\cdots&\mu_{2n}\\&&\ddots&\vdots\\&&&\mu_{nn}\end{pmatrix}
+\end{gather*}
+\caption{LU分解算法示意图}
+\end{figure}
+
+\entry 需注意：重复第5步时，有如下的小妙招。
+\begin{enumerate}\tl
+    \item 在第$m$步生成行时，对某个元素 $\mu_{ij}$，首先在其上方\emph{紧贴顶部的位置}\footnote{而非紧贴该元素的位置。} 找到 $m-1$ 个元素的列向量 $(\mu_{1j},\mu_{2j},\ldots,\mu_{m-1,j})$；再向左\emph{靠近左边缘位置}，找到$m-1$个元素的行向量 $(l_{i1},l_{i2},\ldots,l_{i,m-1})$，则$\mu_{ij}$ 等于 $\mathbf{A}$对应位置元素减去以上两向量的内积。
+    \item 类似的，在第$m$步生成列时，先在其左侧靠边缘部找 $m-1$ 个元素的行向量，再向上靠顶部位置找到 $m-1$ 个元素的列向量，生成值为矩阵$\mathbf{A}$对应位置元素值减两向量内积之后\emph{除以 $\mu_{kk}$}。
+    \item 易错点：生成列时，\emph{不要忘记除以 $\mu_{kk}$}！
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering\small
+\begin{tikzpicture}
+\node at (0,0)
+{$\begin{bmatrix}
+\mu_{11}&\mu_{12}&\cdots&\mu_{1j}&\cdots&\mu_{1n}\\
+l_{21}&\mu_{22}&\cdots&\mu_{2j}&\cdots&\mu_{2n}\\
+\vdots&\vdots&      &\vdots&      &\vdots\\
+l_{i1}&l_{i2}&\cdots&\mu_{ij}&\cdots&\mu_{in}\\
+\vdots&\vdots&      &\vdots&      &\vdots\\
+l_{n1}&l_{n2}&\cdots&l_{nj}&\cdots&\mu_{nn}
+\end{bmatrix}$};
+\draw[fill=black,opacity=0.2,draw=white] (-2.1,-0.5) rectangle (0, 0);
+\draw[fill=black,opacity=0.2,draw=white] (0.1,0.05) rectangle (0.75,1.35);
+\draw (-1.4,-1.4) -- (-1.4,0.9) -- (2.2,0.9);
+\draw (-0.7,-1.4) -- (-0.7,0.45) -- (2.2,0.45);
+\draw (0.1,0) -- (2.2,0);
+\draw (0.1,-0.5) -- (2.2,-0.5);
+\draw (1.5,-1.4) -- (1.5,-1.1) -- (2.2,-1.1);
+\end{tikzpicture}
+\caption{LU分解算法图示（以一个行元素$\mu_{ij}$的生成为例）}
+\end{figure}
+
+
+\example 分解矩阵$\mathbf{A}$为$\mathbf{LU}$，其中：$\mathbf{A}=\begin{spmatrix}4&-2&0&4\\-2&2&-3&1\\0&-3&13&-7\\4&1&-7&23\end{spmatrix}$
+
+（答案：$\mathbf{L}=\begin{spmatrix}1&&&\\-\frac12&1&&\\0&-3&1&\\1&3&\frac12&1\end{spmatrix}$，$\mathbf{U}=\begin{spmatrix}4&-2&0&4\\&1&-3&3\\&&4&2\\&&&9\end{spmatrix}$）
+
+\entry 利用LU分解\emph{求解线性方程组}：
+\[\mathbf{Ax=b}\sothat\mathbf{LUx=b}\sothat
+\begin{cases}\mathbf{Ux=y}\\\mathbf{Ly=b}\end{cases}\]
+转化为两个对角阵方程，易于求解。（计算量仍为 $O(n^3)$，来自于 LU 分解本身。）
+
+\entry \key{LDU分解}：令$\mathbf{D}=\diag(\mu_{11},\mu_{22},\cdots,\mu_{nn})$，则有：
+\[\mathbf{A}=\mathbf{LU}=\mathbf{L\cdot I\cdot U}=\mathbf{LDD}^{-1}\mathbf{U}=\mathbf{LDM}^{\mathrm{T}}\]
+其中$\mathbf{M}^{\mathrm{T}}=\mathbf{D}^{-1}\mathbf{U}$，$\mathbf{M}^{\mathrm{T}}$是一单位上三角阵。则：
+\begin{equation}
+\mathbf{M}=\begin{spmatrix}1&&&\\m_{21}&1&&\\\vdots&\vdots&\ddots&\\m_{n1}&m_{n2}&\cdots&1\end{spmatrix},\ m_{ji}=\frac{\mu_{ij}}{\mu_{ii}}\ \text{（即每行元素除以排头元素）}
+\end{equation}
+称$\mathbf{A=LDM}^{\mathrm{T}}$为矩阵的\emph{LDU分解}。
+
+\entry LDU计算式不必死记，只需在LU分解后变换为相应形式即可。
+
+\entry 对于\emph{对称阵}，可分解为：$\mathbf{A=LDL}^{\mathrm{T}}$（前提：各阶顺序主子式非$0$）
+
+\entry 对于\emph{对称正定阵}，$\mathbf{D}$的元素均非负（且对角线非$0$），则进一步有 $\mathbf{A}=\mathbf{GG}^{\mathrm{T}}$（Cholesky分解）
+
+\entry \key{平方根法}：$\mathbf{A=GG}^{
+\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{GG}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Gy=b}\\\mathbf{G}^{\mathrm{T}}\mathbf{x=y}\end{cases}$
+
+\entry \key{改进平方根法}
+\footnote{相较于平方根法少去若干开方运算，故称「改进」。}
+：$\mathbf{A=LDL}^{\mathrm{T}}\sothat\mathbf{Ax=b}\sothat\mathbf{LDL}^{\mathrm{T}}\mathbf{x=b}\sothat\begin{cases}\mathbf{Ly=b}\\\mathbf{Dz=y}\\\mathbf{L}^{\mathrm{T}}\mathbf{x=b}\end{cases}$
+
+\entry \key{稀疏矩阵}：大量元素为$0$，非零元很少。以\emph{带状矩阵}为例：
+\begin{figure}[htbp]
+\small\centering
+\begin{tikzpicture}
+\node at (0,0)
+{$\begin{pmatrix}
+\ast&\ast&\ast&&&\\
+\ast&\ast&\ast&\ast&&\\
+\ast&\ast&\ast&\ast&\ast&\\
+&\ast&\ast&\ast&\ast&\ast\\
+&&\ast&\ast&\ast&\ast\\
+&&&\ast&\ast&\ast\\
+\end{pmatrix}$};
+\node [rotate=90,scale=1.4] at (-0.75,1.5) {$\Biggr\}$};
+\node at (-0.75,1.8) {$q+1$};
+\node [scale=1.4] at (-1.8,0.75) {$\Biggl\{$};
+\node at (-2.3,0.75) {$p+1$};
+\end{tikzpicture}
+\caption{上带宽为 $q$，下带宽为 $p$ 的带状矩阵}\label{2-f2}
+\end{figure}
+
+\noindent $p=q=1$时的带状矩阵称为\key{三对角矩阵}，通常为\emph{严格对角占优矩阵}。
+
+\entry 解三对角系数矩阵线性方程组的\key{追赶法}：设系数矩阵$\mathbf{T}$为三对角阵，则可用LU分解求解方程组：
+\[\mathbf{T=LU},\mathbf{Tx=d}\sothat\mathbf{LUx=d}\sothat\begin{cases}\mathbf{Ly=d}&\text{（追）}\\\mathbf{Ux=y}&\text{（赶）}\end{cases}\]
+其中 $\mathbf{L}$ 是带宽为 $p$ 的下三角阵，$\mathbf{U}$ 是带宽为 $q$ 的上三角阵
+\footnote{对于三对角阵，其 LU 分解的结果可用简单的表达式直接写出，参见李乃成、梅立泉《数值分析》第36页；但若是针对考试做准备，则可仅按一般的LU分解处理三对角矩阵。}
+。求解前一方程时，从上至下依次带入（「追」）；求解后一方程时，从下至上依次回代（「赶」）。
+
+\section{病态问题理论}
+
+\entry \key{误差向量} $\mathbf{e=x^{\ast}}-\tilde{\mathbf{x}}$ 与 \key{残向量} $\mathbf{r=b-A}\tilde{\mathbf{x}}$：前者为里，后者为表。
+
+\entry 如何衡量误差（向量）的大小？可采用向量的\key{范数}衡量。
+
+\define \key{向量范数}：称$\|\mathbf{x}\|$为一个向量的范数，若$\|\mathbf{x}\|\in\mathbb{R}$满足：
+\begin{enumerate}\tl
+    \item 非负性：$\forall \mathbf{x}\in\mathbb{R}^n,\|\mathbf{x}\|\geq0\text{且}\|\mathbf{x}\|=0$ $\Leftrightarrow$ $\mathbf{x=0}$
+    \item 齐次性：$\forall\alpha\in\mathbb{R},x\in\mathbb{R}^n,\|\alpha\mathbf{x}\|=|\alpha|\cdot\|\mathbf{x}\|$
+    \item 三角不等式：$\forall\mathbf{x,y}\in\mathbb{R}^n,\|\mathbf{x+y}\|\leq\|\mathbf{x}\|+\|\mathbf{y}\|$
+\end{enumerate}
+
+\entry 常用向量范数：
+\begin{itemize}\tl
+    \item $1$-范数：$\|\mathbf{x}\|_1=|x_1|+|x_2|+\cdots+|x_n|.$
+    \item $2$-范数：$\|\mathbf{x}\|_2=\sqrt{x_1^2+x_2^2+\cdots+x_n^2}.$
+    \item $\infty$-范数：$\|\mathbf{x}\|_{\infty}=\max\limits_{1\leq i\leq n}|x_i|.$
+\end{itemize}
+
+\define \key{矩阵范数}：称$\|\mathbf{A}\|\in\mathbb{R}$为一个矩阵范数，若其满足：
+\begin{enumerate}\tl
+    \item 非负性：$\forall\mathbf{A},\|\mathbf{A}\|\geq0$且$\|\mathbf{A}\|=0\ \Leftrightarrow\ \mathbf{A=O}$
+    \item 齐次性：$\forall\alpha\in\mathbb{R},\|\alpha\mathbf{A}\|=|\alpha|\cdot\|\mathbf{A}\|$
+    \item 三角不等式：$\|\mathbf{A+B}\|\leq\|\mathbf{A}\|+\|\mathbf{B}\|$
+    \item $\|\mathbf{AB}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{B}\|$
+\end{enumerate}
+
+\define 向量范数与矩阵范数的\key{相容性}：若$\|\mathbf{Ax}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}\|$，则称矩阵范数$\|\mathbf{A}\|$与向量范数$\|\mathbf{x}\|$为\emph{相容}或\emph{协调}的。
+
+\entry \key{算子范数}：称 $\|\mathbf{A}\|_p=\max\dfrac{\|\mathbf{Ax}\|_p}{\|\mathbf{x}\|_p}=\max\limits_{\|\mathbf{x}\|_p=1}\|\mathbf{Ax}\|_p$ 为（由向量范数 $\|\mathbf{x}\|_p$ 诱导的）矩阵范数，容易证明 $\|\mathbf{A}\|_p$ 与 $\|\mathbf{x}\|_p$ 满足相容条件。
+\begin{enumerate}\tl
+    \item $1$-范数：$\|\mathbf{A}\|_1=\max\limits_{1\leq j\leq n}\left\{\sum\limits_{i=1}^n|a_{ij}|\right\}$，即列和最大值。
+    \item $2$-范数：$\|\mathbf{A}\|_2=\sqrt{\mathbf{A}^{\mathrm{T}}\mathbf{A}\text{的最大特征值}}$.
+    \item $\infty$-范数：$\|\mathbf{A}\|_{\infty}=\max\limits_{1\leq i\leq n}\left\{\sum\limits_{j=1}^n|a_{ij}|\right\}$，即行和最大值。
+\end{enumerate}
+
+\entry 矩阵的\key{谱半径}：$\rho(\mathbf{A})=\max\limits_{1\leq i\leq n}|\lambda_i|$，性质：$\rho(\mathbf{A})\leq\|\mathbf{A}\|$
+
+\trm\label{I-B} 设$\|\mathbf{B}\|\leq1$，则$\mathbf{I-B}$可逆，且有
+\begin{equation}
+\|(\mathbf{I-B})^{-1}\|\leq\frac1{1-\|\mathbf{B}\|}
+\end{equation}
+
+\entry \emph{舍入误差}对解的影响：
+\[\mathbf{r=b-A}\tilde{\mathbf{x}}\sothat\mathbf{A}\tilde{\mathbf{x}}=\mathbf{b-r}\neq\mathbf{b}\]
+为分析舍入误差的相对水平，先分析误差向量的大小：
+\[\mathbf{e}=\\\mathbf{A}^{-1}\mathbf{r}\sothat\|\mathbf{e}\|=\|\mathbf{A}^{-1}\mathbf{r}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{r}\|\]
+由于$\mathbf{Ax}^{\ast}=\mathbf{b}$，故
+\[\|\mathbf{b}\|=\|\mathbf{Ax}^{\ast}\|\leq\|\mathbf{A}\|\cdot\|\mathbf{x}^{\ast}\|\sothat\frac1{\|\mathbf{x}^{\ast}\|}\leq\frac{\|\mathbf{A}\|}{\|\mathbf{b}\|}\]
+故相对误差水平$\dfrac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\leq\|\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|\cdot\dfrac{\|\mathbf{r}\|}{\|\mathbf{b}\|}$，其中的系数即可定义为矩阵的\key{条件数} $\cond(\mathbf{A})=\|\mathbf{A}\|\|\mathbf{A}^{-1}\|$.
+
+\entry 易知$\cond(\mathbf{A})\geq1$（$\|\mathbf{A}\|\|\mathbf{A}^{-1}\|\geq\|\mathbf{A\cdot A}^{-1}\|=1$）
+
+\entry 残向量$\mathbf{r}$不能完全反映偏差水平，因$\mathbf{r}$小，$\mathbf{e}$也不一定小。
+
+\entry \emph{系数扰动}对解的影响：设系数矩阵 $\mathbf{A}$ 有扰动 $\Delta\mathbf{A}$，则
+\[(\mathbf{A}+\Delta\mathbf{A})\mathbf{x=b}\sothat\mathbf{r=b-A}\tilde{\mathbf{x}}=\Delta\mathbf{A}\tilde{\mathbf{x}}\sothat\|\mathbf{r}\|\leq\|\Delta\mathbf{A}\|\|\tilde{\mathbf{x}}\|\]
+可见若$\Delta\mathbf{A}$小，则$\mathbf{r}$也小。故相对误差水平
+\[\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\cond(\mathbf{A})\frac{\|\mathbf{r}\|}{\|\mathbf{b}\|}\leq\cond(\mathbf{A})\cdot\frac{\|\tilde{\mathbf{x}}\|}{\|\mathbf{x}^{\ast}\|}\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\]
+
+\entry 舍入误差与系数扰动的共同影响：假设总的影响可归结为 $(\mathbf{A}-\Delta\mathbf{A})(\mathbf{x}-\Delta\mathbf{x})=\mathbf{b}-\Delta\mathbf{b}$，当$\|\Delta\mathbf{A}\|\cdot\|\mathbf{A}^{-1}\|<1$时，记 $\varepsilon_{\mathbf{A}}=\|\Delta\mathbf{A}\|/\|\mathbf{A}\|$ 与 $\varepsilon_{\mathbf{b}}=\|\Delta\mathbf{b}\|/\|\mathbf{b}\|$ 为各系数在范数意义下的相对偏差，则有
+\begin{equation}
+\frac{\|\mathbf{x}^{\ast}-\tilde{\mathbf{x}}\|}{\mathbf{x}^{\ast}}\leq\frac{\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|}{1-\|\mathbf{A}^{-1}\|\cdot\|\mathbf{A}\|\cdot\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}}\left(\frac{\|\Delta\mathbf{b}\|}{\|\mathbf{b}\|}+\frac{\|\Delta\mathbf{A}\|}{\|\mathbf{A}\|}\right)=\frac{\varepsilon_{\mathbf{b}}+\varepsilon_{\mathbf{A}}}{[\cond(\mathbf{A})]^{-1}-\varepsilon_{\mathbf{A}}}
+\end{equation}
+易见当$\cond(\mathbf{A})$较大时，方程组为\emph{病态方程组}；反之，当$\cond(\mathbf{A})$较小时，方程组仍为\emph{良态方程组}。
+
+\entry $\cond(\mathbf{A})$的估计：利用算子范数的相容性，有
+\[\mathbf{Ax=b}\sothat\mathbf{x=A}^{-1}\mathbf{b}\sothat\|\mathbf{x}\|\leq\|\mathbf{A}^{-1}\|\cdot\|\mathbf{b}\|\sothat\frac{\|\mathbf{x}\|}{\|\mathbf{b}\|}\leq\|\mathbf{A}^{-1}\|\]
+随机选取$p$个向量$\mathbf{b}_1,\mathbf{b}_2,\cdots,\mathbf{b}_p$，解方程$\mathbf{Ax}^{(k)}=\mathbf{b}_k$（$1\leq k\leq p$），得到$\mathbf{x}^{(k)}$，由上面结论可知
+\[\max_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}\leq\|\mathbf{A}^{-1}\|\]
+故可近似认为：$\cond(\mathbf{A})\approx\|\mathbf{A}\|\cdot\max\limits_{1\leq k\leq p}\frac{\|\mathbf{x}^{(k)}\|}{\|\mathbf{b}_k\|}.$
